@@ -2,9 +2,9 @@ from random import randint
 from pico2d import *
 
 
-KPU_WIDTH, KPU_HEIGHT = 1280, 1024
+WIDTH, HEIGHT = 1020, 800
 
-x, y = KPU_WIDTH // 2, KPU_HEIGHT // 2
+x, y = WIDTH // 2, HEIGHT // 2
 
 def handle_events():
     global running
@@ -32,23 +32,31 @@ def handle_events():
                 dir += 1
     pass
 
-open_canvas(KPU_WIDTH, KPU_HEIGHT)
+open_canvas(WIDTH, HEIGHT)
 
 sonic = load_image('sonic.png')
+coin = load_image('coin.png')
+red_coin = load_image('red_coin.png')
+fly = load_image('fly_monster.png')
 
 running = True
 
-x2, y2 = randint(0, KPU_WIDTH), randint(0, KPU_HEIGHT)
+game = 0
 dir = 0
 dir2 = 1
 frame = 0
+fly_frame = 0
 
 while running:
         clear_canvas()
-        if dir == 1 and dir2 == 1:
+        fly.clip_draw(int(fly_frame) * 116, 0, 116, 115, 500, 400, 40, 40)
+        if dir == 1:
             sonic.clip_draw(int(frame) * 40, 460, 40, 40, x, y)
-        elif dir == -1 and dir2 == -1:
+            coin.clip_draw(int(frame) * 20, 0, 20, 20, x+60, y)
+            fly.clip_draw(int(fly_frame) * 116, 0, 116, 115, x + 120, y,40,40)
+        elif dir == -1:
             sonic.clip_composite_draw(int(frame) * 40, 460, 40, 40, 0, 'h', x, y, 40, 40)
+            red_coin.clip_draw(int(frame) * 20, 0, 20, 20, x + 60, y)
         elif dir == 0 and dir2 == 1:
             sonic.clip_draw(int(frame) * 40, 420, 40, 40, x, y)
         elif dir == 0 and dir2 == -1:
@@ -59,6 +67,8 @@ while running:
             frame = (frame + 0.5) % 8
         else:
             frame = (frame + 1) % 8
+
+        fly_frame = (fly_frame + 1) % 16
 
         handle_events()
 
