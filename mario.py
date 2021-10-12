@@ -10,6 +10,7 @@ def handle_events():
     global running
     global dir
     global dir2
+    global fast
 
     events = get_events()
     for event in events:
@@ -17,6 +18,7 @@ def handle_events():
             running = False
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_RIGHT:
+
                 dir2 = 1
                 dir += 1
             elif event.key == SDLK_LEFT:
@@ -24,12 +26,17 @@ def handle_events():
                 dir -= 1
             elif event.key == SDLK_ESCAPE:
                 running = False
+            elif event.key == SDLK_LSHIFT or event.key == SDLK_RSHIFT:
+                fast = True
+
 
         elif event.type == SDL_KEYUP:
             if event.key == SDLK_RIGHT:
                 dir -= 1
             elif event.key == SDLK_LEFT:
                 dir += 1
+            elif event.key == SDLK_LSHIFT or event.key == SDLK_RSHIFT:
+                fast = False
     pass
 
 open_canvas(WIDTH, HEIGHT)
@@ -40,6 +47,7 @@ red_coin = load_image('red_coin.png')
 fly = load_image('fly_monster.png')
 
 running = True
+fast = False
 
 game = 0
 dir = 0
@@ -72,7 +80,12 @@ while running:
 
         handle_events()
 
-        x += dir * 7
-        delay(0.04)
+        if fast and dir != 0:
+            x += dir * 10
+            delay(0.02)
+        else:
+            x += dir * 7
+            delay(0.04)
+
 
 close_canvas()
