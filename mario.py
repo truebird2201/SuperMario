@@ -57,21 +57,28 @@ fly_frame = 0
 
 while running:
         clear_canvas()
+
         fly.clip_draw(int(fly_frame) * 116, 0, 116, 115, 500, 400, 40, 40)
         if dir == 1:
-            sonic.clip_draw(int(frame) * 40, 460, 40, 40, x, y)
+            if(fast):
+                sonic.clip_draw(int(frame) * 40, 380, 40, 40, x, y)
+            else:
+                sonic.clip_draw(int(frame) * 40, 460, 40, 40, x, y)
             coin.clip_draw(int(frame) * 20, 0, 20, 20, x+60, y)
-            fly.clip_draw(int(fly_frame) * 116, 0, 116, 115, x + 120, y,40,40)
         elif dir == -1:
-            sonic.clip_composite_draw(int(frame) * 40, 460, 40, 40, 0, 'h', x, y, 40, 40)
+            if(fast):
+                sonic.clip_composite_draw(int(frame) * 40, 380, 40, 40, 0, 'h', x, y, 40, 40)
+            else:
+                sonic.clip_composite_draw(int(frame) * 40, 460, 40, 40, 0, 'h', x, y, 40, 40)
             red_coin.clip_draw(int(frame) * 20, 0, 20, 20, x + 60, y)
         elif dir == 0 and dir2 == 1:
             sonic.clip_draw(int(frame) * 40, 420, 40, 40, x, y)
         elif dir == 0 and dir2 == -1:
             sonic.clip_composite_draw(int(frame) * 40, 420, 40, 40, 0, 'h', x, y, 40, 40)
+
         update_canvas()
 
-        if dir == 0:
+        if dir == 0:                                    # 프레임
             frame = (frame + 0.5) % 8
         else:
             frame = (frame + 1) % 8
@@ -80,11 +87,11 @@ while running:
 
         handle_events()
 
-        if fast and dir != 0:
+        if fast and dir != 0:                           # 대시 on
             x += dir * 10
-            delay(0.02)
-        else:
-            x += dir * 7
+            delay(0.04)
+        else:                                           # 대시 off
+            x += dir * 6
             delay(0.04)
 
 
