@@ -175,9 +175,10 @@ class player:
             if self.dir != 0 and self.dir != self.dir2:
                 self.plus_move = 0
 
-            if (x > 980 and self.dir == 1) or (x < 20 and self.dir == -1):
-                pass
-
+            if x > 970 and self.dir != -1:
+                x = 970
+            elif x < 30 and self.dir != 1:
+                x = 30
             else:
                 if self.fast and self.dir != 0:  # 대시 on
                     x += (self.dir * 2) + (self.dir2 * self.plus_move)
