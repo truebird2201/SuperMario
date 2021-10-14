@@ -9,7 +9,7 @@ running = True
 game = 0
 fly_frame = 0
 frame = 0
-main_frame = False
+main_frame = 0
 main_move = False
 
 x, y = 60, 60
@@ -26,7 +26,6 @@ class player:
     global x
     global y
     global frame
-    global main_frame
     dir = 0
     dir2 = 1
     gravity = 5
@@ -55,7 +54,6 @@ class player:
         global x
         global y
         global frame
-        global main_frame
 
         events = get_events()
         for event in events:
@@ -113,7 +111,6 @@ class player:
         global x
         global y
         global frame
-        global main_frame
 
         self.left = x - 30
         self.right = x + 30
@@ -187,7 +184,7 @@ class player:
                     x += self.dir2 * self.plus_move
                     delay(0.04)
 
-class Pipe:
+class Pipe:                         # 파이프
     global game
 
     left = 0
@@ -211,19 +208,34 @@ class Pipe:
 
 p = [Pipe(200,300,150,30),Pipe(450,550,200,30),Pipe(700,800,250,30)]
 
-def draw_back():                                # 배경 그리기
+def draw_back():                                   # 배경 그리기
     global game
     global main_frame
+    global main_move
 
     if game == 0:
         main_back.clip_draw(0, 0, 1000, 800, 500, 400)
         main_sonic.clip_draw(0, 0, 400, 340, 150, 200 + main_frame)
         Title.clip_draw(0, 0, 1000, 300, 500, 600 - main_frame,800,200)
         name.clip_draw(0, 0, 1000, 300, 500, 750 - main_frame, 400, 120)
+
+
         if (int)(main_frame % 10) != 0:
             press.clip_draw(0, 0, 800, 300, 500, 400, 400, 150)
+
     elif game == 1:
         select.clip_draw(0, 0, 1000, 800, 500, 400)
+        select_Stage.clip_draw(0, 0, 1000, 800, 520, 600, 800, 200 + (main_frame*3))
+        select_Stage2.clip_draw(0, 0, 1000, 300, 500, 270 - (main_frame*2))
+
+    if main_move == True:                           # 메인 움직임
+        main_frame = main_frame + 0.1
+    if main_frame > 20:
+        main_move = False
+    if main_move == False:
+        main_frame = main_frame - 0.1
+    if main_frame < 0:
+        main_move = True
 
 
 
@@ -241,30 +253,26 @@ press = load_image('press.png')
 pipe = load_image('pipe.png')
 stage1 = load_image('world1-1.png')
 select = load_image('select_back.png')
+select_Stage = load_image('select_Stage.png')
+select_Stage2 = load_image('select_Stage2.png')
 
 while running:
     clear_canvas()
 
     draw_back()                                     # 배경 그리기
     player.draw(player)                             # 플레이어 그리기
-    for i in p:
+    for i in p:                                     # 파이프 그리기
         i.draw()
     update_canvas()
     player.handle_events(player)
 
-    if player.dir == 0:  # 프레임
+    if player.dir == 0:                              # 프레임
         frame = (frame + 0.5) % 8
     else:
         frame = (frame + 1) % 8
+
     fly_frame = (fly_frame + 1) % 16
 
-    if main_move == True:
-        main_frame = main_frame + 0.1
-    if main_frame > 20:
-        main_move = False
-    if main_move == False:
-        main_frame = main_frame - 0.1
-    if main_frame < 0:
-        main_move = True
+
 
 close_canvas()
