@@ -3,7 +3,7 @@ from pico2d import *
 from math import *
 
 
-WIDTH, HEIGHT = 1020, 800
+WIDTH, HEIGHT = 1000, 800
 
 x, y = WIDTH // 2, HEIGHT // 2
 
@@ -19,10 +19,10 @@ class player:
     gravity = 5
     jumpPower = 40
     jumpTime = 0
-    left = x - 20
-    right = x + 20
-    top = y - 20
-    bottom = y + 20
+    left = x - 30
+    right = x + 30
+    top = y - 30
+    bottom = y + 30
     savey = 0
     savey2 = 0
     jumpcount = 2
@@ -94,10 +94,10 @@ class player:
         global y
         global frame
 
-        self.left = x - 20
-        self.right = x + 20
-        self.top = y - 20
-        self.bottom = y + 20
+        self.left = x - 30
+        self.right = x + 30
+        self.top = y - 30
+        self.bottom = y + 30
 
         if game == 0:
             update_canvas()
@@ -119,27 +119,27 @@ class player:
 
             if self.dir == 1:                        # 오른쪽
                 if self.fast:                       # 대시
-                    sonic_sprite.clip_draw(int(frame) * 40, 380, 40, 40, x, y)
+                    sonic_sprite.clip_draw(int(frame) * 40, 380, 40, 40, x, y, 60, 60)
                 else:
                     if self.Jumping:
-                        sonic_sprite.clip_draw(int(frame) * 40, 340, 40, 40, x, y)
+                        sonic_sprite.clip_draw(int(frame) * 40, 340, 40, 40, x, y, 60, 60)
                     else:
-                        sonic_sprite.clip_draw(int(frame) * 40, 460, 40, 40, x, y)
+                        sonic_sprite.clip_draw(int(frame) * 40, 460, 40, 40, x, y, 60, 60)
 
             elif self.dir == -1:                     # 왼쪽
                 if self.fast:                       # 대시
-                    sonic_sprite.clip_composite_draw(int(frame) * 40, 380, 40, 40, 0, 'h', x, y, 40, 40)
+                    sonic_sprite.clip_composite_draw(int(frame) * 40, 380, 40, 40, 0, 'h', x, y, 60, 60)
                 else:
                     if self.Jumping:
-                        sonic_sprite.clip_composite_draw(int(frame) * 40, 340, 40, 40, 0, 'h', x, y, 40, 40)
+                        sonic_sprite.clip_composite_draw(int(frame) * 40, 340, 40, 40, 0, 'h', x, y, 60, 60)
                     else:
-                        sonic_sprite.clip_composite_draw(int(frame) * 40, 460, 40, 40, 0, 'h', x, y, 40, 40)
+                        sonic_sprite.clip_composite_draw(int(frame) * 40, 460, 40, 40, 0, 'h', x, y, 60, 60)
 
             elif self.dir == 0 and self.dir2 == 1:        # 마지막이 오른쪽이였던 멈춤
-                sonic_sprite.clip_draw(int(frame) * 40, 420, 40, 40, x, y)
+                sonic_sprite.clip_draw(int(frame) * 40, 420, 40, 40, x, y, 60, 60)
 
             elif self.dir == 0 and self.dir2 == -1:       # 마지막이 왼쪽이였던 멈춤
-                sonic_sprite.clip_composite_draw(int(frame) * 40, 420, 40, 40, 0, 'h', x, y, 40, 40)
+                sonic_sprite.clip_composite_draw(int(frame) * 40, 420, 40, 40, 0, 'h', x, y, 60, 60)
 
             update_canvas()
 
@@ -147,10 +147,10 @@ class player:
             self.handle_events(player)
 
             if self.fast and self.dir != 0:                           # 대시 on
-                x += self.dir * 12
+                x += self.dir * 16
                 delay(0.04)
             else:                                           # 대시 off
-                x += self.dir * 6
+                x += self.dir * 10
                 delay(0.04)
 
 
