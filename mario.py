@@ -14,6 +14,12 @@ main_move = False
 
 x, y = 60, 60
 
+def crush(A,B):
+    if A.top < B.bottom and B.top < A.bottom and A.left < B.right and B.left < A.right:
+        return True
+    else:
+        return False
+
 class player:
     global running
     global game
@@ -35,6 +41,7 @@ class player:
     jumpcount = 2
     Jumping = False
     fast = False
+    plus_move = 1
 
     def __init__(self, x, y):
         self.x = x
@@ -66,9 +73,11 @@ class player:
 
                 elif event.type == SDL_KEYDOWN:  # 키 다운
                     if event.key == SDLK_RIGHT:  # 오른쪽
+                        self.plus_move = 0
                         self.dir2 = 1
                         self.dir += 1
                     elif event.key == SDLK_LEFT:  # 왼쪽
+                        self.plus_move = 0
                         self.dir2 = -1
                         self.dir -= 1
                     elif event.key == SDLK_ESCAPE:  # ESC
@@ -153,15 +162,28 @@ class player:
             elif self.dir == 0 and self.dir2 == -1:       # 마지막이 왼쪽이였던 멈춤
                 sonic_sprite.clip_composite_draw(int(frame) * 40, 420, 40, 40, 0, 'h', x, y, 60, 60)
 
-            if (x > 1000 and self.dir == 1) and (x < 0 and self.dir == -1):
+            if self.dir != 0 and self.plus_move < 15:
+                self.plus_move += 1
+                if self.plus_move > 15:
+                    self.plus_move = 15
+
+            elif self.dir == 0 and self.plus_move > 0:
+                self.plus_move -= 2
+                if self.plus_move < 0:
+                    self.plus_move = 0
+
+            if self.dir != 0 and self.dir != self.dir2:
+                self.plus_move = 0
+
+            if (x > 980 and self.dir == 1) or (x < 20 and self.dir == -1):
                 pass
-            
+
             else:
                 if self.fast and self.dir != 0:  # 대시 on
-                    x += self.dir * 16
+                    x += (self.dir * 2) + (self.dir2 * self.plus_move)
                     delay(0.04)
                 else:  # 대시 off
-                    x += self.dir * 10
+                    x += self.dir2 * self.plus_move
                     delay(0.04)
 
 class Pipe:
