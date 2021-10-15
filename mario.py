@@ -19,7 +19,7 @@ def crush(A,B):
         return 1
     elif y+30 > B.bottom and B.top > y-30 and x-30 < B.right and B.right < x+30:
         return 2
-    elif y-30 < B.top and y+10 > B.top and x+30 > B.left and B.right > x-30:
+    if y-30 < B.top and y+10 > B.top and x+30 > B.left and B.right > x-30:
         return 3
     else:
         return 0
@@ -30,6 +30,7 @@ class player:
     global x
     global y
     global frame
+    ground = True
     dir = 0
     dir2 = 1
     gravity = 5
@@ -129,7 +130,6 @@ class player:
             self.top = y - 30
             self.left = x - 30
 
-            stage1.clip_draw(int(frame) * 40, 380, 40, 40, x, y, 60, 60)
             if self.Jumping:
                 y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (self.jumpTime * self.jumpPower) + self.savey2
                 self.jumpTime += 1
@@ -192,11 +192,33 @@ class player:
                     x = i.left-30
                 elif crush(self, i) == 2:
                     x = i.right+30
-                elif crush(self, i) == 3:
-                    self.Jumping = False
-                    self.jumpcount = 2
+                if crush(self, i) == 3:
                     y = i.top+30
+                    self.savey = y
 
+class Ground:                         # 파이프
+    global game
+
+    left = 0
+    right = 0
+    top = 0
+    bottom = 0
+    kind = 0
+
+    def __init__(self, left, right, top, bottom, kind):
+        self.left = left
+        self.right = right
+        self.top = top
+        self.bottom = bottom
+        self.kind = 0 # 땅
+
+    def draw(self):
+
+        global game
+
+        if game == 1:
+            if self.kind == 0:
+                pass
 class Pipe:                         # 파이프
     global game
 
@@ -219,7 +241,9 @@ class Pipe:                         # 파이프
             pipe.clip_draw(0, 300-(self.top-self.bottom), 100, (self.top-self.bottom), (self.right+self.left)/2, (self.top+self.bottom)/2)
 
 
+
 p = [Pipe(200,300,150,30),Pipe(450,550,200,30),Pipe(700,800,250,30)]
+g = [Ground(0,930,0,25),Ground(930,1000,0,70)]
 
 def draw_back():                                   # 배경 그리기
     global game
