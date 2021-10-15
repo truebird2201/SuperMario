@@ -15,10 +15,16 @@ main_move = False
 x, y = 60, 60
 
 def crush(A,B):
-    if A.top < B.bottom and B.top < A.bottom and A.left < B.right and B.left < A.right:
-        return True
+    if y+30 > B.bottom and B.top > y-30 and x+30 > B.left and B.left > x-30:
+        return 1
+    elif y+30 > B.bottom and B.top > y-30 and x-30 < B.right and B.right < x+30:
+        return 2
+    elif y+30 > B.bottom and B.bottom > y-30 and x+30 > B.left and B.right > x-30:
+        return 3
+    elif y-30 < B.top and y+30 > B.top and x+30 > B.left and B.right > x-30:
+        return 4
     else:
-        return False
+        return 0
 
 class player:
     global running
@@ -120,10 +126,10 @@ class player:
 
 
         if game == 1:
-            self.left = x - 20
-            self.right = x + 20
-            self.top = y - 20
-            self.left = x - 20
+            self.left = x - 30
+            self.right = x + 30
+            self.top = y - 30
+            self.left = x - 30
 
             stage1.clip_draw(int(frame) * 40, 380, 40, 40, x, y, 60, 60)
             if self.Jumping:
@@ -183,6 +189,15 @@ class player:
                 else:  # 대시 off
                     x += self.dir2 * self.plus_move
                     delay(0.04)
+            for i in p:
+                if crush(self, i) == 1:
+                    x = i.left-30
+                elif crush(self, i) == 2:
+                    x = i.right+30
+                elif crush(self, i) == 3:
+                    self.Jumping = False
+                elif crush(self, i) == 4:
+                    y = i.top + 30
 
 class Pipe:                         # 파이프
     global game
