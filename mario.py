@@ -19,10 +19,8 @@ def crush(A,B):
         return 1
     elif y+30 > B.bottom and B.top > y-30 and x-30 < B.right and B.right < x+30:
         return 2
-    elif y+30 > B.bottom and B.bottom > y-30 and x+30 > B.left and B.right > x-30:
+    elif y-30 < B.top and y+10 > B.top and x+30 > B.left and B.right > x-30:
         return 3
-    elif y-30 < B.top and y+30 > B.top and x+30 > B.left and B.right > x-30:
-        return 4
     else:
         return 0
 
@@ -196,8 +194,8 @@ class player:
                     x = i.right+30
                 elif crush(self, i) == 3:
                     self.Jumping = False
-                elif crush(self, i) == 4:
-                    y = i.top + 30
+                    self.jumpcount = 2
+                    y = i.top+30
 
 class Pipe:                         # 파이프
     global game
