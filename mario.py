@@ -12,15 +12,18 @@ frame = 0
 main_frame = 0
 main_move = False
 
-x, y = 60, 60
+x, y = 900, 55
 
 def crush(A,B):
-    if y-30 < B.top and y+10 > B.top and x+30 > B.left and B.right > x-30:
-        return 3
-    elif y+30 > B.bottom and B.top > y-30 and x+30 > B.left and B.left > x-30:
+
+    if y+30 > B.bottom and B.top > y-30 and x+20 > B.left and B.left > x-20:
         return 1
-    elif y+30 > B.bottom and B.top > y-30 and x-30 < B.right and B.right < x+30:
+    elif y+30 > B.bottom and B.top > y-30 and x-20 < B.right and B.right < x+20:
         return 2
+    if y-31 < B.top and y+30 > B.top and x+20 > B.left and B.right > x-20:
+        return 3
+    elif y-20 > B.bottom and y+20 < B.bottom and x+20 > B.left and B.right > x-20:
+        return 4
     else:
         return 0
 
@@ -40,9 +43,11 @@ class player:
     right = x + 30
     top = y - 30
     bottom = y + 30
+    downpower = 0
     savey = 0
     savey2 = 0
     jumpcount = 2
+    Ground = True
     Jumping = False
     fast = False
     plus_move = 1
@@ -158,10 +163,16 @@ class player:
                         sonic_sprite.clip_composite_draw(int(frame) * 40, 460, 40, 40, 0, 'h', x, y, 60, 60)
 
             elif self.dir == 0 and self.dir2 == 1:        # 마지막이 오른쪽이였던 멈춤
-                sonic_sprite.clip_draw(int(frame) * 40, 420, 40, 40, x, y, 60, 60)
+                if self.Jumping == False:
+                    sonic_sprite.clip_draw(int(frame) * 40, 420, 40, 40, x, y, 60, 60)
+                else:
+                    sonic_sprite.clip_draw(int(frame) * 40, 340, 40, 40, x, y, 60, 60)
 
             elif self.dir == 0 and self.dir2 == -1:       # 마지막이 왼쪽이였던 멈춤
-                sonic_sprite.clip_composite_draw(int(frame) * 40, 420, 40, 40, 0, 'h', x, y, 60, 60)
+                if self.Jumping == False:
+                    sonic_sprite.clip_composite_draw(int(frame) * 40, 420, 40, 40, 0, 'h', x, y, 60, 60)
+                else:
+                    sonic_sprite.clip_composite_draw(int(frame) * 40, 340, 40, 40, 0, 'h', x, y, 60, 60)
 
             if self.dir != 0 and self.plus_move < 15:
                 self.plus_move += 1
@@ -187,16 +198,31 @@ class player:
                 else:  # 대시 off
                     x += self.dir2 * self.plus_move
                     delay(0.04)
-            for i in p:
+            self.Ground = False
+
+            for i in b:
+                if crush(self, i) == 3:
+                    self.Ground = True
+                    self.downpower = 0
+
+            if self.Jumping == True:
+                self.Ground = True
+                self.downpower = 0
+
+            if self.Ground == False:
+                y -= 3 + self.downpower
+                self.downpower += 4
+
+            for i in b:
                 if crush(self, i) == 1:
-                    x = i.left-30
+                    x = i.left-20
                 elif crush(self, i) == 2:
-                    x = i.right+30
+                    x = i.right+20
                 if crush(self, i) == 3:
                     y = i.top+30
                     self.savey = y
 
-class Ground:                         # 파이프
+class Block:                         # 파이프
     global game
 
     left = 0
@@ -206,44 +232,25 @@ class Ground:                         # 파이프
     kind = 0
 
     def __init__(self, left, right, top, bottom, kind):
+        self.kind = kind
         self.left = left
         self.right = right
         self.top = top
         self.bottom = bottom
-        self.kind = 0 # 땅
 
     def draw(self):
 
         global game
 
         if game == 1:
-            if self.kind == 0:
+            if self.kind == 0:              # 땅
                 pass
-class Pipe:                         # 파이프
-    global game
-
-    left = 0
-    right = 0
-    top = 0
-    bottom = 0
-
-    def __init__(self, left, right, top, bottom):
-        self.left = left
-        self.right = right
-        self.top = top
-        self.bottom = bottom
-
-    def draw(self):
-
-        global game
-
-        if game == 1:
-            pipe.clip_draw(0, 300-(self.top-self.bottom), 100, (self.top-self.bottom), (self.right+self.left)/2, (self.top+self.bottom)/2)
+            elif self.kind == 1:            # 파이프
+                    pipe.clip_draw(0, 300 - (self.top - self.bottom), 100, (self.top - self.bottom),(self.right + self.left) / 2, (self.top + self.bottom) / 2)
 
 
-
-p = [Pipe(200,300,150,30),Pipe(450,550,200,30),Pipe(700,800,250,30)]
-g = [Ground(0,930,0,25,0),Ground(930,1000,0,70,0)]
+b = [Block(200,300,150,30,1),Block(450,550,200,30,1),Block(700,800,250,30,1),
+     Block(0,930,25,0,0),Block(930,1000,70,0,0)]
 
 def draw_back():                                   # 배경 그리기
     global game
@@ -298,7 +305,7 @@ while running:
 
     draw_back()                                     # 배경 그리기
     player.draw(player)                             # 플레이어 그리기
-    for i in p:                                     # 파이프 그리기
+    for i in b:                                     # 파이프 그리기
         i.draw()
     update_canvas()
     player.handle_events(player)
