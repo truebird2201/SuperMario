@@ -1,6 +1,5 @@
 import game_framework
 import Title_state
-import Select_state
 from pico2d import *
 
 
@@ -11,7 +10,7 @@ logo_time = 0.0
 
 def enter():
     global image
-    image = load_image('Mario_credit.png')
+    image = load_image('LeeSeoYeon.png')
 
 def exit():
     global image
@@ -23,8 +22,7 @@ def update():
     global logo_time
     if (logo_time > 1.0):
         logo_time = 0
-        #game_framework.change_state(Title_state)
-        game_framework.change_state(Select_state)
+        game_framework.change_state(Title_state)
     #delay(0.01)
     logo_time += 0.01
 

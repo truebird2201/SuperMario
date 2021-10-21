@@ -4,23 +4,15 @@ import game_framework
 import Title_state
 from math import *
 
-
-sonic_sprite = load_image('sonic.png')
-coin = load_image('coin.png')
-red_coin = load_image('red_coin.png')
-fly = load_image('fly_monster.png')
-main_back = load_image('main_back.png')
-main_sonic = load_image('main_sonic.png')
-name = load_image('LeeSeoYeon.png')
-Title = load_image('SuperSonic.png')
-press = load_image('press.png')
-pipe = load_image('pipe.png')
-stage1 = load_image('world1-1.png')
-select = load_image('select_back.png')
-select_Stage = load_image('select_Stage.png')
-select_Stage2 = load_image('select_Stage2.png')
-
-
+sonic_sprite = None
+coin = None
+red_coin = None
+fly = None
+pipe = None
+stage1 = None
+select = None
+select_Stage = None
+select_Stage2 = None
 
 fly_frame = 0
 main_frame = 0
@@ -29,9 +21,11 @@ main_move = False
 
 
 class player:
-    global running
-    global game
 
+    left = 0
+    right = 0
+    top = 0
+    bottom = 0
     frame =0
     ground = True
     dir = 0
@@ -54,32 +48,15 @@ class player:
         self.x = x
         self.y = y
 
-
-    def handle_events(self):
-
-        global running
-        global game
-        global frame
-
-        events = get_events()
-        for event in events:
-
-            if game == 0:  # 대기 화면
-                if event.type == SDL_QUIT:
-                    running = False
-                elif event.type == SDL_KEYDOWN:  # 키 다운
-                    if event.key == SDLK_SPACE:  # 스페이스
-                        game = 1
-
     def update(self):
         if sonic.dir == 0:  # 프레임
             self.frame = (self.frame + 0.5) % 8
         else:
             self.frame = (self.frame + 1) % 8
-        self.left = self.x - 30
-        self.right = self.x + 30
-        self.top = self.y - 30
-        self.bottom = self.y + 30
+        self.left = self.x - 20
+        self.right = self.x + 20
+        self.top = self.y + 30
+        self.bottom = self.y - 30
 
     def move(self):
         if self.dir != 0 and self.plus_move < 15:
@@ -115,7 +92,7 @@ class player:
 
         if self.Ground == False:
             self.y -= 3 + self.downpower
-            self.downpower += 4
+            self.downpower += 2
 
         for i in b:
             if crush(self, i) == 1:
@@ -132,9 +109,6 @@ class player:
 
     def draw(self):
 
-        global running
-        global game
-
         if self.Jumping:
             self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (self.jumpTime * self.jumpPower) + self.savey2
             self.jumpTime += 1
@@ -148,7 +122,6 @@ class player:
             sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, 60, 60)
             if self.frame > 7:
                 delay(0.2)
-                game = 0
                 self.GoDown2 = False
         else:
             if self.dir == 1:  # 오른쪽
@@ -182,7 +155,6 @@ class player:
                     sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, 60, 60)
 
 class Block:                         # 파이프
-    global game
 
     left = 0
     right = 0
@@ -198,24 +170,20 @@ class Block:                         # 파이프
         self.bottom = bottom
 
     def draw(self):
-
-        global game
-
-        if game == 1:
-            if self.kind == 0:              # 땅
-                pass
-            elif self.kind == 1:
-                    pipe.clip_draw(0, 300 - (self.top - self.bottom), 100, (self.top - self.bottom),(self.right + self.left) / 2, (self.top + self.bottom) / 2)
+        if self.kind == 0:              # 땅
+            pass
+        elif self.kind == 1:
+                pipe.clip_draw(0, 300 - (self.top - self.bottom), 100, (self.top - self.bottom),(self.right + self.left) / 2, (self.top + self.bottom) / 2)
 
 def crush(A,B):
 
-    if y+30 > B.bottom and B.top > y-30 and x+20 > B.left and B.left > x-20:
+    if A.y+30 > B.bottom and B.top > A.y-30 and A.x+20 > B.left and B.left > A.x-20:
         return 1
-    elif y+30 > B.bottom and B.top > y-30 and x-20 < B.right and B.right < x+20:
+    if A.y+30 > B.bottom and B.top > A.y-30 and A.x-20 < B.right and B.right < A.x+20:
         return 2
-    if y-31 < B.top and y+30 > B.top and x+20 > B.left and B.right > x-20:
+    if A.y-31 < B.top and A.y+30 > B.top and A.right > B.left and B.right > A.left:
         return 3
-    elif y-20 > B.bottom and y+20 < B.bottom and x+20 > B.left and B.right > x-20:
+    if A.y-30 > B.bottom and A.y+30 < B.bottom and A.right > B.left and B.right > A.left:
         return 4
     else:
         return 0
@@ -224,24 +192,12 @@ b = [Block(200,300,150,30,1),Block(450,550,200,30,1),Block(700,800,250,30,1),
      Block(0,930,25,0,0),Block(930,1000,70,0,0)]
 
 def draw_back():                                   # 배경 그리기
-    global game
     global main_frame
     global main_move
 
-    if game == 0:
-        main_back.clip_draw(0, 0, 1000, 800, 500, 400)
-        main_sonic.clip_draw(0, 0, 400, 340, 150, 200 + main_frame)
-        Title.clip_draw(0, 0, 1000, 300, 500, 600 - main_frame,800,200)
-        name.clip_draw(0, 0, 1000, 300, 500, 750 - main_frame, 400, 120)
-
-
-        if (int)(main_frame % 10) != 0:
-            press.clip_draw(0, 0, 800, 300, 500, 400, 400, 150)
-
-    elif game == 1:
-        select.clip_draw(0, 0, 1000, 800, 500, 400)
-        select_Stage.clip_draw(0, 0, 1000, 800, 520, 600, 800, 200 + (main_frame*3))
-        select_Stage2.clip_draw(0, 0, 1000, 300, 500, 270 - (main_frame*2))
+    select.clip_draw(0, 0, 1000, 800, 500, 400)
+    select_Stage.clip_draw(0, 0, 1000, 800, 520, 600, 800, 200 + (main_frame * 3))
+    select_Stage2.clip_draw(0, 0, 1000, 300, 500, 270 - (main_frame * 2))
 
     if main_move == True:                           # 메인 움직임
         main_frame = main_frame + 0.1
@@ -253,36 +209,34 @@ def draw_back():                                   # 배경 그리기
         main_move = True
 
 
-
-open_canvas(WIDTH, HEIGHT)
-
-while running:
-    clear_canvas()
-
-    draw_back()                                     # 배경 그리기
-    sonic.draw()                             # 플레이어 그리기
-    for i in b:                                     # 파이프 그리기
-        i.draw()
-    update_canvas()
-    sonic.handle_events()
-
-    fly_frame = (fly_frame + 1) % 16
-
-
-
-close_canvas()
-
-
 def enter():
     global sonic, b
     global WIDTH, HEIGHT, frame, x, y
+    global sonic_sprite, coin, red_coin, fly
+    global pipe, stage1, select, select_Stage, select_Stage2
+    sonic_sprite = load_image('sonic.png')
+    coin = load_image('coin.png')
+    red_coin = load_image('red_coin.png')
+    fly = load_image('fly_monster.png')
+    pipe = load_image('pipe.png')
+    stage1 = load_image('world1-1.png')
+    select = load_image('select_back.png')
+    select_Stage = load_image('select_Stage.png')
+    select_Stage2 = load_image('select_Stage2.png')
+    WIDTH = 1000
+    HEIGHT = 800
 
     sonic = player(30, 60)
 
 def exit():
     global sonic, b
     global WIDTH, HEIGHT, frame, x, y
+    global sonic_sprite, pipe, select, select_Stage, select_Stage2
     del(sonic)
+    del(pipe)
+    del(select)
+    del(select_Stage)
+    del(select_Stage2)
     del(b)
 
 def handle_events():
@@ -307,14 +261,14 @@ def handle_events():
                 game_framework.change_state(Title_state)
             elif event.key == SDLK_SPACE:  # 스페이스
                 if sonic.jumpcount == 2:
-                    sonic.savey = y
-                    sonic.savey2 = y
+                    sonic.savey = sonic.y
+                    sonic.savey2 = sonic.y
                     sonic.Jumping = True
                     sonic.jumpcount -= 1
 
                 elif sonic.jumpcount == 1:
                     sonic.jumpTime = 0
-                    sonic.savey2 = y
+                    sonic.savey2 = sonic.y
                     sonic.Jumping = True
                     sonic.jumpcount -= 1
 
@@ -330,14 +284,16 @@ def handle_events():
                 sonic.fast = False
 
 def update():
-    mario.update()
-    mapmove()
-    delay(0.001)
+    sonic.update()
+    sonic.move()
+    delay(0.003)
 
 def draw():
     clear_canvas()
-    map1.clip_draw(0, 0, 4222, 624, 2110 * 2.5 + moveWinx, 120 * 2.5 + moveWiny, 4224 * 2.5, 624 * 2.5)
-    mario.draw()
+    draw_back()
+    sonic.draw()
+    for i in b:
+        i.draw()
     update_canvas()
 
 def pause():
