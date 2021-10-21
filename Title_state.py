@@ -8,7 +8,6 @@ main_move = False
 
 main_back = None
 main_sonic = None
-name = None
 Title = None
 press = None
 
@@ -18,26 +17,23 @@ def draw_back():                                   # 배경 그리기
 
     main_back.clip_draw(0, 0, 1000, 800, 500, 400)
     main_sonic.clip_draw(0, 0, 400, 340, 150, 200 + main_frame)
-    Title.clip_draw(0, 0, 1000, 300, 500, 600 - main_frame, 800, 200)
-    name.clip_draw(0, 0, 1000, 300, 500, 750 - main_frame, 400, 120)
+    Title.clip_draw(0, 0, 1000, 300, 500, 650 - main_frame, 800, 200)
 
     if (int)(main_frame % 10) != 0:
         press.clip_draw(0, 0, 800, 300, 500, 400, 400, 150)
 
 def enter():
-    global main_back, main_sonic, name, Title, press
+    global main_back, main_sonic, Title, press
 
     main_back = load_image('main_back.png')
     main_sonic = load_image('main_sonic.png')
-    name = load_image('LeeSeoYeon.png')
     Title = load_image('SuperSonic.png')
     press = load_image('press.png')
 
 def exit():
-    global main_back, main_sonic, name, Title, press
+    global main_back, main_sonic, Title, press
     del(main_back)
     del(main_sonic)
-    del(name)
     del(Title)
     del(press)
 
