@@ -30,8 +30,8 @@ class player:
     ground = True
     dir = 0
     dir2 = 1
-    gravity = 5
-    jumpPower = 40
+    gravity = 4
+    jumpPower = 35
     jumpTime = 0
     downpower = 0
     savey = 0
@@ -59,6 +59,16 @@ class player:
         self.bottom = self.y - 30
 
     def move(self):
+
+        if self.Jumping:
+            self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (self.jumpTime * self.jumpPower) + self.savey2
+            self.jumpTime += 1
+            if self.y < self.savey:
+                self.y = self.savey
+                self.Jumping = False
+                self.jumpTime = 0.0
+                self.jumpcount = 2
+
         if self.dir != 0 and self.plus_move < 15:
             self.plus_move += 1
             if self.plus_move > 15:
@@ -109,14 +119,7 @@ class player:
 
     def draw(self):
 
-        if self.Jumping:
-            self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (self.jumpTime * self.jumpPower) + self.savey2
-            self.jumpTime += 1
-            if self.y < self.savey:
-                self.y = self.savey
-                self.Jumping = False
-                self.jumpTime = 0.0
-                self.jumpcount = 2
+
 
         if self.GoDown2 == True:
             sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, 60, 60)

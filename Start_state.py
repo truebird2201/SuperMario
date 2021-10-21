@@ -10,7 +10,7 @@ logo_time = 0.0
 
 def enter():
     global image
-    image = load_image('LeeSeoYeon.png')
+    image = load_image('start.png')
 
 def exit():
     global image
@@ -23,13 +23,13 @@ def update():
     if (logo_time > 1.0):
         logo_time = 0
         game_framework.change_state(Title_state)
-    #delay(0.01)
+    delay(0.01)
     logo_time += 0.01
 
 def draw():
     global image
     clear_canvas()
-    image.draw(512, 300)
+    image.draw(500, 400)
     update_canvas()
 
 
