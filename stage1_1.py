@@ -1,23 +1,12 @@
 from random import randint
 from pico2d import *
 import game_framework
-import Title_state
+import Select_state
+import stage1_2
 from math import *
 
 sonic_sprite = None
-coin = None
-red_coin = None
-fly = None
-pipe = None
-stage1 = None
-select = None
-select_Stage = None
-select_Stage2 = None
-
-fly_frame = 0
-main_frame = 0
-main_move = False
-
+stage1_1 = None
 
 
 class player:
@@ -82,10 +71,11 @@ class player:
         if self.dir != 0 and self.dir != self.dir2:
             self.plus_move = 0
 
-        if self.x > 970 and self.dir != -1:
-            self.x = 970
-        elif self.x < 30 and self.dir != 1:
-            self.x = 30
+        if self.x > 700 and self.dir != -1:
+            self.x = 700
+        elif self.x < 300 and self.dir != 1:
+            self.x = 300
+
         else:
             if self.fast and self.dir != 0:  # 대시 on
                 self.x += (self.dir * 2) + (self.dir2 * self.plus_move)
@@ -123,7 +113,7 @@ class player:
             if self.frame > 7:
                 delay(0.2)
                 self.GoDown2 = False
-                game_framework.change_state(Title_state)
+                game_framework.change_state(stage1_2)
         else:
             if self.dir == 1:  # 오른쪽
                 if self.fast:  # 대시
@@ -174,7 +164,7 @@ class Block:                         # 파이프
         if self.kind == 0:              # 땅
             pass
         elif self.kind == 1:
-                pipe.clip_draw(0, 300 - (self.top - self.bottom), 100, (self.top - self.bottom),(self.right + self.left) / 2, (self.top + self.bottom) / 2)
+            pass
 
 def crush(A,B):
 
@@ -190,50 +180,32 @@ def crush(A,B):
         return 0
 
 def draw_back():                                   # 배경 그리기
-    global main_frame
-    global main_move
-
-    select.clip_draw(0, 0, 1000, 800, 500, 400)
-    select_Stage.clip_draw(0, 0, 1000, 800, 520, 600, 800, 200 + (main_frame * 3))
-    select_Stage2.clip_draw(0, 0, 1000, 300, 500, 270 - (main_frame * 2))
-
-    if main_move == True:                           # 메인 움직임
-        main_frame = main_frame + 0.1
-    if main_frame > 20:
-        main_move = False
-    if main_move == False:
-        main_frame = main_frame - 0.1
-    if main_frame < 0:
-        main_move = True
-
+    stage1_1.clip_draw(0, 0, 2356, 314, -sonic.x, 400, 6005, 800)
 
 def enter():
     global sonic, b
     global WIDTH, HEIGHT, frame, x, y
-    global sonic_sprite, coin, red_coin, fly
-    global pipe, stage1, select, select_Stage, select_Stage2
+    global sonic_sprite, stage1_1
+
     sonic_sprite = load_image('sonic.png')
-    pipe = load_image('pipe.png')
-    select = load_image('select_back.png')
-    select_Stage = load_image('select_Stage.png')
-    select_Stage2 = load_image('select_Stage2.png')
+    stage1_1 = load_image('1-1-1.png')
+
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(200, 300, 150, 30, 1), Block(450, 550, 200, 30, 1), Block(700, 800, 250, 30, 1),
-         Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
+    b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
 
     sonic = player(30, 60)
 
 def exit():
     global sonic, b
     global WIDTH, HEIGHT, frame, x, y
-    global sonic_sprite, pipe, select, select_Stage, select_Stage2
+    global sonic_sprite, stage1_1
+
+    del(sonic_sprite)
+    del(stage1_1)
+
     del(sonic)
-    del(pipe)
-    del(select)
-    del(select_Stage)
-    del(select_Stage2)
     del(b)
 
 def handle_events():
@@ -255,7 +227,7 @@ def handle_events():
             elif event.key == SDLK_DOWN:  # 아래
                 sonic.GoDown = True
             elif event.key == SDLK_ESCAPE:  # ESC
-                game_framework.change_state(Title_state)
+                game_framework.change_state(Select_state)
             elif event.key == SDLK_SPACE:  # 스페이스
                 if sonic.jumpcount == 2:
                     sonic.savey = sonic.y

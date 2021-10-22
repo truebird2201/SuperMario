@@ -2,19 +2,16 @@ from random import randint
 from pico2d import *
 import game_framework
 import Title_state
+import stage1_1
 from math import *
 
 sonic_sprite = None
-coin = None
-red_coin = None
-fly = None
 pipe = None
 stage1 = None
 select = None
 select_Stage = None
 select_Stage2 = None
 
-fly_frame = 0
 main_frame = 0
 main_move = False
 
@@ -41,7 +38,7 @@ class player:
     Jumping = False
     fast = False
     GoDown = False
-    GoDown2 = False
+    GoDown2 = 0
     plus_move = 1
 
     def __init__(self, x, y):
@@ -110,20 +107,33 @@ class player:
             elif crush(self, i) == 2:
                 self.x = i.right + 20
             elif crush(self, i) == 3:
-                if self.GoDown == True and i.kind == 1:
-                    self.GoDown2 = True
-                    self.frame = 0
-                    self.GoDown = False
+                if self.GoDown == True:
+                    if i.kind == 1:
+                        self.GoDown2 = 1
+                        self.frame = 0
+                        self.GoDown = False
+                    if i.kind == 2:
+                        self.GoDown2 = 2
+                        self.frame = 0
+                        self.GoDown = False
+                    if i.kind == 3:
+                        self.GoDown2 = 3
+                        self.frame = 0
+                        self.GoDown = False
                 self.y = i.top + 30
                 self.savey = self.y
 
     def draw(self):
-        if self.GoDown2 == True:
+        if self.GoDown2 == 1 or self.GoDown2 == 2 or self.GoDown2 == 3:
             sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, 60, 60)
             if self.frame > 7:
                 delay(0.2)
-                self.GoDown2 = False
-                game_framework.change_state(Title_state)
+                if self.GoDown2 == 1:
+                    game_framework.change_state(stage1_1)
+                if self.GoDown2 == 2:
+                    game_framework.change_state(Title_state)
+                if self.GoDown2 == 3:
+                    game_framework.change_state(Title_state)
         else:
             if self.dir == 1:  # 오른쪽
                 if self.fast:  # 대시
@@ -173,7 +183,7 @@ class Block:                         # 파이프
     def draw(self):
         if self.kind == 0:              # 땅
             pass
-        elif self.kind == 1:
+        elif self.kind == 1 or self.kind == 2 or self.kind == 3:
                 pipe.clip_draw(0, 300 - (self.top - self.bottom), 100, (self.top - self.bottom),(self.right + self.left) / 2, (self.top + self.bottom) / 2)
 
 def crush(A,B):
@@ -220,7 +230,7 @@ def enter():
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(200, 300, 150, 30, 1), Block(450, 550, 200, 30, 1), Block(700, 800, 250, 30, 1),
+    b = [Block(200, 300, 150, 30, 1), Block(450, 550, 200, 30, 2), Block(700, 800, 250, 30, 3),
          Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
 
     sonic = player(30, 60)
