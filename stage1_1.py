@@ -6,6 +6,7 @@ import stage1_2
 from math import *
 
 sonic_sprite = None
+walk_monster = None
 stage1_1 = None
 
 
@@ -15,8 +16,7 @@ class player:
     right = 0
     top = 0
     bottom = 0
-    frame =0
-    ground = True
+    frame = 0
     dir = 0
     dir2 = 1
     gravity = 4
@@ -145,6 +145,56 @@ class player:
                 else:
                     sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, 60, 60)
 
+class Monster:
+
+    left = 0
+    right = 0
+    top = 0
+    bottom = 0
+    frame = 0
+    Ground = False
+    dir = 1
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def update(self):
+        self.frame = (self.frame + 1) % 9
+        self.left = self.x - 20
+        self.right = self.x + 20
+        self.top = self.y + 20
+        self.bottom = self.y - 20
+
+    def move(self):
+        self.x += self.dir * 2
+        for i in b:
+            if crush(self, i) == 3:
+                if self.dir == 1:
+                    if self.x+30 > i.right:
+                        self.dir = -1
+                        self.x += self.dir * 1
+                else:
+                    if self.x-30 < i.left:
+                        self.dir = 1
+                        self.x += self.dir * 1
+        self.Ground = False
+        for i in b:
+            if crush(self, i) == 3:
+                self.Ground = True
+                self.downpower = 0
+
+        if self.Ground == False:
+            self.y -= 3
+
+
+    def draw(self):
+        if self.dir == 1:  # 오른쪽
+            walk_monster.clip_draw(int(self.frame) * 93, 0, 93, 105, self.x, self.y, 40, 40)
+
+        elif self.dir == -1:  # 왼쪽
+            walk_monster.clip_composite_draw(int(self.frame) * 93, 0, 93, 105, self.x, self.y, 40, 40)
+
 class Block:                         # 파이프
 
     left = 0
@@ -183,17 +233,19 @@ def draw_back():                                   # 배경 그리기
     stage1_1.clip_draw(0, 0, 2356, 314, -sonic.x, 400, 6005, 800)
 
 def enter():
-    global sonic, b
-    global WIDTH, HEIGHT, frame, x, y
+    global sonic, b, wm
+    global WIDTH, HEIGHT, frame, x, y, walk_monster
     global sonic_sprite, stage1_1
 
     sonic_sprite = load_image('sonic.png')
+    walk_monster = load_image('walk_monster.png')
     stage1_1 = load_image('1-1-1.png')
 
     WIDTH = 1000
     HEIGHT = 800
 
     b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
+    wm = [Monster(100, 100)]
 
     sonic = player(30, 60)
 
@@ -255,12 +307,17 @@ def handle_events():
 def update():
     sonic.update()
     sonic.move()
+    for i in wm:
+        i.update()
+        i.move()
     delay(0.003)
 
 def draw():
     clear_canvas()
     draw_back()
     for i in b:
+        i.draw()
+    for i in wm:
         i.draw()
     sonic.draw()
     update_canvas()
