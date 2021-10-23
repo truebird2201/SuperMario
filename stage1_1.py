@@ -170,7 +170,7 @@ class Monster:
         if crush(sonic, self) == 3:
             self.die = True
             self.frame = 0
-        if self.die == True and (self.frame%16) == 15:
+        if self.die == True and int(self.frame) == 10:
             self.life = False
 
     def move(self):
