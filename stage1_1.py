@@ -8,19 +8,21 @@ from math import *
 sonic_sprite = None
 walk_monster = None
 stage1_1 = None
+bmx = 0
+bmy = 0
 
 
 class player:
-
     left = 0
     right = 0
     top = 0
     bottom = 0
     frame = 0
+    ground = True
     dir = 0
     dir2 = 1
-    gravity = 4
-    jumpPower = 35
+    gravity = 0.01
+    jumpPower = 1.5
     jumpTime = 0
     downpower = 0
     savey = 0
@@ -31,7 +33,7 @@ class player:
     fast = False
     GoDown = False
     GoDown2 = False
-    plus_move = 1
+    plus_move = 0
 
     def __init__(self, x, y):
         self.x = x
@@ -39,9 +41,9 @@ class player:
 
     def update(self):
         if sonic.dir == 0:  # 프레임
-            self.frame = (self.frame + 0.5) % 8
+            self.frame = (self.frame + 0.015) % 8
         else:
-            self.frame = (self.frame + 1) % 8
+            self.frame = (self.frame + 0.03) % 8
         self.left = self.x - 20
         self.right = self.x + 20
         self.top = self.y + 30
@@ -50,7 +52,8 @@ class player:
     def move(self):
 
         if self.Jumping:
-            self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (self.jumpTime * self.jumpPower) + self.savey2
+            self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
+                        self.jumpTime * self.jumpPower) + self.savey2
             self.jumpTime += 1
             if self.y < self.savey:
                 self.y = self.savey
@@ -58,31 +61,28 @@ class player:
                 self.jumpTime = 0.0
                 self.jumpcount = 2
 
-        if self.dir != 0 and self.plus_move < 15:
-            self.plus_move += 1
-            if self.plus_move > 15:
-                self.plus_move = 15
+        if self.dir != 0 and self.plus_move < 1.0:
+            self.plus_move += 0.01
+            if self.plus_move > 1.0:
+                self.plus_move = 1.0
 
         elif self.dir == 0 and self.plus_move > 0:
-            self.plus_move -= 2
+            self.plus_move -= 0.01
             if self.plus_move < 0:
                 self.plus_move = 0
 
         if self.dir != 0 and self.dir != self.dir2:
             self.plus_move = 0
 
-        if self.x > 700 and self.dir != -1:
-            self.x = 700
-        elif self.x < 300 and self.dir != 1:
-            self.x = 300
-
+        if self.x > 970 and self.dir != -1:
+            self.x = 970
+        elif self.x < 30 and self.dir != 1:
+            self.x = 30
         else:
             if self.fast and self.dir != 0:  # 대시 on
-                self.x += (self.dir * 2) + (self.dir2 * self.plus_move)
-                delay(0.04)
+                self.x += (self.dir * 0.05) + (self.dir2 * self.plus_move)
             else:  # 대시 off
-                self.x += self.dir2 * self.plus_move
-                delay(0.04)
+                self.x += self.dir2 * self.plus_move / 2
         self.Ground = False
 
         for i in b:
@@ -91,8 +91,10 @@ class player:
                 self.downpower = 0
 
         if self.Ground == False:
-            self.y -= 3 + self.downpower
-            self.downpower += 2
+            self.savey = 0
+            if self.Jumping == False:
+                self.y -= 0.2 + self.downpower
+                self.downpower += 0.015
 
         for i in b:
             if crush(self, i) == 1:
@@ -100,10 +102,6 @@ class player:
             elif crush(self, i) == 2:
                 self.x = i.right + 20
             elif crush(self, i) == 3:
-                if self.GoDown == True and i.kind == 1:
-                    self.GoDown2 = True
-                    self.frame = 0
-                    self.GoDown = False
                 self.y = i.top + 30
                 self.savey = self.y
 
@@ -154,6 +152,8 @@ class Monster:
     frame = 0
     Ground = False
     dir = 1
+    life = True
+    die = False
 
     def __init__(self, x, y, Speed):
         self.x = x
@@ -161,11 +161,17 @@ class Monster:
         self.Speed = Speed
 
     def update(self):
-        self.frame = (self.frame + 1) % 16
+        self.frame = (self.frame + 0.03) % 16
         self.left = self.x - 20
         self.right = self.x + 20
         self.top = self.y + 20
         self.bottom = self.y - 20
+
+        if crush(sonic, self) == 3:
+            self.die = True
+            self.frame = 0
+        if self.die == True and (self.frame%16) == 15:
+            self.life = False
 
     def move(self):
         self.x += self.dir * self.Speed
@@ -174,11 +180,11 @@ class Monster:
                 if self.dir == 1:
                     if self.x+30 > i.right:
                         self.dir = -1
-                        self.x += self.dir * self.Speed
+                        self.x += self.dir * self.Speed/10
                 else:
                     if self.x-30 < i.left:
                         self.dir = 1
-                        self.x += self.dir * self.Speed
+                        self.x += self.dir * self.Speed/10
         self.Ground = False
         for i in b:
             if crush(self, i) == 3:
@@ -190,11 +196,19 @@ class Monster:
 
 
     def draw(self):
-        if self.dir == 1:  # 오른쪽
-            walk_monster.clip_composite_draw(int(self.frame) * 81, 0, 81, 93, 0, 'h', self.x, self.y, 40, 40)
 
-        elif self.dir == -1:  # 왼쪽
-            walk_monster.clip_draw(int(self.frame) * 81, 0, 81, 93, self.x, self.y, 40, 40)
+
+        if self.die == True:
+            if self.dir == 1:  # 오른쪽
+                walk_monster.clip_composite_draw(1296, 0, 109, 93, 0, 'h', self.x, self.y, 50, 40)
+            elif self.dir == -1:  # 왼쪽
+                walk_monster.clip_draw(1296, 0, 109, 93, self.x, self.y, 50, 40)
+        else:
+            if self.dir == 1:  # 오른쪽
+                walk_monster.clip_composite_draw(int(self.frame) * 81, 0, 81, 93, 0, 'h', self.x, self.y, 40, 40)
+
+            elif self.dir == -1:  # 왼쪽
+                walk_monster.clip_draw(int(self.frame) * 81, 0, 81, 93, self.x, self.y, 40, 40)
 
 
 class Block:                         # 파이프
@@ -231,8 +245,18 @@ def crush(A,B):
     else:
         return 0
 
+def backmove():
+    global bmx
+    global bmy
+    global sonic
+
+    if sonic.dir == 1:
+        bmx -= sonic.plus_move/2
+    elif sonic.dir == -1:
+        bmx += sonic.plus_move/2
+
 def draw_back():                                   # 배경 그리기
-    stage1_1.clip_draw(0, 0, 2356, 314, -sonic.x, 400, 6005, 800)
+    stage1_1.clip_draw(0, 0, 2357, 314, 1178.5*2.7+bmx, 157*2.7+bmy, 2357*2.7, 314*2.7)
 
 def enter():
     global sonic, b, wm
@@ -247,7 +271,7 @@ def enter():
     HEIGHT = 800
 
     b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
-    wm = [Monster(100, 100, randint(2,7)),Monster(100, 100, randint(2,7)),Monster(100, 100, randint(2,7)),Monster(100, 100, randint(2,7))]
+    wm = [Monster(100,100,0.2)]
 
     sonic = player(30, 60)
 
@@ -309,10 +333,10 @@ def handle_events():
 def update():
     sonic.update()
     sonic.move()
+    backmove()
     for i in wm:
         i.update()
         i.move()
-    delay(0.003)
 
 def draw():
     clear_canvas()
@@ -320,7 +344,8 @@ def draw():
     for i in b:
         i.draw()
     for i in wm:
-        i.draw()
+        if i.life == True:
+            i.draw()
     sonic.draw()
     update_canvas()
 

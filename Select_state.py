@@ -23,12 +23,12 @@ class player:
     right = 0
     top = 0
     bottom = 0
-    frame =0
+    frame = 0
     ground = True
     dir = 0
     dir2 = 1
-    gravity = 4
-    jumpPower = 35
+    gravity = 0.01
+    jumpPower = 1.5
     jumpTime = 0
     downpower = 0
     savey = 0
@@ -39,7 +39,7 @@ class player:
     fast = False
     GoDown = False
     GoDown2 = 0
-    plus_move = 1
+    plus_move = 0
 
     def __init__(self, x, y):
         self.x = x
@@ -47,9 +47,9 @@ class player:
 
     def update(self):
         if sonic.dir == 0:  # 프레임
-            self.frame = (self.frame + 0.5) % 8
+            self.frame = (self.frame + 0.015) % 8
         else:
-            self.frame = (self.frame + 1) % 8
+            self.frame = (self.frame + 0.03) % 8
         self.left = self.x - 20
         self.right = self.x + 20
         self.top = self.y + 30
@@ -66,13 +66,13 @@ class player:
                 self.jumpTime = 0.0
                 self.jumpcount = 2
 
-        if self.dir != 0 and self.plus_move < 15:
-            self.plus_move += 1
-            if self.plus_move > 15:
-                self.plus_move = 15
+        if self.dir != 0 and self.plus_move < 1.0:
+            self.plus_move += 0.01
+            if self.plus_move > 1.0:
+                self.plus_move = 1.0
 
         elif self.dir == 0 and self.plus_move > 0:
-            self.plus_move -= 2
+            self.plus_move -= 0.01
             if self.plus_move < 0:
                 self.plus_move = 0
 
@@ -85,11 +85,9 @@ class player:
             self.x = 30
         else:
             if self.fast and self.dir != 0:  # 대시 on
-                self.x += (self.dir * 2) + (self.dir2 * self.plus_move)
-                delay(0.04)
+                self.x += (self.dir * 0.05) + (self.dir2 * self.plus_move)
             else:  # 대시 off
-                self.x += self.dir2 * self.plus_move
-                delay(0.04)
+                self.x += self.dir2 * self.plus_move/2
         self.Ground = False
 
         for i in b:
@@ -98,8 +96,10 @@ class player:
                 self.downpower = 0
 
         if self.Ground == False:
-            self.y -= 3 + self.downpower
-            self.downpower += 2
+            self.savey = 0
+            if self.Jumping == False:
+                self.y -= 0.2 + self.downpower
+                self.downpower += 0.015
 
         for i in b:
             if crush(self, i) == 1:
@@ -127,7 +127,7 @@ class player:
         if self.GoDown2 == 1 or self.GoDown2 == 2 or self.GoDown2 == 3:
             sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, 60, 60)
             if self.frame > 7:
-                delay(0.2)
+                delay(0.1)
                 if self.GoDown2 == 1:
                     game_framework.change_state(stage1_1)
                 if self.GoDown2 == 2:
@@ -204,15 +204,15 @@ def draw_back():                                   # 배경 그리기
     global main_move
 
     select.clip_draw(0, 0, 1000, 800, 500, 400)
-    select_Stage.clip_draw(0, 0, 1000, 800, 520, 600, 800, 200 + (main_frame * 3))
+    select_Stage.clip_draw(0, 0, 1000, 800, 520, 450, 800, 200 + (main_frame * 3))
     select_Stage2.clip_draw(0, 0, 1000, 300, 500, 270 - (main_frame * 2))
 
     if main_move == True:                           # 메인 움직임
-        main_frame = main_frame + 0.1
-    if main_frame > 20:
+        main_frame = main_frame + 0.03
+    if main_frame > 10:
         main_move = False
     if main_move == False:
-        main_frame = main_frame - 0.1
+        main_frame = main_frame - 0.03
     if main_frame < 0:
         main_move = True
 
@@ -293,7 +293,6 @@ def handle_events():
 def update():
     sonic.update()
     sonic.move()
-    delay(0.003)
 
 def draw():
     clear_canvas()

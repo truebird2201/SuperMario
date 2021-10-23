@@ -15,12 +15,12 @@ def draw_back():                                   # 배경 그리기
     global main_frame
     global main_move
 
-    main_back.clip_draw(0, 0, 1000, 800, 500, 400)
-    main_sonic.clip_draw(0, 0, 400, 340, 150, 200 + main_frame)
-    Title.clip_draw(0, 0, 1000, 300, 500, 650 - main_frame, 800, 200)
+    main_back.clip_draw(0, 0, 1000, 600, 500, 300)
+    main_sonic.clip_draw(0, 0, 400, 350, 150, 100 + main_frame)
+    Title.clip_draw(0, 0, 1000, 300, 500, 500 - main_frame, 800, 200)
 
     if (int)(main_frame % 10) != 0:
-        press.clip_draw(0, 0, 800, 300, 500, 400, 400, 150)
+        press.clip_draw(0, 0, 800, 300, 500, 300, 400, 150)
 
 def enter():
     global main_back, main_sonic, Title, press
