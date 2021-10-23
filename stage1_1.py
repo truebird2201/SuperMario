@@ -155,29 +155,30 @@ class Monster:
     Ground = False
     dir = 1
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, Speed):
         self.x = x
         self.y = y
+        self.Speed = Speed
 
     def update(self):
-        self.frame = (self.frame + 1) % 9
+        self.frame = (self.frame + 1) % 16
         self.left = self.x - 20
         self.right = self.x + 20
         self.top = self.y + 20
         self.bottom = self.y - 20
 
     def move(self):
-        self.x += self.dir * 2
+        self.x += self.dir * self.Speed
         for i in b:
             if crush(self, i) == 3:
                 if self.dir == 1:
                     if self.x+30 > i.right:
                         self.dir = -1
-                        self.x += self.dir * 1
+                        self.x += self.dir * self.Speed
                 else:
                     if self.x-30 < i.left:
                         self.dir = 1
-                        self.x += self.dir * 1
+                        self.x += self.dir * self.Speed
         self.Ground = False
         for i in b:
             if crush(self, i) == 3:
@@ -190,10 +191,11 @@ class Monster:
 
     def draw(self):
         if self.dir == 1:  # 오른쪽
-            walk_monster.clip_draw(int(self.frame) * 93, 0, 93, 105, self.x, self.y, 40, 40)
+            walk_monster.clip_composite_draw(int(self.frame) * 81, 0, 81, 93, 0, 'h', self.x, self.y, 40, 40)
 
         elif self.dir == -1:  # 왼쪽
-            walk_monster.clip_composite_draw(int(self.frame) * 93, 0, 93, 105, self.x, self.y, 40, 40)
+            walk_monster.clip_draw(int(self.frame) * 81, 0, 81, 93, self.x, self.y, 40, 40)
+
 
 class Block:                         # 파이프
 
@@ -245,7 +247,7 @@ def enter():
     HEIGHT = 800
 
     b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
-    wm = [Monster(100, 100)]
+    wm = [Monster(100, 100, randint(2,7)),Monster(100, 100, randint(2,7)),Monster(100, 100, randint(2,7)),Monster(100, 100, randint(2,7))]
 
     sonic = player(30, 60)
 
