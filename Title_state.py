@@ -16,11 +16,11 @@ def draw_back():                                   # 배경 그리기
     global main_move
 
     main_back.clip_draw(0, 0, 1000, 600, 500, 300)
-    main_sonic.clip_draw(0, 0, 400, 350, 150, 100 + main_frame)
-    Title.clip_draw(0, 0, 1000, 300, 500, 500 - main_frame, 800, 200)
+    main_sonic.clip_draw(0, 0, 400, 350, 150, 100 + main_frame/3)
+    Title.clip_draw(0, 0, 1000, 300, 500, 500 - main_frame/3, 800, 200)
 
-    if (int)(main_frame % 10) != 0:
-        press.clip_draw(0, 0, 800, 300, 500, 300, 400, 150)
+    if (int)(main_frame % 20) >= 1:
+        press.clip_draw(0, 0, 800, 300, 500, 350, 400, 150)
 
 def enter():
     global main_back, main_sonic, Title, press
@@ -59,7 +59,7 @@ def update():
 
     if main_move == True:                           # 메인 움직임
         main_frame = main_frame + 0.1
-    if main_frame > 20:
+    if main_frame > 40:
         main_move = False
     if main_move == False:
         main_frame = main_frame - 0.1

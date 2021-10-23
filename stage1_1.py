@@ -34,6 +34,9 @@ class player:
     GoDown = False
     GoDown2 = False
     plus_move = 0
+    life = True
+    die = False
+    diedown = 0
 
     def __init__(self, x, y):
         self.x = x
@@ -48,6 +51,16 @@ class player:
         self.right = self.x + 20
         self.top = self.y + 30
         self.bottom = self.y - 30
+
+        if self.die == True and int(self.frame) <= 2:                                        # 떨어지는 이미지
+            self.diedown -= 0.2
+        elif self.die == True and int(self.frame) <= 6:
+            self.diedown += 1
+
+        if self.die == True and int(self.frame) == 7:               # 죽으면 초기화
+            self.life = False
+            enter()
+
 
     def move(self):
 
@@ -106,42 +119,47 @@ class player:
                 self.savey = self.y
 
     def draw(self):
-        if self.GoDown2 == True:
-            sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, 60, 60)
-            if self.frame > 7:
-                delay(0.2)
-                self.GoDown2 = False
-                game_framework.change_state(stage1_2)
+
+        if self.die == True:                        # 죽으면
+                sonic_sprite.clip_draw(int(self.frame) * 40, 380, 40, 40, self.x, self.y-self.diedown, 60, 60)
         else:
-            if self.dir == 1:  # 오른쪽
-                if self.fast:  # 대시
-                    sonic_sprite.clip_draw(int(self.frame) * 40, 380, 40, 40, self.x, self.y, 60, 60)
-                else:
-                    if self.Jumping:
+            if self.GoDown2 == True:
+                sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, 60, 60)
+                if self.frame > 7:
+                    delay(0.2)
+                    self.GoDown2 = False
+                    game_framework.change_state(stage1_2)
+            else:
+                if self.dir == 1:  # 오른쪽
+                    if self.fast:  # 대시
+                        sonic_sprite.clip_draw(int(self.frame) * 40, 380, 40, 40, self.x, self.y, 60, 60)
+                    else:
+                        if self.Jumping:
+                            sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, 60, 60)
+                        else:
+                            sonic_sprite.clip_draw(int(self.frame) * 40, 460, 40, 40, self.x, self.y, 60, 60)
+
+                elif self.dir == -1:  # 왼쪽
+                    if self.fast:  # 대시
+                        sonic_sprite.clip_composite_draw(int(self.frame) * 40, 380, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+                    else:
+                        if self.Jumping:
+                            sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+                        else:
+                            sonic_sprite.clip_composite_draw(int(self.frame) * 40, 460, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+
+                elif self.dir == 0 and self.dir2 == 1:  # 마지막이 오른쪽이였던 멈춤
+                    if self.Jumping == False:
+                        sonic_sprite.clip_draw(int(self.frame) * 40, 420, 40, 40, self.x, self.y, 60, 60)
+                    else:
                         sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, 60, 60)
-                    else:
-                        sonic_sprite.clip_draw(int(self.frame) * 40, 460, 40, 40, self.x, self.y, 60, 60)
 
-            elif self.dir == -1:  # 왼쪽
-                if self.fast:  # 대시
-                    sonic_sprite.clip_composite_draw(int(self.frame) * 40, 380, 40, 40, 0, 'h', self.x, self.y, 60, 60)
-                else:
-                    if self.Jumping:
+                elif self.dir == 0 and self.dir2 == -1:  # 마지막이 왼쪽이였던 멈춤
+                    if self.Jumping == False:
+                        sonic_sprite.clip_composite_draw(int(self.frame) * 40, 420, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+                    else:
                         sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, 60, 60)
-                    else:
-                        sonic_sprite.clip_composite_draw(int(self.frame) * 40, 460, 40, 40, 0, 'h', self.x, self.y, 60, 60)
 
-            elif self.dir == 0 and self.dir2 == 1:  # 마지막이 오른쪽이였던 멈춤
-                if self.Jumping == False:
-                    sonic_sprite.clip_draw(int(self.frame) * 40, 420, 40, 40, self.x, self.y, 60, 60)
-                else:
-                    sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, 60, 60)
-
-            elif self.dir == 0 and self.dir2 == -1:  # 마지막이 왼쪽이였던 멈춤
-                if self.Jumping == False:
-                    sonic_sprite.clip_composite_draw(int(self.frame) * 40, 420, 40, 40, 0, 'h', self.x, self.y, 60, 60)
-                else:
-                    sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, 60, 60)
 
 class Monster:
 
@@ -166,10 +184,14 @@ class Monster:
         self.right = self.x + 20
         self.top = self.y + 20
         self.bottom = self.y - 20
-
-        if crush(sonic, self) == 3:
-            self.die = True
-            self.frame = 0
+        if self.die == False:
+            if crush(sonic, self) == 1 or crush(sonic, self) == 2:
+                sonic.die = True
+                sonic.frame = 0
+                sonic.dir = 0
+            if crush(sonic, self) == 3:
+                self.die = True
+                self.frame = 0
         if self.die == True and int(self.frame) == 10:
             self.life = False
 
@@ -229,7 +251,7 @@ class Block:                         # 파이프
     def draw(self):
         if self.kind == 0:              # 땅
             pass
-        elif self.kind == 1:
+        elif self.kind == 1:            # 파이프
             pass
 
 def crush(A,B):
@@ -238,9 +260,9 @@ def crush(A,B):
         return 1
     if A.y+30 > B.bottom and B.top > A.y-30 and A.x-20 < B.right and B.right < A.x+20:
         return 2
-    if A.y-31 < B.top and A.y+30 > B.top and A.right > B.left and B.right > A.left:
+    if A.y-31 < B.top and A.y+30 > B.top and A.x+20 > B.left and B.right > A.x-20:
         return 3
-    if A.y-30 > B.bottom and A.y+30 < B.bottom and A.right > B.left and B.right > A.left:
+    if A.y-30 > B.bottom and A.y+30 < B.bottom and A.x+20 > B.left and B.right > A.x-20:
         return 4
     else:
         return 0
@@ -271,7 +293,7 @@ def enter():
     HEIGHT = 800
 
     b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
-    wm = [Monster(100,100,0.2)]
+    wm = [Monster(100,100,0.2),Monster(100,100,0.2),Monster(100,100,0.2),Monster(100,100,0.2)]
 
     sonic = player(30, 60)
 
@@ -294,33 +316,34 @@ def handle_events():
             game_framework.quit()
 
         elif event.type == SDL_KEYDOWN:  # 키 다운
-            if event.key == SDLK_RIGHT:  # 오른쪽
-                sonic.plus_move = 0
-                sonic.dir2 = 1
-                sonic.dir += 1
-            elif event.key == SDLK_LEFT:  # 왼쪽
-                sonic.plus_move = 0
-                sonic.dir2 = -1
-                sonic.dir -= 1
-            elif event.key == SDLK_DOWN:  # 아래
-                sonic.GoDown = True
-            elif event.key == SDLK_ESCAPE:  # ESC
-                game_framework.change_state(Select_state)
-            elif event.key == SDLK_SPACE:  # 스페이스
-                if sonic.jumpcount == 2:
-                    sonic.savey = sonic.y
-                    sonic.savey2 = sonic.y
-                    sonic.Jumping = True
-                    sonic.jumpcount -= 1
+            if sonic.die == False:
+                if event.key == SDLK_RIGHT:  # 오른쪽
+                    sonic.plus_move = 0
+                    sonic.dir2 = 1
+                    sonic.dir += 1
+                elif event.key == SDLK_LEFT:  # 왼쪽
+                    sonic.plus_move = 0
+                    sonic.dir2 = -1
+                    sonic.dir -= 1
+                elif event.key == SDLK_DOWN:  # 아래
+                    sonic.GoDown = True
+                elif event.key == SDLK_ESCAPE:  # ESC
+                    game_framework.change_state(Select_state)
+                elif event.key == SDLK_SPACE:  # 스페이스
+                    if sonic.jumpcount == 2:
+                        sonic.savey = sonic.y
+                        sonic.savey2 = sonic.y
+                        sonic.Jumping = True
+                        sonic.jumpcount -= 1
 
-                elif sonic.jumpcount == 1:
-                    sonic.jumpTime = 0
-                    sonic.savey2 = sonic.y
-                    sonic.Jumping = True
-                    sonic.jumpcount -= 1
+                    elif sonic.jumpcount == 1:
+                        sonic.jumpTime = 0
+                        sonic.savey2 = sonic.y
+                        sonic.Jumping = True
+                        sonic.jumpcount -= 1
 
-            elif event.key == SDLK_LSHIFT or event.key == SDLK_RSHIFT:  # 쉬프트
-                sonic.fast = True
+                elif event.key == SDLK_LSHIFT or event.key == SDLK_RSHIFT:  # 쉬프트
+                    sonic.fast = True
 
         elif event.type == SDL_KEYUP:  # 키 업
             if event.key == SDLK_RIGHT:  # 오른쪽
