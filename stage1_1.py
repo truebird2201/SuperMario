@@ -161,7 +161,7 @@ class player:
                         sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, 60, 60)
 
 
-class Monster:
+class Goomba:
 
     left = 0
     right = 0
@@ -256,9 +256,9 @@ class Block:                         # 파이프
 
 def crush(A,B):
 
-    if A.y+30 > B.bottom and B.top > A.y-30 and A.x+20 > B.left and B.left > A.x-20:
+    if A.y+30 > B.bottom and B.top > A.y-29 and A.x+20 > B.left and B.left > A.x-20:
         return 1
-    if A.y+30 > B.bottom and B.top > A.y-30 and A.x-20 < B.right and B.right < A.x+20:
+    if A.y+30 > B.bottom and B.top > A.y-29 and A.x-20 < B.right and B.right < A.x+20:
         return 2
     if A.y-31 < B.top and A.y+30 > B.top and A.x+20 > B.left and B.right > A.x-20:
         return 3
@@ -293,7 +293,7 @@ def enter():
     HEIGHT = 800
 
     b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
-    wm = [Monster(100,100,0.2),Monster(100,100,0.2),Monster(100,100,0.2),Monster(100,100,0.2)]
+    wm = [Goomba(100,100,0.2),Goomba(100,100,0.2),Goomba(100,100,0.4),Goomba(100,100,0.7)]
 
     sonic = player(30, 60)
 

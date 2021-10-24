@@ -188,9 +188,9 @@ class Block:                         # 파이프
 
 def crush(A,B):
 
-    if A.y+30 > B.bottom and B.top > A.y-30 and A.x+20 > B.left and B.left > A.x-20:
+    if A.y+30 > B.bottom and B.top > A.y-29 and A.x+20 > B.left and B.left > A.x-20:
         return 1
-    if A.y+30 > B.bottom and B.top > A.y-30 and A.x-20 < B.right and B.right < A.x+20:
+    if A.y+30 > B.bottom and B.top > A.y-29and A.x-20 < B.right and B.right < A.x+20:
         return 2
     if A.y-31 < B.top and A.y+30 > B.top and A.right > B.left and B.right > A.left:
         return 3
