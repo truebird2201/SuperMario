@@ -57,7 +57,7 @@ class player:
         elif self.die == True and int(self.frame) <= 6:
             self.diedown += 1
 
-        if self.die == True and int(self.frame) == 7:               # 죽으면 초기화
+        if self.die == True and int(self.frame) == 7:                               # 죽으면 초기화
             self.life = False
             enter()
 
@@ -121,7 +121,7 @@ class player:
     def draw(self):
 
         if self.die == True:                        # 죽으면
-                sonic_sprite.clip_draw(int(self.frame) * 40, 380, 40, 40, self.x, self.y-self.diedown, 60, 60)
+                sonic_sprite.clip_draw(int(self.frame) * 40, 260, 40, 40, self.x, self.y-self.diedown, 60, 60)
         else:
             if self.GoDown2 == True:
                 sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, 60, 60)
