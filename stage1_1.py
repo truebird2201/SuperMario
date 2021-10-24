@@ -90,13 +90,13 @@ class player:
                 self.jumpTime = 0.0
                 self.jumpcount = 2
 
-        if self.dir != 0 and self.plus_move < 0.5:
-            self.plus_move += 0.01
-            if self.plus_move > 0.5:
-                self.plus_move = 0.5
+        if self.dir != 0 and self.plus_move < 0.6:
+            self.plus_move += 0.0005
+            if self.plus_move > 0.6:
+                self.plus_move = 0.6
 
         elif self.dir == 0 and self.plus_move > 0:
-            self.plus_move -= 0.01
+            self.plus_move -= 0.0015
             if self.plus_move < 0:
                 self.plus_move = 0
 
@@ -109,9 +109,9 @@ class player:
             self.x = 30
         else:
             if self.fast and self.dir != 0:  # 대시 on
-                self.x += (self.dir * 0.03) + (self.dir2 * self.plus_move)
+                self.x += (self.dir * 0.2) + (self.dir2 * self.plus_move)
             else:  # 대시 off
-                self.x += self.dir2 * self.plus_move / 2
+                self.x += self.dir2 * self.plus_move
         self.Ground = False
 
         for i in b:
@@ -153,7 +153,10 @@ class player:
                         if self.Jumping:
                             sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, 60, 60)
                         else:
-                            sonic_sprite.clip_draw(int(self.frame) * 40, 460, 40, 40, self.x, self.y, 60, 60)
+                            if self.plus_move < 0.5:
+                                sonic_sprite.clip_draw(int(self.frame) * 40, 460, 40, 40, self.x, self.y, 60, 60)
+                            else:
+                                sonic_sprite.clip_draw(int(self.frame) * 40, 220, 40, 40, self.x, self.y, 60, 60)
 
                 elif self.dir == -1:  # 왼쪽
                     if self.fast:  # 대시
@@ -162,17 +165,26 @@ class player:
                         if self.Jumping:
                             sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, 60, 60)
                         else:
-                            sonic_sprite.clip_composite_draw(int(self.frame) * 40, 460, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+                            if self.plus_move < 0.5:
+                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 460, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+                            else:
+                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 220, 40, 40, 0, 'h', self.x,self.y, 60, 60)
 
                 elif self.dir == 0 and self.dir2 == 1:  # 마지막이 오른쪽이였던 멈춤
                     if self.Jumping == False:
-                        sonic_sprite.clip_draw(int(self.frame) * 40, 420, 40, 40, self.x, self.y, 60, 60)
+                        if self.plus_move == 0:
+                            sonic_sprite.clip_draw(int(self.frame) * 40, 420, 40, 40, self.x, self.y, 60, 60)
+                        else:
+                            sonic_sprite.clip_draw(int(self.frame) * 40, 180, 40, 40, self.x, self.y, 60, 60)
                     else:
                         sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, 60, 60)
 
                 elif self.dir == 0 and self.dir2 == -1:  # 마지막이 왼쪽이였던 멈춤
                     if self.Jumping == False:
-                        sonic_sprite.clip_composite_draw(int(self.frame) * 40, 420, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+                        if self.plus_move == 0:
+                            sonic_sprite.clip_composite_draw(int(self.frame) * 40, 420, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+                        else:
+                            sonic_sprite.clip_composite_draw(int(self.frame) * 40, 180, 40, 40, 0, 'h', self.x, self.y,60, 60)
                     else:
                         sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, 60, 60)
 
