@@ -8,8 +8,23 @@ from math import *
 sonic_sprite = None
 walk_monster = None
 stage1_1 = None
+num = None
 bmx = 0
 bmy = 0
+point = 1399
+
+def point_draw():
+    global point
+    for i in range (0, 9+1):
+        if point/1000 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 30, 570, 50, 50)
+        if (point/100)%10 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 80, 570, 50, 50)
+        if (point / 10)%10 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 130, 570, 50, 50)
+        if point%10 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 180, 570, 50, 50)
+
 
 
 class player:
@@ -282,12 +297,13 @@ def draw_back():                                   # 배경 그리기
 
 def enter():
     global sonic, b, wm
-    global WIDTH, HEIGHT, frame, x, y, walk_monster
-    global sonic_sprite, stage1_1
+    global WIDTH, HEIGHT, frame, x, y, walk_monster, point
+    global sonic_sprite, stage1_1, num
 
     sonic_sprite = load_image('sonic.png')
     walk_monster = load_image('walk_monster.png')
     stage1_1 = load_image('1-1-1.png')
+    num = load_image('number.png')
 
     WIDTH = 1000
     HEIGHT = 800
@@ -300,13 +316,14 @@ def enter():
 def exit():
     global sonic, b
     global WIDTH, HEIGHT, frame, x, y
-    global sonic_sprite, stage1_1
+    global sonic_sprite, stage1_1, num
 
     del(sonic_sprite)
     del(stage1_1)
 
     del(sonic)
     del(b)
+    del(num)
 
 def handle_events():
     global sonic
@@ -370,6 +387,7 @@ def draw():
         if i.life == True:
             i.draw()
     sonic.draw()
+    point_draw()
     update_canvas()
 
 def pause():
