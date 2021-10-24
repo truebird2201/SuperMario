@@ -11,16 +11,17 @@ stage1_1 = None
 num = None
 bmx = 0
 bmy = 0
-point = 1399
+point = 0
 
 def point_draw():
     global point
-    for i in range (0, 9+1):
-        if point/1000 == i:
+
+    for i in range(0, 9+1):
+        if point//1000 == i:
             num.clip_draw(0+80*i, 0, 80, 80, 30, 570, 50, 50)
-        if (point/100)%10 == i:
+        if (point//100)%10 == i:
             num.clip_draw(0+80*i, 0, 80, 80, 80, 570, 50, 50)
-        if (point / 10)%10 == i:
+        if (point//10)%10 == i:
             num.clip_draw(0+80*i, 0, 80, 80, 130, 570, 50, 50)
         if point%10 == i:
             num.clip_draw(0+80*i, 0, 80, 80, 180, 570, 50, 50)
@@ -89,10 +90,10 @@ class player:
                 self.jumpTime = 0.0
                 self.jumpcount = 2
 
-        if self.dir != 0 and self.plus_move < 1.0:
+        if self.dir != 0 and self.plus_move < 0.5:
             self.plus_move += 0.01
-            if self.plus_move > 1.0:
-                self.plus_move = 1.0
+            if self.plus_move > 0.5:
+                self.plus_move = 0.5
 
         elif self.dir == 0 and self.plus_move > 0:
             self.plus_move -= 0.01
@@ -108,7 +109,7 @@ class player:
             self.x = 30
         else:
             if self.fast and self.dir != 0:  # 대시 on
-                self.x += (self.dir * 0.05) + (self.dir2 * self.plus_move)
+                self.x += (self.dir * 0.03) + (self.dir2 * self.plus_move)
             else:  # 대시 off
                 self.x += self.dir2 * self.plus_move / 2
         self.Ground = False
@@ -188,6 +189,7 @@ class Goomba:
     life = True
     die = False
 
+
     def __init__(self, x, y, Speed):
         self.x = x
         self.y = y
@@ -205,8 +207,13 @@ class Goomba:
                 sonic.frame = 0
                 sonic.dir = 0
             if crush(sonic, self) == 3:
+                if self.die == False:
+                    global point
+                    point += 2
                 self.die = True
                 self.frame = 0
+
+
         if self.die == True and int(self.frame) == 10:
             self.life = False
 
@@ -381,13 +388,13 @@ def update():
 def draw():
     clear_canvas()
     draw_back()
+    point_draw()
     for i in b:
         i.draw()
     for i in wm:
         if i.life == True:
             i.draw()
     sonic.draw()
-    point_draw()
     update_canvas()
 
 def pause():
