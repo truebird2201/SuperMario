@@ -9,22 +9,29 @@ sonic_sprite = None
 walk_monster = None
 stage1_1 = None
 num = None
+score = None
 bmx = 0
 bmy = 0
 point = 0
 
 def point_draw():
     global point
-
+    score.clip_draw(0, 0, 320, 80, 730, 570, 180,50)
     for i in range(0, 9+1):
-        if point//1000 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 30, 570, 50, 50)
+        if point//1000000 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 800+30, 570, 30, 30)
+        if (point // 100000) % 10000 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 800+55, 570, 30, 30)
+        if (point//10000)%1000 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 800+80, 570, 30, 30)
+        if (point//1000)%100 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 800+105, 570, 30, 30)
         if (point//100)%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 80, 570, 50, 50)
+            num.clip_draw(0+80*i, 0, 80, 80, 800+130, 570, 30, 30)
         if (point//10)%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 130, 570, 50, 50)
+            num.clip_draw(0+80*i, 0, 80, 80, 800+155, 570, 30, 30)
         if point%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 180, 570, 50, 50)
+            num.clip_draw(0+80*i, 0, 80, 80, 800+180, 570, 30, 30)
 
 
 
@@ -91,7 +98,7 @@ class player:
                 self.jumpcount = 2
 
         if self.dir != 0 and self.plus_move < 0.6:
-            self.plus_move += 0.0005
+            self.plus_move += 0.001
             if self.plus_move > 0.6:
                 self.plus_move = 0.6
 
@@ -317,12 +324,13 @@ def draw_back():                                   # 배경 그리기
 def enter():
     global sonic, b, wm
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point
-    global sonic_sprite, stage1_1, num
+    global sonic_sprite, stage1_1, num, score
 
     sonic_sprite = load_image('sonic.png')
     walk_monster = load_image('walk_monster.png')
     stage1_1 = load_image('1-1-1.png')
     num = load_image('number.png')
+    score = load_image('score.png')
 
     WIDTH = 1000
     HEIGHT = 800
@@ -335,7 +343,7 @@ def enter():
 def exit():
     global sonic, b
     global WIDTH, HEIGHT, frame, x, y
-    global sonic_sprite, stage1_1, num
+    global sonic_sprite, stage1_1, num, score
 
     del(sonic_sprite)
     del(stage1_1)
@@ -343,6 +351,7 @@ def exit():
     del(sonic)
     del(b)
     del(num)
+    del (score)
 
 def handle_events():
     global sonic
