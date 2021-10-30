@@ -9,6 +9,7 @@ sonic_sprite = None
 walk_monster = None
 stage1_1 = None
 num = None
+item = None
 score = None
 bmx = 0
 bmy = 0
@@ -16,22 +17,91 @@ point = 0
 
 def point_draw():
     global point
-    score.clip_draw(0, 0, 320, 80, 730, 570, 180,50)
+    score.clip_draw(0, 0, 170, 80, 100, 569, 150,50)
     for i in range(0, 9+1):
         if point//1000000 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 800+30, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 150+30, 570, 30, 30)
         if (point // 100000) % 10000 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 800+55, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 150+55, 570, 30, 30)
         if (point//10000)%1000 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 800+80, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 150+80, 570, 30, 30)
         if (point//1000)%100 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 800+105, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 150+105, 570, 30, 30)
         if (point//100)%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 800+130, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 150+130, 570, 30, 30)
         if (point//10)%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 800+155, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 150+155, 570, 30, 30)
         if point%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 800+180, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 150+180, 570, 30, 30)
+
+
+
+class item:
+    left = 0
+    right = 0
+    top = 0
+    bottom = 0
+    frame = 0
+    ground = True
+    dir = 1
+    gravity = 0.01
+    jumpPower = 1.5
+    jumpTime = 0
+    downpower = 0
+    savey = 0
+    kind = 0
+    Ground = True
+    Jumping = True
+
+    life = True
+
+
+    def __init__(self, x, y, kind):
+        self.x = x
+        self.y = y
+        self.kind = kind
+
+    def update(self):
+
+        self.frame = (self.frame + 0.03) % 7
+        self.left = self.x - 20
+        self.right = self.x + 20
+        self.top = self.y + 20
+        self.bottom = self.y - 20
+
+        self.x += self.dir * 0.3
+
+
+
+    def move(self):
+
+        if self.Jumping:
+            self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
+                        self.jumpTime * self.jumpPower)
+            self.jumpTime += 1
+            if self.y < self.savey:
+                self.y = self.savey
+                self.Jumping = False
+                self.jumpTime = 0.0
+                self.jumpcount = 2
+
+
+        for i in b:
+            if crush(self, i) == 3:
+                self.Ground = True
+                self.Jumping = True
+                self.downpower = 0
+
+        for i in b:
+            if crush(self, i) == 1:
+                self.x = i.left - 25
+            elif crush(self, i) == 2:
+                self.x = i.right + 25
+            elif crush(self, i) == 3:
+                self.y = i.top + 25
+
+    def draw(self):
+        it.clip_draw(int(self.frame) * 40, 200, 40, 40, self.x, self.y, 50, 50)
 
 
 
@@ -322,26 +392,28 @@ def draw_back():                                   # 배경 그리기
     stage1_1.clip_draw(0, 0, 2357, 314, 1178.5*2.7+bmx, 157*2.7+bmy, 2357*2.7, 314*2.7)
 
 def enter():
-    global sonic, b, wm
+    global sonic, b, wm, ite
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point
-    global sonic_sprite, stage1_1, num, score
+    global sonic_sprite, stage1_1, num, score, it
 
     sonic_sprite = load_image('sonic.png')
     walk_monster = load_image('walk_monster.png')
     stage1_1 = load_image('1-1-1.png')
     num = load_image('number.png')
     score = load_image('score.png')
+    it = load_image('item.png')
 
     WIDTH = 1000
     HEIGHT = 800
 
     b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
     wm = [Goomba(100,100,0.2),Goomba(100,100,0.2),Goomba(100,100,0.4),Goomba(100,100,0.7)]
+    ite = [item(100, 100, 1)]
 
     sonic = player(30, 60)
 
 def exit():
-    global sonic, b
+    global sonic, b,wm, ite
     global WIDTH, HEIGHT, frame, x, y
     global sonic_sprite, stage1_1, num, score
 
@@ -352,6 +424,7 @@ def exit():
     del(b)
     del(num)
     del (score)
+    del(ite)
 
 def handle_events():
     global sonic
@@ -405,6 +478,9 @@ def update():
     for i in wm:
         i.update()
         i.move()
+    for i in ite:
+        i.update()
+        i.move()
 
 def draw():
     clear_canvas()
@@ -413,6 +489,9 @@ def draw():
     for i in b:
         i.draw()
     for i in wm:
+        if i.life == True:
+            i.draw()
+    for i in ite:
         if i.life == True:
             i.draw()
     sonic.draw()
