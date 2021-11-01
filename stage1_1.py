@@ -70,39 +70,51 @@ class item:
         self.top = self.y + 20
         self.bottom = self.y - 20
 
-        self.x += self.dir * 0.3
+        self.x += self.dir * 0.5
 
 
 
     def move(self):
+        if self.kind==1:
+            if self.Jumping:
+                self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
+                            self.jumpTime * self.jumpPower)
+                self.jumpTime += 1
+                if self.y < self.savey:
+                    self.y = self.savey
+                    self.Jumping = False
+                    self.jumpTime = 0.0
+                    self.jumpcount = 2
 
-        if self.Jumping:
-            self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
-                        self.jumpTime * self.jumpPower)
-            self.jumpTime += 1
-            if self.y < self.savey:
-                self.y = self.savey
-                self.Jumping = False
-                self.jumpTime = 0.0
-                self.jumpcount = 2
 
+            for i in b:
+                if crush(self, i) == 3:
+                    self.Ground = True
+                    self.Jumping = True
+                    self.downpower = 0
 
-        for i in b:
-            if crush(self, i) == 3:
-                self.Ground = True
-                self.Jumping = True
-                self.downpower = 0
-
-        for i in b:
-            if crush(self, i) == 1:
-                self.dir = -1
-            elif crush(self, i) == 2:
-                self.dir = 1
-            elif crush(self, i) == 3:
-                self.y = i.top + 25
+            for i in b:
+                if crush(self, i) == 1:
+                    self.dir = -1
+                elif crush(self, i) == 2:
+                    self.dir = 1
+                elif crush(self, i) == 3:
+                    self.y = i.top + 25
+        elif self.kind == 2:
+            self.y -= 0.5
+            for i in b:
+                if crush(self, i) == 1:
+                    self.dir = -1
+                elif crush(self, i) == 2:
+                    self.dir = 1
+                elif crush(self, i) == 3:
+                    self.y = i.top + 25
 
     def draw(self):
-        it.clip_draw(int(self.frame) * 40, 200, 40, 40, self.x, self.y, 50, 50)
+        if self.kind == 1:
+            it.clip_draw(int(self.frame) * 40, 160, 40, 40, self.x, self.y, 50, 50)
+        elif self.kind == 2:
+            it.clip_draw(0, 120, 40, 40, self.x, self.y, 25, 25)
 
 
 
@@ -133,6 +145,8 @@ class player:
     starmode = False
     starcount = 0
     diedown = 0
+    size = 60
+
 
     def __init__(self, x, y):
         self.x = x
@@ -153,6 +167,9 @@ class player:
                 if i.kind == 1:                                                 # 별
                     self.starmode = True
                     self.starcount = 3500
+                    i.life = False
+                elif i.kind == 2:                                                # 버섯
+                    self.size = 90
                     i.life = False
 
 
@@ -232,10 +249,10 @@ class player:
     def draw(self):
 
         if self.die == True:                        # 죽으면
-                sonic_sprite.clip_draw(int(self.frame) * 40, 260, 40, 40, self.x, self.y-self.diedown, 60, 60)
+                sonic_sprite.clip_draw(int(self.frame) * 40, 260, 40, 40, self.x, self.y-self.diedown, self.size, self.size)
         else:
             if self.GoDown2 == True:
-                sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, 60, 60)
+                sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, self.size, self.size)
                 if self.frame > 7:
                     delay(0.2)
                     self.GoDown2 = False
@@ -244,91 +261,91 @@ class player:
                 if self.starmode == False:                                                                          # 스타모드 아닐때
                     if self.dir == 1:  # 오른쪽
                         if self.fast:  # 대시
-                            sonic_sprite.clip_draw(int(self.frame) * 40, 380, 40, 40, self.x, self.y, 60, 60)
+                            sonic_sprite.clip_draw(int(self.frame) * 40, 380, 40, 40, self.x, self.y, self.size, self.size)
                         else:
                             if self.Jumping:
-                                sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, 60, 60)
+                                sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, self.size, self.size)
                             else:
                                 if self.plus_move < 0.5:
-                                    sonic_sprite.clip_draw(int(self.frame) * 40, 460, 40, 40, self.x, self.y, 60, 60)
+                                    sonic_sprite.clip_draw(int(self.frame) * 40, 460, 40, 40, self.x, self.y, self.size, self.size)
                                 else:
-                                    sonic_sprite.clip_draw(int(self.frame) * 40, 220, 40, 40, self.x, self.y, 60, 60)
+                                    sonic_sprite.clip_draw(int(self.frame) * 40, 220, 40, 40, self.x, self.y, self.size, self.size)
 
                     elif self.dir == -1:  # 왼쪽
                         if self.fast:  # 대시
-                            sonic_sprite.clip_composite_draw(int(self.frame) * 40, 380, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+                            sonic_sprite.clip_composite_draw(int(self.frame) * 40, 380, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
                         else:
                             if self.Jumping:
-                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
                             else:
                                 if self.plus_move < 0.5:
-                                    sonic_sprite.clip_composite_draw(int(self.frame) * 40, 460, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+                                    sonic_sprite.clip_composite_draw(int(self.frame) * 40, 460, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
                                 else:
-                                    sonic_sprite.clip_composite_draw(int(self.frame) * 40, 220, 40, 40, 0, 'h', self.x,self.y, 60, 60)
+                                    sonic_sprite.clip_composite_draw(int(self.frame) * 40, 220, 40, 40, 0, 'h', self.x,self.y, self.size, self.size)
 
                     elif self.dir == 0 and self.dir2 == 1:  # 마지막이 오른쪽이였던 멈춤
                         if self.Jumping == False:
                             if self.plus_move == 0:
-                                sonic_sprite.clip_draw(int(self.frame) * 40, 420, 40, 40, self.x, self.y, 60, 60)
+                                sonic_sprite.clip_draw(int(self.frame) * 40, 420, 40, 40, self.x, self.y, self.size, self.size)
                             else:
-                                sonic_sprite.clip_draw(int(self.frame) * 40, 180, 40, 40, self.x, self.y, 60, 60)
+                                sonic_sprite.clip_draw(int(self.frame) * 40, 180, 40, 40, self.x, self.y, self.size, self.size)
                         else:
-                            sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, 60, 60)
+                            sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, self.size, self.size)
 
                     elif self.dir == 0 and self.dir2 == -1:  # 마지막이 왼쪽이였던 멈춤
                         if self.Jumping == False:
                             if self.plus_move == 0:
-                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 420, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 420, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
                             else:
-                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 180, 40, 40, 0, 'h', self.x, self.y,60, 60)
+                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 180, 40, 40, 0, 'h', self.x, self.y,self.size, self.size)
                         else:
-                            sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, 60, 60)
+                            sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
                 else:                                                                                                                       # 스타 모드일때
                     if self.dir == 1:  # 오른쪽
                         if self.fast:  # 대시
-                            star.clip_draw(int(self.frame) * 40, 380, 40, 40, self.x, self.y, 60, 60)
+                            star.clip_draw(int(self.frame) * 40, 380, 40, 40, self.x, self.y, self.size, self.size)
                         else:
                             if self.Jumping:
-                                star.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, 60, 60)
+                                star.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, self.size, self.size)
                             else:
                                 if self.plus_move < 0.5:
-                                    star.clip_draw(int(self.frame) * 40, 460, 40, 40, self.x, self.y, 60, 60)
+                                    star.clip_draw(int(self.frame) * 40, 460, 40, 40, self.x, self.y, self.size, self.size)
                                 else:
-                                    star.clip_draw(int(self.frame) * 40, 220, 40, 40, self.x, self.y, 60, 60)
+                                    star.clip_draw(int(self.frame) * 40, 220, 40, 40, self.x, self.y, self.size, self.size)
 
                     elif self.dir == -1:  # 왼쪽
                         if self.fast:  # 대시
                             star.clip_composite_draw(int(self.frame) * 40, 380, 40, 40, 0, 'h', self.x, self.y,
-                                                             60, 60)
+                                                             self.size, self.size)
                         else:
                             if self.Jumping:
                                 star.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x,
-                                                                 self.y, 60, 60)
+                                                                 self.y, self.size, self.size)
                             else:
                                 if self.plus_move < 0.5:
                                     star.clip_composite_draw(int(self.frame) * 40, 460, 40, 40, 0, 'h', self.x,
-                                                                     self.y, 60, 60)
+                                                                     self.y, self.size, self.size)
                                 else:
                                     star.clip_composite_draw(int(self.frame) * 40, 220, 40, 40, 0, 'h', self.x,
-                                                                     self.y, 60, 60)
+                                                                     self.y, self.size, self.size)
 
                     elif self.dir == 0 and self.dir2 == 1:  # 마지막이 오른쪽이였던 멈춤
                         if self.Jumping == False:
                             if self.plus_move == 0:
-                                star.clip_draw(int(self.frame) * 40, 420, 40, 40, self.x, self.y, 60, 60)
+                                star.clip_draw(int(self.frame) * 40, 420, 40, 40, self.x, self.y, self.size, self.size)
                             else:
-                                star.clip_draw(int(self.frame) * 40, 180, 40, 40, self.x, self.y, 60, 60)
+                                star.clip_draw(int(self.frame) * 40, 180, 40, 40, self.x, self.y, self.size, self.size)
                         else:
-                            star.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, 60, 60)
+                            star.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, self.size, self.size)
 
                     elif self.dir == 0 and self.dir2 == -1:  # 마지막이 왼쪽이였던 멈춤
                         if self.Jumping == False:
                             if self.plus_move == 0:
-                                star.clip_composite_draw(int(self.frame) * 40, 420, 40, 40, 0, 'h', self.x,self.y, 60, 60)
+                                star.clip_composite_draw(int(self.frame) * 40, 420, 40, 40, 0, 'h', self.x,self.y, self.size, self.size)
                             else:
-                                star.clip_composite_draw(int(self.frame) * 40, 180, 40, 40, 0, 'h', self.x,self.y, 60, 60)
+                                star.clip_composite_draw(int(self.frame) * 40, 180, 40, 40, 0, 'h', self.x,self.y, self.size, self.size)
                         else:
-                            star.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y,60, 60)
+                            star.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y,self.size, self.size)
 
 
 class Goomba:
@@ -435,22 +452,33 @@ class Block:                         # 파이프
 
     def draw(self):
         if self.kind == 0:              # 땅
-            pass
+            walk_monster.clip_draw(30, 30, 1, 1, self.left, self.bottom, self.right-self.left, self.top-self.bottom)
         elif self.kind == 1:            # 파이프
             pass
 
 def crush(A,B):
-
-    if A.y+30 > B.bottom and B.top > A.y-29 and A.x+20 > B.left and B.left > A.x-20:
-        return 1
-    if A.y+30 > B.bottom and B.top > A.y-29 and A.x-20 < B.right and B.right < A.x+20:
-        return 2
-    if A.y-31 < B.top and A.y+30 > B.top and A.x+20 > B.left and B.right > A.x-20:
-        return 3
-    if A.y-30 > B.bottom and A.y+30 < B.bottom and A.x+20 > B.left and B.right > A.x-20:
-        return 4
-    else:
-        return 0
+    if sonic.size == 60:
+        if A.y+30 > B.bottom and B.top > A.y-29 and A.x+20 > B.left and B.left > A.x-20:
+            return 1
+        if A.y+30 > B.bottom and B.top > A.y-29 and A.x-20 < B.right and B.right < A.x+20:
+            return 2
+        if A.y-31 < B.top and A.y+30 > B.top and A.x+20 > B.left and B.right > A.x-20:
+            return 3
+        if A.y-30 > B.bottom and A.y+30 < B.bottom and A.x+20 > B.left and B.right > A.x-20:
+            return 4
+        else:
+            return 0
+    elif sonic.size == 90:
+        if A.y+45 > B.bottom and B.top > A.y-44 and A.x+30 > B.left and B.left > A.x-30:
+            return 1
+        if A.y+45 > B.bottom and B.top > A.y-44 and A.x-30 < B.right and B.right < A.x+30:
+            return 2
+        if A.y-46 < B.top and A.y+45 > B.top and A.x+30 > B.left and B.right > A.x-30:
+            return 3
+        if A.y-45 > B.bottom and A.y+45 < B.bottom and A.x+30 > B.left and B.right > A.x-30:
+            return 4
+        else:
+            return 0
 
 def backmove():
     global bmx
@@ -481,9 +509,9 @@ def enter():
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
+    b = [Block(0, 930, 25, 1, 0), Block(930, 1000, 70, 1, 0)]
     wm = [Goomba(100,100,0.2),Goomba(100,100,0.2),Goomba(100,100,0.4),Goomba(100,100,0.7)]
-    ite = [item(100, 100, 1)]
+    ite = [item(100, 100, 1),item(300, 100, 2)]
 
     sonic = player(30, 60)
 
