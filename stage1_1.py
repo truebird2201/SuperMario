@@ -48,10 +48,9 @@ class item:
     gravity = 0.01
     jumpPower = 1.5
     jumpTime = 0
-    downpower = 0
     savey = 0
     kind = 0
-    Ground = True
+
     Jumping = True
 
     life = True
@@ -70,7 +69,10 @@ class item:
         self.top = self.y + 20
         self.bottom = self.y - 20
 
-        self.x += self.dir * 0.5
+        if self.kind == 1:
+            self.x += self.dir * 0.7
+        elif self.kind == 2:
+            self.x += self.dir * 0.5
 
 
 
@@ -78,7 +80,7 @@ class item:
         if self.kind == 1:                                                              # 스타
             if self.Jumping:
                 self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
-                            self.jumpTime * self.jumpPower)
+                            self.jumpTime * self.jumpPower) + self.savey
                 self.jumpTime += 1
                 if self.y < self.savey:
                     self.y = self.savey
@@ -88,18 +90,15 @@ class item:
 
 
             for i in b:
-                if crush(self, i) == 3:
-                    self.Ground = True
-                    self.Jumping = True
-                    self.downpower = 0
-
-            for i in b:
                 if crush(self, i) == 1:
                     self.dir = -1
                 elif crush(self, i) == 2:
                     self.dir = 1
                 elif crush(self, i) == 3:
                     self.y = i.top + 20
+                    self.savey = self.y
+                    self.Jumping = True
+                    self.jumpTime = 0
 
         elif self.kind == 2:                                                            # 버섯
             self.y -= 0.5
@@ -180,6 +179,26 @@ class player:
                     self.size = 60
                     i.life = False
 
+        for i in wm:
+            if self.die == False and i.die == False:
+                if sonic.starmode == False:                                                 # 스타모드가 아니라면
+                    if player_ground_crush(self, i) == 1 or player_ground_crush(self, i) == 2:                  # 옆에서 부딪히면 소닉 죽음
+                        sonic.die = True
+                        sonic.frame = 0
+                        sonic.dir = 0
+                    if player_ground_crush(self, i) == 3:                                             # 위에서 소닉이 밟으면 굼바 죽음
+                        if i.die == False:
+                            global point
+                            point += 2
+                        i.die = True
+                        i.frame = 0
+
+                else:
+                    if crush(sonic, i) != 0:
+                        if i.die == False:
+                            point += 2
+                        i.die = True
+                        i.frame = 0
 
 
         if self.die == True and int(self.frame) <= 2:                                        # 떨어지는 이미지
@@ -386,25 +405,6 @@ class Goomba:
         self.right = self.x + 20
         self.top = self.y + 20
         self.bottom = self.y - 20
-        if self.die == False:
-            if sonic.starmode == False:                                                 # 스타모드가 아니라면
-                if crush(sonic, self) == 1 or crush(sonic, self) == 2:                  # 옆에서 부딪히면 소닉 죽음
-                    sonic.die = True
-                    sonic.frame = 0
-                    sonic.dir = 0
-                if crush(sonic, self) == 3:                                             # 위에서 소닉이 밟으면 굼바 죽음
-                    if self.die == False:
-                        global point
-                        point += 2
-                    self.die = True
-                    self.frame = 0
-
-            else:
-                if crush(sonic, self) != 0:
-                    if self.die == False:
-                        point += 2
-                    self.die = True
-                    self.frame = 0
 
 
         if self.die == True and int(self.frame) == 10:
@@ -457,27 +457,27 @@ class Block:                         # 파이프
     kind = 0
 
     def __init__(self, left, right, top, bottom, kind):
-        self.kind = kind
         self.left = left
         self.right = right
         self.top = top
         self.bottom = bottom
+        self.kind = kind
 
     def draw(self):
         if self.kind == 0:              # 땅
-            walk_monster.clip_draw(30, 30, 1, 1, self.left, self.bottom, self.right-self.left, self.top-self.bottom)
+            star.clip_composite_draw(40, 340, 1, 1, 0, 'h', self.left, self.bottom, self.right-self.left, self.top-self.bottom)
         elif self.kind == 1:            # 파이프
             pass
 
 def player_ground_crush(A,B):
     if sonic.size == 48:
-        if A.y+24 > B.bottom and B.top > A.y-23 and A.x+16 > B.left and B.left > A.x-16:
+        if A.y+24 > B.bottom and A.y-24 < B.top and A.x+16 > B.left and A.x-16 < B.left:
             return 1
-        if A.y+24 > B.bottom and B.top > A.y-23 and A.x-16 < B.right and B.right < A.x+16:
+        if A.y+24 > B.bottom and A.y-24 < B.top and A.x+16 > B.right and A.x-16 < B.right:
             return 2
-        if A.y-25 < B.top and A.y+24 > B.top and A.x+16 > B.left and B.right > A.x-16:
+        if A.y+24 > B.top and A.y-25 < B.top and A.x+16 > B.left and A.x-16 < B.right:
             return 3
-        if A.y-24 > B.bottom and A.y+24 < B.bottom and A.x+16 > B.left and B.right > A.x-16:
+        if A.y+25 > B.bottom and A.y-24 < B.bottom and A.x+16 > B.left and A.x-16 < B.right:
             return 4
         else:
             return 0
@@ -494,13 +494,13 @@ def player_ground_crush(A,B):
             return 0
 
 def crush(A, B):
-    if A.y + 20 > B.bottom and B.top > A.y - 19 and A.x + 20 > B.left and B.left > A.x - 20:
+    if A.y + 20 > B.bottom and A.y - 20 < B.top and A.x + 20 > B.left and A.x - 20 < B.left:
         return 1
-    if A.y + 20 > B.bottom and B.top > A.y - 19 and A.x - 20 < B.right and B.right < A.x + 20:
+    if A.y + 20 > B.bottom and A.y - 20 < B.top and A.x + 20 > B.right and A.x - 20 < B.right:
         return 2
-    if A.y - 21 < B.top and A.y + 20 > B.top and A.x + 20 > B.left and B.right > A.x - 20:
+    if A.y + 20 > B.top and A.y - 21 < B.top and A.x + 20 > B.left and A.x - 20 < B.right:
         return 3
-    if A.y - 20 > B.bottom and A.y + 20 < B.bottom and A.x + 20 > B.left and B.right > A.x - 20:
+    if A.y + 21 > B.bottom and A.y - 20 < B.bottom and A.x + 20 > B.left and A.x - 20 < B.right:
         return 4
     else:
         return 0
@@ -534,7 +534,7 @@ def enter():
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(0, 930, 25, 1, 0), Block(930, 1000, 70, 1, 0)]
+    b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
     wm = [Goomba(100,100,0.2),Goomba(100,100,0.2),Goomba(100,100,0.4),Goomba(100,100,0.7)]
     ite = [item(500, 100, 1),item(500, 100, 2)]
 
