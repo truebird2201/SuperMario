@@ -12,29 +12,40 @@ stage1_1 = None
 num = None
 item = None
 score = None
+coin = None
+star = None
+firesonic = None
+flower = None
 bmx = 0
 bmy = 0
 point = 0
+money = 0
 
 def point_draw():
     global point
-    score.clip_draw(0, 0, 170, 80, 100, 569, 150,50)
+    score.clip_draw(0, 0, 170, 80, 80, 569, 130 ,50)
+    coin.clip_draw(0, 0, 20, 20, 120, 535, 20, 20)
     for i in range(0, 9+1):
         if point//1000000 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 150+30, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 130+20, 565, 25, 25)
         if (point // 100000) % 10000 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 150+55, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 130+40, 565, 25, 25)
         if (point//10000)%1000 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 150+80, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 130+60, 565, 25, 25)
         if (point//1000)%100 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 150+105, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 130+80, 565, 25, 25)
         if (point//100)%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 150+130, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 130+100, 565, 25, 25)
         if (point//10)%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 150+155, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 130+120, 565, 25, 25)
         if point%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 150+180, 570, 30, 30)
+            num.clip_draw(0+80*i, 0, 80, 80, 130+140, 565, 25, 25)
 
+    for i in range(0, 9+1):
+        if (money//10)%10 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 130+20, 540, 25, 25)
+        if money%10 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 130+40, 540, 25, 25)
 
 
 class item:
@@ -62,8 +73,10 @@ class item:
         self.kind = kind
 
     def update(self):
-
-        self.frame = (self.frame + 0.03) % 7
+        if self.kind==0:
+            self.frame = (self.frame + 0.025) % 10
+        else:
+            self.frame = (self.frame + 0.02) % 7
         self.left = self.x - 20
         self.right = self.x + 20
         self.top = self.y + 20
@@ -80,13 +93,12 @@ class item:
         if self.kind == 1:                                                              # 스타
             if self.Jumping:
                 self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
-                            self.jumpTime * self.jumpPower) + self.savey
+                            self.jumpTime * self.jumpPower)
                 self.jumpTime += 1
                 if self.y < self.savey:
                     self.y = self.savey
-                    self.Jumping = False
+                    self.Jumping = True
                     self.jumpTime = 0.0
-                    self.jumpcount = 2
 
 
             for i in b:
@@ -97,8 +109,6 @@ class item:
                 elif crush(self, i) == 3:
                     self.y = i.top + 20
                     self.savey = self.y
-                    self.Jumping = True
-                    self.jumpTime = 0
 
         elif self.kind == 2:                                                            # 버섯
             self.y -= 0.5
@@ -111,14 +121,19 @@ class item:
                     self.y = i.top + 20
 
     def draw(self):
+        if self.kind == 0:
+            coin.clip_draw(int(self.frame) * 20, 0, 20, 20, self.x, self.y, 20, 20)
         if self.kind == 1:
             it.clip_draw(int(self.frame) * 40, 160, 40, 40, self.x, self.y, 50, 50)
         elif self.kind == 2:
             it.clip_draw(0, 120, 40, 40, self.x, self.y, 25, 25)
+        elif self.kind == 3:
+            it.clip_draw(40, 120, 40, 40, self.x, self.y, 25, 25)
 
 
 
 class player:
+
     left = 0
     right = 0
     top = 0
@@ -143,6 +158,7 @@ class player:
     life = True
     die = False
     starmode = False
+    firemode = False
     starcount = 0
     diedown = 0
     size = 48
@@ -158,12 +174,13 @@ class player:
         else:
             self.frame = (self.frame + 0.03) % 8
 
-        if self.size == 60:
+        if self.size == 60:                         # 버섯
             self.left = self.x - 20
             self.right = self.x + 20
             self.top = self.y + 30
             self.bottom = self.y - 30
-        elif self.size == 48:
+
+        elif self.size == 48:                       # 기본
             self.left = self.x - 16
             self.right = self.x + 16
             self.top = self.y + 24
@@ -176,6 +193,16 @@ class player:
                     self.starcount = 3500
                     i.life = False
                 elif i.kind == 2:                                                # 버섯
+                    self.size = 60
+                    i.life = False
+                elif i.kind == 0:                                                # 동전
+                    global money
+                    money += 1
+                    i.life = False
+                    if money == 50:
+                        money = 0
+                elif i.kind == 3:                                                # 꽃
+                    self.firemode = True
                     self.size = 60
                     i.life = False
 
@@ -192,6 +219,10 @@ class player:
                             point += 2
                         i.die = True
                         i.frame = 0
+
+                        self.Jumping = True
+                        self.jumpTime = 0.0
+                        self.jumpcount = 1
 
                 else:
                     if crush(sonic, i) != 0:
@@ -212,7 +243,7 @@ class player:
         if self.starmode == True:
             self.starcount-=1
 
-        if self.starcount==0 and self.starmode == True:
+        if self.starcount == 0 and self.starmode == True:                           # 스타모드 끝
             self.starmode = False
 
 
@@ -273,6 +304,10 @@ class player:
                 elif player_ground_crush(self, i) == 3:
                     self.y = i.top + 30
                     self.savey = self.y
+                elif player_ground_crush(self, i) == 4:
+                    self.y = i.bottom-30
+                    self.savey = self.y
+                    self.Jumping = False
             elif self.size == 48:
                 if player_ground_crush(self, i) == 1:
                     self.x = i.left - 16
@@ -281,6 +316,10 @@ class player:
                 elif player_ground_crush(self, i) == 3:
                     self.y = i.top + 24
                     self.savey = self.y
+                elif player_ground_crush(self, i) == 4:
+                    self.y = i.bottom-24
+                    self.savey = self.y
+                    self.Jumping = False
 
     def draw(self):
 
@@ -288,7 +327,10 @@ class player:
                 sonic_sprite.clip_draw(int(self.frame) * 40, 260, 40, 40, self.x, self.y-self.diedown, self.size, self.size)
         else:
             if self.GoDown2 == True:
-                sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, self.size, self.size)
+                if self.firemode == True:
+                    firesonic.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, self.size, self.size)
+                else:
+                    sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, self.size, self.size)
                 if self.frame > 7:
                     delay(0.2)
                     self.GoDown2 = False
@@ -297,45 +339,89 @@ class player:
                 if self.starmode == False:                                                                          # 스타모드 아닐때
                     if self.dir == 1:  # 오른쪽
                         if self.fast:  # 대시
-                            sonic_sprite.clip_draw(int(self.frame) * 40, 380, 40, 40, self.x, self.y, self.size, self.size)
+                            if self.firemode == True:
+                                firesonic.clip_draw(int(self.frame) * 40, 380, 40, 40, self.x, self.y, self.size, self.size)
+                            else:
+                                sonic_sprite.clip_draw(int(self.frame) * 40, 380, 40, 40, self.x, self.y, self.size, self.size)
                         else:
                             if self.Jumping:
-                                sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, self.size, self.size)
+                                if self.firemode == True:
+                                    firesonic.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, self.size, self.size)
+                                else:
+                                    sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, self.size, self.size)
                             else:
                                 if self.plus_move < 0.5:
-                                    sonic_sprite.clip_draw(int(self.frame) * 40, 460, 40, 40, self.x, self.y, self.size, self.size)
+                                    if self.firemode == True:
+                                        firesonic.clip_draw(int(self.frame) * 40, 460, 40, 40, self.x, self.y, self.size, self.size)
+                                    else:
+                                        sonic_sprite.clip_draw(int(self.frame) * 40, 460, 40, 40, self.x, self.y, self.size, self.size)
                                 else:
-                                    sonic_sprite.clip_draw(int(self.frame) * 40, 220, 40, 40, self.x, self.y, self.size, self.size)
+                                    if self.firemode == True:
+                                        firesonic.clip_draw(int(self.frame) * 40, 220, 40, 40, self.x, self.y, self.size, self.size)
+                                    else:
+                                        sonic_sprite.clip_draw(int(self.frame) * 40, 220, 40, 40, self.x, self.y, self.size, self.size)
 
                     elif self.dir == -1:  # 왼쪽
                         if self.fast:  # 대시
-                            sonic_sprite.clip_composite_draw(int(self.frame) * 40, 380, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
+                            if self.firemode == True:
+                                firesonic.clip_composite_draw(int(self.frame) * 40, 380, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
+                            else:
+                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 380, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
                         else:
                             if self.Jumping:
-                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
+                                if self.firemode == True:
+                                    firesonic.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
+                                else:
+                                    sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
                             else:
                                 if self.plus_move < 0.5:
-                                    sonic_sprite.clip_composite_draw(int(self.frame) * 40, 460, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
+                                    if self.firemode == True:
+                                        firesonic.clip_composite_draw(int(self.frame) * 40, 460, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
+                                    else:
+                                        sonic_sprite.clip_composite_draw(int(self.frame) * 40, 460, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
                                 else:
-                                    sonic_sprite.clip_composite_draw(int(self.frame) * 40, 220, 40, 40, 0, 'h', self.x,self.y, self.size, self.size)
+                                    if self.firemode == True:
+                                        firesonic.clip_composite_draw(int(self.frame) * 40, 220, 40, 40, 0, 'h', self.x,self.y, self.size, self.size)
+                                    else:
+                                        sonic_sprite.clip_composite_draw(int(self.frame) * 40, 220, 40, 40, 0, 'h', self.x,self.y, self.size, self.size)
 
                     elif self.dir == 0 and self.dir2 == 1:  # 마지막이 오른쪽이였던 멈춤
                         if self.Jumping == False:
                             if self.plus_move == 0:
-                                sonic_sprite.clip_draw(int(self.frame) * 40, 420, 40, 40, self.x, self.y, self.size, self.size)
+                                if self.firemode == True:
+                                    firesonic.clip_draw(int(self.frame) * 40, 420, 40, 40, self.x, self.y, self.size, self.size)
+                                else:
+                                    sonic_sprite.clip_draw(int(self.frame) * 40, 420, 40, 40, self.x, self.y, self.size, self.size)
                             else:
-                                sonic_sprite.clip_draw(int(self.frame) * 40, 180, 40, 40, self.x, self.y, self.size, self.size)
+                                if self.firemode == True:
+                                    firesonic.clip_draw(int(self.frame) * 40, 180, 40, 40, self.x, self.y, self.size, self.size)
+                                else:
+                                    sonic_sprite.clip_draw(int(self.frame) * 40, 180, 40, 40, self.x, self.y, self.size, self.size)
                         else:
-                            sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, self.size, self.size)
+                            if self.firemode == True:
+                                firesonic.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, self.size, self.size)
+                            else:
+                                sonic_sprite.clip_draw(int(self.frame) * 40, 340, 40, 40, self.x, self.y, self.size, self.size)
 
                     elif self.dir == 0 and self.dir2 == -1:  # 마지막이 왼쪽이였던 멈춤
                         if self.Jumping == False:
                             if self.plus_move == 0:
-                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 420, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
+                                if self.firemode == True:
+                                    firesonic.clip_composite_draw(int(self.frame) * 40, 420, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
+                                else:
+                                    sonic_sprite.clip_composite_draw(int(self.frame) * 40, 420, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
                             else:
-                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 180, 40, 40, 0, 'h', self.x, self.y,self.size, self.size)
+                                if self.firemode == True:
+                                    firesonic.clip_composite_draw(int(self.frame) * 40, 180, 40, 40, 0, 'h', self.x, self.y,self.size, self.size)
+                                else:
+                                    sonic_sprite.clip_composite_draw(int(self.frame) * 40, 180, 40, 40, 0, 'h', self.x, self.y,self.size, self.size)
                         else:
-                            sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
+                            if self.firemode == True:
+                                firesonic.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
+                            else:
+                                sonic_sprite.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y, self.size, self.size)
+
+
                 else:                                                                                                                       # 스타 모드일때
                     if self.dir == 1:  # 오른쪽
                         if self.fast:  # 대시
@@ -401,10 +487,10 @@ class Goomba:
 
     def update(self):
         self.frame = (self.frame + 0.03) % 16
-        self.left = self.x - 20
-        self.right = self.x + 20
-        self.top = self.y + 20
-        self.bottom = self.y - 20
+        self.left = self.x - 30
+        self.right = self.x + 30
+        self.top = self.y + 30
+        self.bottom = self.y - 30
 
 
         if self.die == True and int(self.frame) == 10:
@@ -437,15 +523,15 @@ class Goomba:
 
         if self.die == True:
             if self.dir == 1:  # 오른쪽
-                walk_monster.clip_composite_draw(1296, 0, 109, 93, 0, 'h', self.x, self.y, 50, 40)
+                walk_monster.clip_composite_draw(1296, 0, 109, 93, 0, 'h', self.x, self.y, 40, 30)
             elif self.dir == -1:  # 왼쪽
-                walk_monster.clip_draw(1296, 0, 109, 93, self.x, self.y, 50, 40)
+                walk_monster.clip_draw(1296, 0, 109, 93, self.x, self.y, 40, 30)
         else:
             if self.dir == 1:  # 오른쪽
-                walk_monster.clip_composite_draw(int(self.frame) * 81, 0, 81, 93, 0, 'h', self.x, self.y, 40, 40)
+                walk_monster.clip_composite_draw(int(self.frame) * 81, 0, 81, 93, 0, 'h', self.x, self.y, 30, 30)
 
             elif self.dir == -1:  # 왼쪽
-                walk_monster.clip_draw(int(self.frame) * 81, 0, 81, 93, self.x, self.y, 40, 40)
+                walk_monster.clip_draw(int(self.frame) * 81, 0, 81, 93, self.x, self.y, 30, 30)
 
 
 class Block:                         # 파이프
@@ -465,7 +551,7 @@ class Block:                         # 파이프
 
     def draw(self):
         if self.kind == 0:              # 땅
-            star.clip_composite_draw(40, 340, 1, 1, 0, 'h', self.left, self.bottom, self.right-self.left, self.top-self.bottom)
+            walk_monster.clip_draw(60, 60, 1, 1, self.left, self.bottom, self.right-self.left, self.top-self.bottom)
         elif self.kind == 1:            # 파이프
             pass
 
@@ -475,10 +561,10 @@ def player_ground_crush(A,B):
             return 1
         if A.y+24 > B.bottom and A.y-24 < B.top and A.x+16 > B.right and A.x-16 < B.right:
             return 2
-        if A.y+24 > B.top and A.y-25 < B.top and A.x+16 > B.left and A.x-16 < B.right:
-            return 3
         if A.y+25 > B.bottom and A.y-24 < B.bottom and A.x+16 > B.left and A.x-16 < B.right:
             return 4
+        if A.y+24 > B.top and A.y-25 < B.top and A.x+16 > B.left and A.x-16 < B.right:
+            return 3
         else:
             return 0
     elif sonic.size == 60:
@@ -486,10 +572,10 @@ def player_ground_crush(A,B):
             return 1
         if A.y+30 > B.bottom and B.top > A.y-29 and A.x-20 < B.right and B.right < A.x+20:
             return 2
+        if A.y-30 < B.bottom and A.y+30 > B.bottom and A.x+20 > B.left and B.right > A.x-20:
+            return 4
         if A.y-31 < B.top and A.y+30 > B.top and A.x+20 > B.left and B.right > A.x-20:
             return 3
-        if A.y-30 > B.bottom and A.y+30 < B.bottom and A.x+20 > B.left and B.right > A.x-20:
-            return 4
         else:
             return 0
 
@@ -498,10 +584,11 @@ def crush(A, B):
         return 1
     if A.y + 20 > B.bottom and A.y - 20 < B.top and A.x + 20 > B.right and A.x - 20 < B.right:
         return 2
-    if A.y + 20 > B.top and A.y - 21 < B.top and A.x + 20 > B.left and A.x - 20 < B.right:
-        return 3
     if A.y + 21 > B.bottom and A.y - 20 < B.bottom and A.x + 20 > B.left and A.x - 20 < B.right:
         return 4
+    if A.y + 20 > B.top and A.y - 21 < B.top and A.x + 20 > B.left and A.x - 20 < B.right:
+        return 3
+
     else:
         return 0
 
@@ -520,8 +607,8 @@ def draw_back():                                   # 배경 그리기
 
 def enter():
     global sonic, b, wm, ite
-    global WIDTH, HEIGHT, frame, x, y, walk_monster, point
-    global sonic_sprite, stage1_1, num, score, it, star
+    global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, point, money
+    global sonic_sprite, stage1_1, num, score, it, star, flower
 
     sonic_sprite = load_image('sonic.png')
     walk_monster = load_image('walk_monster.png')
@@ -530,24 +617,31 @@ def enter():
     score = load_image('score.png')
     it = load_image('item.png')
     star = load_image('starsonic.png')
+    firesonic = load_image('firesonic.png')
+    coin = load_image('coin.png')
+    flower = load_image('flower.png')
 
     WIDTH = 1000
     HEIGHT = 800
 
     b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
     wm = [Goomba(100,100,0.2),Goomba(100,100,0.2),Goomba(100,100,0.4),Goomba(100,100,0.7)]
-    ite = [item(500, 100, 1),item(500, 100, 2)]
+    ite = [item(500, 100, 1),item(500, 100, 2),item(100, 20, 0),item(100, 40, 0),item(150, 40, 3)]
 
     sonic = player(30, 60)
+    bmx = 0
+    bmy = 0
+    point = 0
+    money = 0
 
 def exit():
     global sonic, b,wm, ite
-    global WIDTH, HEIGHT, frame, x, y
-    global sonic_sprite, stage1_1, num, score,star, it
+    global WIDTH, HEIGHT, frame, x, y, money, point,flower
+    global sonic_sprite, stage1_1, num, score,star, it, coin,firesonic
 
     del(sonic_sprite)
     del(stage1_1)
-
+    del(flower)
     del(sonic)
     del(b)
     del(num)
@@ -555,6 +649,10 @@ def exit():
     del(ite)
     del(it)
     del(star)
+    del(coin)
+    del(firesonic)
+    del(money)
+    del(point)
 
 def handle_events():
     global sonic
