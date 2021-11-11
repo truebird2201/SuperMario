@@ -8,6 +8,7 @@ from math import *
 sonic_sprite = None
 star = None
 walk_monster = None
+fly_monster = None
 stage1_1 = None
 num = None
 item = None
@@ -192,7 +193,7 @@ class player:
                     self.starmode = True
                     self.starcount = 3500
                     i.life = False
-                elif i.kind == 2:                                                # 버섯 
+                elif i.kind == 2:                                                # 버섯
                     self.size = 60
                     i.life = False
                 elif i.kind == 0:                                                # 동전
@@ -466,7 +467,7 @@ class player:
                             star.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y,self.size, self.size)
 
 
-class Goomba:
+class Monster:
 
     left = 0
     right = 0
@@ -480,10 +481,11 @@ class Goomba:
     global point
 
 
-    def __init__(self, x, y, Speed):
+    def __init__(self, x, y, Speed, kind):
         self.x = x
         self.y = y
         self.Speed = Speed
+        self.kind = kind
 
     def update(self):
         self.frame = (self.frame + 0.03) % 16
@@ -608,10 +610,11 @@ def draw_back():                                   # 배경 그리기
 def enter():
     global sonic, b, wm, ite
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, point, money
-    global sonic_sprite, stage1_1, num, score, it, star, flower
+    global sonic_sprite, stage1_1, num, score, it, star, flower, fly_monster
 
     sonic_sprite = load_image('sonic.png')
     walk_monster = load_image('walk_monster.png')
+    fly_monster = load_image('fly_monster.png')
     stage1_1 = load_image('1-1-1.png')
     num = load_image('number.png')
     score = load_image('score.png')
