@@ -193,7 +193,7 @@ class player:
                     self.starcount = 3500
                     i.life = False
                 elif i.kind == 2:                                                # 버섯
-                    self.size = 60
+                    self.size = 60 
                     i.life = False
                 elif i.kind == 0:                                                # 동전
                     global money
