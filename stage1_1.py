@@ -21,32 +21,41 @@ bmx = 0
 bmy = 0
 point = 0
 money = 0
+life = 3
 
 def point_draw():
     global point
-    score.clip_draw(0, 0, 170, 80, 80, 569, 130 ,50)
-    coin.clip_draw(0, 0, 20, 20, 120, 535, 20, 20)
-    for i in range(0, 9+1):
-        if point//1000000 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 130+20, 565, 25, 25)
-        if (point // 100000) % 10000 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 130+40, 565, 25, 25)
-        if (point//10000)%1000 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 130+60, 565, 25, 25)
-        if (point//1000)%100 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 130+80, 565, 25, 25)
-        if (point//100)%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 130+100, 565, 25, 25)
-        if (point//10)%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 130+120, 565, 25, 25)
-        if point%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 130+140, 565, 25, 25)
+    score.clip_draw(0, 0, 170, 80, 80, 519, 130 ,50)
+    coin.clip_draw(0, 0, 20, 20, 120, 485, 20, 20)
+    sonic_sprite.clip_draw(0, 460, 40, 40, 120, 560, 40, 40)
 
-    for i in range(0, 9+1):
+    for i in range(0, 9+1):                                                 # 점수
+        if point//1000000 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 130+20, 515, 25, 25)
+        if (point // 100000) % 10000 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 130+40, 515, 25, 25)
+        if (point//10000)%1000 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 130+60, 515, 25, 25)
+        if (point//1000)%100 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 130+80, 515, 25, 25)
+        if (point//100)%10 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 130+100, 515, 25, 25)
+        if (point//10)%10 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 130+120, 515, 25, 25)
+        if point%10 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 130+140, 515, 25, 25)
+
+    for i in range(0, 9+1):                                                 # 돈
         if (money//10)%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 130+20, 540, 25, 25)
+            num.clip_draw(0+80*i, 0, 80, 80, 130+20, 490, 25, 25)
         if money%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 130+40, 540, 25, 25)
+            num.clip_draw(0+80*i, 0, 80, 80, 130+40, 490, 25, 25)
+
+    for i in range(0, 9+1):                                                 # 목숨
+        if (life//10)%10 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 130+20, 560, 25, 25)
+        if life%10 == i:
+            num.clip_draw(0+80*i, 0, 80, 80, 130+40, 560, 25, 25)
 
 
 class item:
@@ -156,7 +165,6 @@ class player:
     GoDown = False
     GoDown2 = False
     plus_move = 0
-    life = True
     die = False
     starmode = False
     firemode = False
@@ -239,7 +247,8 @@ class player:
             self.diedown += 1
 
         if self.die == True and int(self.frame) == 7:                               # 죽으면 초기화
-            self.life = False
+            global life
+            life -= 1
             enter()
         if self.starmode == True:
             self.starcount-=1
@@ -488,7 +497,12 @@ class Monster:
         self.kind = kind
 
     def update(self):
-        self.frame = (self.frame + 0.03) % 16
+        if self.kind==0:                    # 굼바 프레임
+            self.frame = (self.frame + 0.03) % 16
+
+        elif self.kind == 1:                # 부끄부끄 프레임
+            self.frame = (self.frame + 0.05) % 8
+
         self.left = self.x - 30
         self.right = self.x + 30
         self.top = self.y + 30
@@ -499,44 +513,55 @@ class Monster:
             self.life = False
 
     def move(self):
-        self.x += self.dir * self.Speed
-        for i in b:
-            if crush(self, i) == 3:
-                if self.dir == 1:
-                    if self.x+30 > i.right:
-                        self.dir = -1
-                        self.x += self.dir * self.Speed/10
-                else:
-                    if self.x-30 < i.left:
-                        self.dir = 1
-                        self.x += self.dir * self.Speed/10
-        self.Ground = False
-        for i in b:
-            if crush(self, i) == 3:
-                self.Ground = True
-                self.downpower = 0
+        if self.kind == 0:                                      # 굼바
+            self.x += self.dir * self.Speed
+            for i in b:
+                if crush(self, i) == 3:
+                    if self.dir == 1:
+                        if self.x+30 > i.right:
+                            self.dir = -1
+                            self.x += self.dir * self.Speed/10
+                    else:
+                        if self.x-30 < i.left:
+                            self.dir = 1
+                            self.x += self.dir * self.Speed/10
+            self.Ground = False
+            for i in b:
+                if crush(self, i) == 3:
+                    self.Ground = True
+                    self.downpower = 0
 
-        if self.Ground == False:
-            self.y -= 3
+            if self.Ground == False:
+                self.y -= 3
+
+        elif self.kind == 1:                                    # 부끄부끄
+            pass
 
 
     def draw(self):
 
+        if self.kind == 0:                                  # 굼바 그리기
+            if self.die == True:
+                if self.dir == 1:  # 오른쪽
+                    walk_monster.clip_composite_draw(1296, 0, 109, 93, 0, 'h', self.x, self.y, 40, 30)
+                elif self.dir == -1:  # 왼쪽
+                    walk_monster.clip_draw(1296, 0, 109, 93, self.x, self.y, 40, 30)
+            else:
+                if self.dir == 1:  # 오른쪽
+                    walk_monster.clip_composite_draw(int(self.frame) * 81, 0, 81, 93, 0, 'h', self.x, self.y, 30, 30)
 
-        if self.die == True:
+                elif self.dir == -1:  # 왼쪽
+                    walk_monster.clip_draw(int(self.frame) * 81, 0, 81, 93, self.x, self.y, 30, 30)
+
+        elif self.kind == 1:                               # 부끄부끄 그리기
             if self.dir == 1:  # 오른쪽
-                walk_monster.clip_composite_draw(1296, 0, 109, 93, 0, 'h', self.x, self.y, 40, 30)
-            elif self.dir == -1:  # 왼쪽
-                walk_monster.clip_draw(1296, 0, 109, 93, self.x, self.y, 40, 30)
-        else:
-            if self.dir == 1:  # 오른쪽
-                walk_monster.clip_composite_draw(int(self.frame) * 81, 0, 81, 93, 0, 'h', self.x, self.y, 30, 30)
+                fly_monster.clip_composite_draw(int(self.frame) * 40, 0, 40, 40, 0, 'h', self.x, self.y, 45, 45)
 
             elif self.dir == -1:  # 왼쪽
-                walk_monster.clip_draw(int(self.frame) * 81, 0, 81, 93, self.x, self.y, 30, 30)
+                fly_monster.clip_draw(int(self.frame) * 40, 0, 40, 40, self.x, self.y, 45, 45)
 
 
-class Block:                         # 파이프
+class Block:                         # 블럭
 
     left = 0
     right = 0
@@ -628,7 +653,7 @@ def enter():
     HEIGHT = 800
 
     b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
-    wm = [Goomba(100,100,0.2),Goomba(100,100,0.2),Goomba(100,100,0.4),Goomba(100,100,0.7)]
+    wm = [Monster(100,100,0.2,0),Monster(100,100,0.2,1),Monster(100,100,0.4,0),Monster(100,100,0.7,0)]
     ite = [item(500, 100, 1),item(500, 100, 2),item(100, 20, 0),item(100, 40, 0),item(150, 40, 3)]
 
     sonic = player(30, 60)
