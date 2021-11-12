@@ -17,6 +17,7 @@ coin = None
 star = None
 firesonic = None
 flower = None
+brick = None
 bmx = 0
 bmy = 0
 point = 0
@@ -261,7 +262,7 @@ class player:
 
     def move(self):
 
-        if self.Jumping:
+        if self.Jumping:                                                            # 점프
             self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
                         self.jumpTime * self.jumpPower) + self.savey2
             self.jumpTime += 1
@@ -317,8 +318,10 @@ class player:
                     self.savey = self.y
                 elif player_ground_crush(self, i) == 4:
                     self.y = i.bottom-30
-                    self.savey = self.y
+                    self.savey = 0
                     self.Jumping = False
+                    self.jumpcount = 2
+                    self.jumpTime = 0.0
             elif self.size == 48:
                 if player_ground_crush(self, i) == 1:
                     self.x = i.left - 16
@@ -329,8 +332,10 @@ class player:
                     self.savey = self.y
                 elif player_ground_crush(self, i) == 4:
                     self.y = i.bottom-24
-                    self.savey = self.y
+                    self.savey = 0
                     self.Jumping = False
+                    self.jumpcount = 2
+                    self.jumpTime = 0.0
 
     def draw(self):
 
@@ -568,6 +573,7 @@ class Block:                         # 블럭
     top = 0
     bottom = 0
     kind = 0
+    frame = 0
 
     def __init__(self, left, right, top, bottom, kind):
         self.left = left
@@ -581,6 +587,11 @@ class Block:                         # 블럭
             pass
         elif self.kind == 1:            # 파이프
             pass
+        elif self.kind == 2:            # 벽돌
+            brick.clip_draw(int(self.frame) * 60, 180, 60, 60, self.left, self.bottom, self.right-self.left, self.top-self.bottom)
+
+    def update(self):
+        self.frame = (self.frame + 0.03) % 16
 
 def player_ground_crush(A,B):
     if sonic.size == 48:
@@ -635,7 +646,7 @@ def draw_back():                                   # 배경 그리기
 def enter():
     global sonic, b, wm, ite
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, point, money
-    global sonic_sprite, stage1_1, num, score, it, star, flower, fly_monster
+    global sonic_sprite, stage1_1, num, score, it, star, flower, fly_monster, brick
 
     sonic_sprite = load_image('sonic.png')
     walk_monster = load_image('walk_monster.png')
@@ -648,11 +659,12 @@ def enter():
     firesonic = load_image('firesonic.png')
     coin = load_image('coin.png')
     flower = load_image('flower.png')
+    brick = load_image('brick.png')
 
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
+    b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0),Block(200, 220, 200, 180, 2)]
     wm = []
     ite = [item(300, 100, 1),item(500, 100, 2),item(700, 100, 3)]
 
@@ -665,7 +677,7 @@ def enter():
 def exit():
     global sonic, b,wm, ite
     global WIDTH, HEIGHT, frame, x, y, money, point,flower
-    global sonic_sprite, stage1_1, num, score,star, it, coin, firesonic
+    global sonic_sprite, stage1_1, num, score,star, it, coin, firesonic, brick
 
     del(sonic_sprite)
     del(stage1_1)
@@ -681,6 +693,7 @@ def exit():
     del(firesonic)
     del(money)
     del(point)
+    del(brick)
 
 def handle_events():
     global sonic
