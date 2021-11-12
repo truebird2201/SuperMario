@@ -5,35 +5,24 @@ from pico2d import *
 main_frame = 0
 main_move = False
 
-main_back = None
-main_sonic = None
-Title = None
+back = None
 press = None
 
 def draw_back():                                   # 배경 그리기
-    global main_frame
-    global main_move
-
-    main_back.clip_draw(0, 0, 1000, 600, 500, 300)
-    main_sonic.clip_draw(0, 0, 400, 350, 150, 100 + main_frame/3)
-    Title.clip_draw(0, 0, 1000, 300, 500, 500 - main_frame/3, 800, 200)
+    back.clip_draw(0, 0, 1000, 600, 500, 300)
 
     if (int)(main_frame % 20) >= 1:
-        press.clip_draw(0, 0, 800, 300, 500, 350, 400, 150)
+        press.clip_draw(0, 0, 800, 300, 500, 400, 400, 150)
 
 def enter():
-    global main_back, main_sonic, Title, press
+    global back,press
 
-    main_back = load_image('main_back.png')
-    main_sonic = load_image('main_sonic.png')
-    Title = load_image('SuperSonic.png')
+    back = load_image('gameover.png')
     press = load_image('press.png')
 
 def exit():
-    global main_back, main_sonic, Title, press
-    del(main_back)
-    del(main_sonic)
-    del(Title)
+    global back,press
+    del(back)
     del(press)
 
 def handle_events():

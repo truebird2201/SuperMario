@@ -229,6 +229,7 @@ def enter():
     select_Stage2 = load_image('select_Stage2.png')
     WIDTH = 1000
     HEIGHT = 800
+    stage1_1.life = 3
 
     b = [Block(200, 300, 150, 30, 1), Block(450, 550, 200, 30, 2), Block(700, 800, 250, 30, 3),
          Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0)]
