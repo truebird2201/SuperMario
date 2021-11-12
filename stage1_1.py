@@ -28,7 +28,7 @@ def point_draw():
     score.clip_draw(0, 0, 170, 80, 80, 519, 130 ,50)
     coin.clip_draw(0, 0, 20, 20, 120, 485, 20, 20)
     sonic_sprite.clip_draw(0, 460, 40, 40, 120, 560, 40, 40)
-
+ 
     for i in range(0, 9+1):                                                 # 점수
         if point//1000000 == i:
             num.clip_draw(0+80*i, 0, 80, 80, 130+20, 515, 25, 25)
