@@ -636,7 +636,7 @@ def draw_back():                                   # 배경 그리기
 def enter():
     global sonic, b, wm, ite
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, point, money
-    global sonic_sprite, stage1_1, num, score, it, star, flower, fly_monster
+    global sonic_sprite, stage1_1, num, score, it, star, flower, fly_monster,bmx,bmy
 
     sonic_sprite = load_image('sonic.png')
     walk_monster = load_image('walk_monster.png')

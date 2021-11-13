@@ -134,7 +134,7 @@ class item:
 
     def draw(self):
         if self.kind == 0:
-            coin.clip_draw(int(self.frame) * 20, 0, 20, 20, self.x, self.y, 20, 20)
+            coin.clip_draw(int(self.frame) * 20, 20, 20, 20, self.x, self.y, 20, 20)
         if self.kind == 1:
             it.clip_draw(int(self.frame) * 40, 160, 40, 40, self.x, self.y, 50, 50)
         elif self.kind == 2:
@@ -322,6 +322,7 @@ class player:
                     self.Jumping = False
                     self.jumpcount = 2
                     self.jumpTime = 0.0
+
             elif self.size == 48:
                 if player_ground_crush(self, i) == 1:
                     self.x = i.left - 16
@@ -588,7 +589,7 @@ class Block:                         # 블럭
         elif self.kind == 1:            # 파이프
             pass
         elif self.kind == 2:            # 벽돌
-            brick.clip_draw(int(self.frame) * 60, 180, 60, 60, self.left, self.bottom, self.right-self.left, self.top-self.bottom)
+            brick.clip_draw(int(self.frame) * 60, 180, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
 
     def update(self):
         self.frame = (self.frame + 0.03) % 16
@@ -606,13 +607,13 @@ def player_ground_crush(A,B):
         else:
             return 0
     elif sonic.size == 60:
-        if A.y+30 > B.bottom and B.top > A.y-29 and A.x+20 > B.left and B.left > A.x-20:
+        if A.y+30 > B.bottom and A.y-30 < B.top and A.x+20 > B.left and A.x-20 < B.left:
             return 1
-        if A.y+30 > B.bottom and B.top > A.y-29 and A.x-20 < B.right and B.right < A.x+20:
+        if A.y+30 > B.bottom and A.y-30 < B.top and A.x+20 > B.right and A.x-20 < B.right:
             return 2
-        if A.y-30 < B.bottom and A.y+30 > B.bottom and A.x+20 > B.left and B.right > A.x-20:
+        if A.y+31 > B.bottom and A.y-30 < B.bottom and A.x+20 > B.left and A.x-20 < B.right:
             return 4
-        if A.y-31 < B.top and A.y+30 > B.top and A.x+20 > B.left and B.right > A.x-20:
+        if A.y+30 > B.top and A.y-31 < B.top and A.x+20 > B.left and A.x-20 < B.right:
             return 3
         else:
             return 0
@@ -646,7 +647,7 @@ def draw_back():                                   # 배경 그리기
 def enter():
     global sonic, b, wm, ite
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, point, money
-    global sonic_sprite, stage1_1, num, score, it, star, flower, fly_monster, brick
+    global sonic_sprite, stage1_1, num, score, it, star, flower, fly_monster, brick,bmx,bmy
 
     sonic_sprite = load_image('sonic.png')
     walk_monster = load_image('walk_monster.png')
@@ -664,7 +665,7 @@ def enter():
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0),Block(200, 220, 200, 180, 2)]
+    b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0),Block(200, 230, 200, 170, 2),Block(230, 260, 200, 170, 2),Block(260, 290, 200, 170, 2)]
     wm = []
     ite = [item(300, 100, 1),item(500, 100, 2),item(700, 100, 3)]
 
@@ -751,6 +752,8 @@ def update():
     sonic.update()
     sonic.move()
     backmove()
+    for i in b:
+        i.update()
     for i in wm:
         i.update()
         i.move()
