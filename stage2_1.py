@@ -16,7 +16,6 @@ score = None
 coin = None
 star = None
 firesonic = None
-flower = None
 brick = None
 bmx = 0
 bmy = 0
@@ -27,7 +26,7 @@ life = 3
 def point_draw():
     global point
     score.clip_draw(0, 0, 170, 80, 80, 519, 130 ,50)
-    coin.clip_draw(0, 0, 20, 20, 120, 485, 20, 20)
+    coin.clip_draw(0, 20, 20, 20, 120, 485, 20, 20)
     sonic_sprite.clip_draw(0, 460, 40, 40, 120, 560, 40, 40)
 
     for i in range(0, 9+1):                                                 # 점수
@@ -84,7 +83,7 @@ class item:
         self.kind = kind
 
     def update(self):
-        if self.kind==0:
+        if self.kind == 0:
             self.frame = (self.frame + 0.025) % 10
         else:
             self.frame = (self.frame + 0.02) % 7
@@ -122,7 +121,7 @@ class item:
                     self.y = i.top + 20
                     self.savey = self.y
 
-        elif self.kind == 2:                                                            # 버섯
+        elif self.kind == 2:                                                            # 빨간 버섯
             self.y -= 0.5
             for i in b:
                 if crush(self, i) == 1:
@@ -131,6 +130,19 @@ class item:
                     self.dir = 1
                 elif crush(self, i) == 3:
                     self.y = i.top + 20
+
+        elif self.kind == 4:                                                            # 초록 버섯
+            for i in b:
+                if crush(self, i) == 1:
+                    self.dir = -1
+                elif crush(self, i) == 2:
+                    self.dir = 1
+                elif crush(self, i) == 3:
+                    self.y = i.top + 20
+                    break
+                else:
+                    self.y -= 0.5
+                    break
 
     def draw(self):
         if self.kind == 0:
@@ -141,6 +153,8 @@ class item:
             it.clip_draw(0, 120, 40, 40, self.x, self.y, 25, 25)
         elif self.kind == 3:
             it.clip_draw(40, 120, 40, 40, self.x, self.y, 25, 25)
+        elif self.kind == 4:
+            it.clip_draw(80, 120, 40, 40, self.x, self.y, 25, 25)
 
 
 
@@ -216,6 +230,10 @@ class player:
                     self.firemode = True
                     self.size = 60
                     i.life = False
+                elif i.kind == 4:                                                # 초록 버섯
+                    global life
+                    life += 1
+                    i.life = False
 
         for i in wm:
             if self.die == False and i.die == False:
@@ -249,11 +267,10 @@ class player:
             self.diedown += 1
 
         if self.die == True and int(self.frame) == 7:                               # 죽으면 초기화
-            global life
             life -= 1
             enter()
         if self.starmode == True:
-            self.starcount-=1
+            self.starcount -= 1
 
         if self.starcount == 0 and self.starmode == True:                           # 스타모드 끝
             self.starmode = False
@@ -647,7 +664,7 @@ def draw_back():                                   # 배경 그리기
 def enter():
     global sonic, b, wm, ite
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, point, money
-    global sonic_sprite, stage1_1, num, score, it, star, flower, fly_monster, brick,bmx,bmy
+    global sonic_sprite, stage1_1, num, score, it, star, fly_monster, brick,bmx,bmy
 
     sonic_sprite = load_image('sonic.png')
     walk_monster = load_image('walk_monster.png')
@@ -659,7 +676,6 @@ def enter():
     star = load_image('starsonic.png')
     firesonic = load_image('firesonic.png')
     coin = load_image('coin.png')
-    flower = load_image('flower.png')
     brick = load_image('brick.png')
 
     WIDTH = 1000
@@ -667,7 +683,7 @@ def enter():
 
     b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0),Block(200, 230, 200, 170, 2),Block(230, 260, 200, 170, 2),Block(260, 290, 200, 170, 2)]
     wm = []
-    ite = [item(300, 100, 1),item(500, 100, 2),item(700, 100, 3)]
+    ite = [item(300, 100, 1), item(500, 100, 2), item(700, 100, 3), item(245, 300, 4)]
 
     sonic = player(30, 60)
     bmx = 0
@@ -677,12 +693,11 @@ def enter():
 
 def exit():
     global sonic, b,wm, ite
-    global WIDTH, HEIGHT, frame, x, y, money, point,flower
+    global WIDTH, HEIGHT, frame, x, y, money, point
     global sonic_sprite, stage1_1, num, score,star, it, coin, firesonic, brick
 
     del(sonic_sprite)
     del(stage1_1)
-    del(flower)
     del(sonic)
     del(b)
     del(num)
