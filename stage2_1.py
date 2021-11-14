@@ -157,6 +157,105 @@ class item:
             it.clip_draw(80, 120, 40, 40, self.x, self.y, 25, 25)
 
 
+class Fire:
+    left = 0
+    right = 0
+    top = 0
+    bottom = 0
+    frame = 0
+    ground = True
+    dir = 1
+    gravity = 0.01
+    jumpPower = 1.5
+    jumpTime = 0
+    savey = 0
+    kind = 0
+
+    Jumping = True
+
+    life = True
+
+
+    def __init__(self, x, y, ki):
+        self.x = sonic.x
+        self.y = sonic.y
+        self.dir = sonic.dir
+
+    def update(self):
+        if self.kind == 0:
+            self.frame = (self.frame + 0.025) % 10
+        else:
+            self.frame = (self.frame + 0.02) % 7
+        self.left = self.x - 20
+        self.right = self.x + 20
+        self.top = self.y + 20
+        self.bottom = self.y - 20
+        #
+        # if self.kind == 1:
+        #     self.x += self.dir * 0.7
+        # elif self.kind == 2:
+        #     self.x += self.dir * 0.5
+        pass
+
+
+
+    def move(self):
+        if self.kind == 1:                                                              # 스타
+            if self.Jumping:
+                self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
+                            self.jumpTime * self.jumpPower)
+                self.jumpTime += 1
+                if self.y < self.savey:
+                    self.y = self.savey
+                    self.Jumping = True
+                    self.jumpTime = 0.0
+
+
+            for i in b:
+                if crush(self, i) == 1:
+                    self.dir = -1
+                elif crush(self, i) == 2:
+                    self.dir = 1
+                elif crush(self, i) == 3:
+                    self.y = i.top + 20
+                    self.savey = self.y
+
+        elif self.kind == 2:                                                            # 빨간 버섯
+            self.y -= 0.5
+            for i in b:
+                if crush(self, i) == 1:
+                    self.dir = -1
+                elif crush(self, i) == 2:
+                    self.dir = 1
+                elif crush(self, i) == 3:
+                    self.y = i.top + 20
+
+        elif self.kind == 4:                                                            # 초록 버섯
+            for i in b:
+                if crush(self, i) == 1:
+                    self.dir = -1
+                elif crush(self, i) == 2:
+                    self.dir = 1
+                elif crush(self, i) == 3:
+                    self.y = i.top + 20
+                    break
+                else:
+                    self.y -= 0.5
+                    break
+
+    def draw(self):
+        if self.kind == 0:
+            coin.clip_draw(int(self.frame) * 20, 20, 20, 20, self.x, self.y, 20, 20)
+        if self.kind == 1:
+            it.clip_draw(int(self.frame) * 40, 160, 40, 40, self.x, self.y, 50, 50)
+        elif self.kind == 2:
+            it.clip_draw(0, 120, 40, 40, self.x, self.y, 25, 25)
+        elif self.kind == 3:
+            it.clip_draw(40, 120, 40, 40, self.x, self.y, 25, 25)
+        elif self.kind == 4:
+            it.clip_draw(80, 120, 40, 40, self.x, self.y, 25, 25)
+
+
 
 class player:
 
@@ -228,7 +327,6 @@ class player:
                         money = 0
                 elif i.kind == 3:                                                # 꽃
                     self.firemode = True
-                    self.size = 60
                     i.life = False
                 elif i.kind == 4:                                                # 초록 버섯
                     global life
@@ -683,7 +781,7 @@ def enter():
 
     b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0),Block(200, 230, 200, 170, 2),Block(230, 260, 200, 170, 2),Block(260, 290, 200, 170, 2)]
     wm = []
-    ite = [item(300, 100, 1), item(500, 100, 2), item(700, 100, 3), item(245, 300, 4)]
+    ite = [item(300, 100, 1), item(500, 100, 2), item(700, 100, 3), item(230, 300, 4)]
 
     sonic = player(30, 60)
     bmx = 0
