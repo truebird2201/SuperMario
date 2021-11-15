@@ -64,14 +64,16 @@ class item:
     top = 0
     bottom = 0
     frame = 0
-    ground = True
     dir = 1
     gravity = 0.01
     jumpPower = 1.5
     jumpTime = 0
+    downpower = 0
     savey = 0
-    kind = 0
-    Jumping = True
+    savey2 = 0
+    jumpcount = 2
+    Ground = True
+    Jumping = False
 
 
 
@@ -79,6 +81,7 @@ class item:
         self.x = x
         self.y = y
         self.kind = kind
+        self.savey = y
 
     def update(self):
         if self.kind == 0:
@@ -94,21 +97,19 @@ class item:
             self.x += self.dir * 0.7
         elif self.kind == 2:
             self.x += self.dir * 0.5
-        pass
+
 
 
 
     def move(self):
         if self.kind == 1:                                                              # 스타
-            if self.Jumping:
-                self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
-                            self.jumpTime * self.jumpPower)
-                self.jumpTime += 1
-                if self.y < self.savey:
-                    self.y = self.savey
-                    self.Jumping = True
-                    self.jumpTime = 0.0
-
+            self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
+                    self.jumpTime * self.jumpPower) + self.savey
+            self.jumpTime += 1
+            print(self.y)
+            if self.y < self.savey:
+                self.y = self.savey
+                self.jumpTime = 0.0
 
             for i in b:
                 if crush(self, i) == 1:
@@ -118,6 +119,15 @@ class item:
                 elif crush(self, i) == 3:
                     self.y = i.top + 20
                     self.savey = self.y
+                    self.jumpTime = 1.0
+                    self.Ground = True
+                    self.downpower = 0
+
+            if self.Ground == False:
+                self.savey = 0
+                if self.Jumping == False:
+                    self.y -= 0.2 + self.downpower
+                    self.downpower += 0.015
 
         elif self.kind == 2:                                                            # 빨간 버섯
             self.y -= 0.5
@@ -162,15 +172,16 @@ class Fire:
     top = 0
     bottom = 0
     frame = 0
-    ground = True
     dir = 1
     gravity = 0.01
     jumpPower = 1.5
     jumpTime = 0
+    downpower = 0
     savey = 0
-    kind = 0
-    Jumping = True
-    life = True
+    savey2 = 0
+    jumpcount = 2
+    Ground = True
+    Jumping = False
 
 
     def __init__(self,x,y,dir):
@@ -182,10 +193,10 @@ class Fire:
 
         self.frame = (self.frame + 0.025) % 10
 
-        self.left = self.x - 10
-        self.right = self.x + 10
-        self.top = self.y + 10
-        self.bottom = self.y - 10
+        self.left = self.x - 6
+        self.right = self.x + 6
+        self.top = self.y + 6
+        self.bottom = self.y - 6
 
 
         for i in b:
@@ -195,6 +206,17 @@ class Fire:
                 self.dir = 1
             elif crush(self, i) == 3:
                 self.y = i.top + 20
+
+        for i in wm:
+            if i.die == False:
+                if crush(self, i) != 0:
+                    if i.die == False:
+                        global point
+                        point += 2
+                    i.die = True
+                    i.frame = 0
+                    fb.remove(self)
+
 
     def move(self):
         self.x += self.dir * 1
@@ -211,7 +233,6 @@ class player:
     top = 0
     bottom = 0
     frame = 0
-    ground = True
     dir = 0
     dir2 = 1
     gravity = 0.01
@@ -685,8 +706,6 @@ def crush(A, B):
         return 1
     if A.y + 20 > B.bottom and A.y - 20 < B.top and A.x + 20 > B.right and A.x - 20 < B.right:
         return 2
-    if A.y + 21 > B.bottom and A.y - 20 < B.bottom and A.x + 20 > B.left and A.x - 20 < B.right:
-        return 4
     if A.y + 20 > B.top and A.y - 21 < B.top and A.x + 20 > B.left and A.x - 20 < B.right:
         return 3
 
@@ -728,7 +747,7 @@ def enter():
 
     b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0),Block(200, 230, 200, 170, 2),Block(230, 260, 200, 170, 2),Block(260, 290, 200, 170, 2)]
     wm = []
-    ite = [item(300, 100, 1), item(500, 100, 2), item(700, 100, 3), item(230, 300, 4)]
+    ite = [item(300, 400, 1), item(500, 100, 2), item(700, 100, 3), item(230, 300, 4)]
     fb=[]
 
     sonic = player(30, 60)
