@@ -106,7 +106,6 @@ class item:
             self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
                     self.jumpTime * self.jumpPower) + self.savey
             self.jumpTime += 1
-            print(self.y)
             if self.y < self.savey:
                 self.y = self.savey
                 self.jumpTime = 0.0
@@ -191,7 +190,7 @@ class Fire:
 
     def update(self):
 
-        self.frame = (self.frame + 0.025) % 10
+        self.frame = (self.frame + 0.1) % 10
 
         self.left = self.x - 6
         self.right = self.x + 6
@@ -201,9 +200,9 @@ class Fire:
 
         for i in b:
             if crush(self, i) == 1:
-                self.dir = -1
+                fb.remove(self)
             elif crush(self, i) == 2:
-                self.dir = 1
+                fb.remove(self)
             elif crush(self, i) == 3:
                 self.y = i.top + 20
 
@@ -222,7 +221,7 @@ class Fire:
         self.x += self.dir * 1
 
     def draw(self):
-        coin.clip_draw(int(self.frame) * 20, 20, 20, 20, self.x, self.y, 20, 20)
+        coin.clip_draw(int(self.frame) * 20, 0, 20, 20, self.x, self.y, 20, 20)
 
 
 
@@ -254,6 +253,8 @@ class player:
     starcount = 0
     diedown = 0
     size = 48
+    depence = False
+    depencetime = 0
 
 
     def __init__(self, x, y):
@@ -261,7 +262,13 @@ class player:
         self.y = y
 
     def update(self):
-        if sonic.dir == 0:  # 프레임
+        if self.depence == True:
+            self.depencetime += 1
+            if self.depencetime == 400:
+                self.depencetime = 0
+                self.depence = False
+
+        if self.dir == 0:  # 프레임
             self.frame = (self.frame + 0.015) % 8
         else:
             self.frame = (self.frame + 0.03) % 8
@@ -304,11 +311,16 @@ class player:
 
         for i in wm:
             if self.die == False and i.die == False:
-                if sonic.starmode == False:                                                 # 스타모드가 아니라면
-                    if player_ground_crush(self, i) == 1 or player_ground_crush(self, i) == 2:                  # 옆에서 부딪히면 소닉 죽음
-                        sonic.die = True
-                        sonic.frame = 0
-                        sonic.dir = 0
+                if self.starmode == False:                                                 # 스타모드가 아니라면
+                    if self.depence == False and (player_ground_crush(self, i) == 1 or player_ground_crush(self, i) == 2):                  # 옆에서 부딪히면 소닉 죽음
+                        if self.size == 60 or self.firemode == True:
+                            self.size = 48
+                            self.firemode = False
+                            self.depence = True
+                        else:
+                            sonic.die = True
+                            sonic.frame = 0
+                            sonic.dir = 0
                     if player_ground_crush(self, i) == 3:                                             # 위에서 소닉이 밟으면 굼바 죽음
                         if i.die == False:
                             global point
@@ -796,7 +808,8 @@ def handle_events():
                 elif event.key == SDLK_DOWN:  # 아래
                     sonic.GoDown = True
                 elif event.key == SDLK_SPACE:  # 스페이스
-                    fb.append(Fire(sonic.x,sonic.y,sonic.dir2))
+                    if sonic.firemode == True:
+                        fb.append(Fire(sonic.x,sonic.y,sonic.dir2))
                 elif event.key == SDLK_ESCAPE:  # ESC
                     game_framework.change_state(Select_state)
                 elif event.key == SDLK_j:
@@ -860,7 +873,8 @@ def draw():
         i.draw()
     for i in fb:
         i.draw()
-    sonic.draw()
+    if sonic.depencetime%2 == 0:
+        sonic.draw()
     update_canvas()
 
 def pause():
