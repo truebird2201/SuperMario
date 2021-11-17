@@ -26,7 +26,7 @@ life = 3
 def point_draw():
     global point
     score.clip_draw(0, 0, 170, 80, 80, 519, 130 ,50)
-    coin.clip_draw(0, 20, 20, 20, 120, 485, 20, 20)
+    coin.clip_draw(0, 40, 20, 20, 120, 485, 20, 20)
     sonic_sprite.clip_draw(0, 460, 40, 40, 120, 560, 40, 40)
 
     for i in range(0, 9+1):                                                 # 점수
@@ -74,11 +74,12 @@ class item:
     jumpcount = 2
     Ground = True
     Jumping = False
+    x=0
 
 
 
     def __init__(self, x, y, kind):
-        self.x = x
+        self.x2 = x
         self.y = y
         self.kind = kind
         self.savey = y
@@ -88,6 +89,7 @@ class item:
             self.frame = (self.frame + 0.025) % 10
         else:
             self.frame = (self.frame + 0.02) % 7
+        self.x = self.x2 + bmx
         self.left = self.x - 20
         self.right = self.x + 20
         self.top = self.y + 20
@@ -154,7 +156,7 @@ class item:
 
     def draw(self):
         if self.kind == 0:
-            coin.clip_draw(int(self.frame) * 20, 20, 20, 20, self.x, self.y, 20, 20)
+            coin.clip_draw(int(self.frame) * 20, 40, 20, 20, self.x, self.y, 20, 20)
         if self.kind == 1:
             it.clip_draw(int(self.frame) * 40, 160, 40, 40, self.x, self.y, 50, 50)
         elif self.kind == 2:
@@ -215,6 +217,11 @@ class Fire:
                     i.die = True
                     i.frame = 0
                     fb.remove(self)
+
+        if self.left > 1000:
+            fb.remove(self)
+        if self.left < 0:
+            fb.remove(self)
 
 
     def move(self):
@@ -305,6 +312,7 @@ class player:
                 elif i.kind == 3:                                                # 꽃
                     self.firemode = True
                     ite.remove(i)
+                    self.size = 60
                 elif i.kind == 4:                                                # 초록 버섯
                     life += 1
                     ite.remove(i)
@@ -589,10 +597,11 @@ class Monster:
     dir = 1
     die = False
     global point
+    x=0;
 
 
     def __init__(self, x, y, Speed, kind):
-        self.x = x
+        self.x2 = x
         self.y = y
         self.Speed = Speed
         self.kind = kind
@@ -603,7 +612,7 @@ class Monster:
 
         elif self.kind == 1:                # 부끄부끄 프레임
             self.frame = (self.frame + 0.05) % 8
-
+        self.x = self.x2+bmx
         self.left = self.x - 30
         self.right = self.x + 30
         self.top = self.y + 30
@@ -615,15 +624,15 @@ class Monster:
 
     def move(self):
         if self.kind == 0:                                      # 굼바
-            self.x += self.dir * self.Speed
+            self.x2 += self.dir * self.Speed
             for i in b:
                 if crush(self, i) == 3:
                     if self.dir == 1:
-                        if self.x+30 > i.right:
+                        if self.right > i.right:
                             self.dir = -1
                             self.x += self.dir * self.Speed/10
                     else:
-                        if self.x-30 < i.left:
+                        if self.left < i.left:
                             self.dir = 1
                             self.x += self.dir * self.Speed/10
             self.Ground = False
@@ -664,6 +673,7 @@ class Monster:
 
 class Block:                         # 블럭
 
+    global bmx
     left = 0
     right = 0
     top = 0
@@ -672,8 +682,8 @@ class Block:                         # 블럭
     frame = 0
 
     def __init__(self, left, right, top, bottom, kind):
-        self.left = left
-        self.right = right
+        self.left2 = left
+        self.right2 = right
         self.top = top
         self.bottom = bottom
         self.kind = kind
@@ -687,6 +697,8 @@ class Block:                         # 블럭
             brick.clip_draw(int(self.frame) * 60, 180, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
 
     def update(self):
+        self.left = self.left2+bmx
+        self.right = self.right2+bmx
         self.frame = (self.frame + 0.03) % 16
 
 def player_ground_crush(A,B):
@@ -703,12 +715,14 @@ def player_ground_crush(A,B):
             return 0
     elif sonic.size == 60:
         if A.y+30 > B.bottom and A.y-30 < B.top and A.x+20 > B.left and A.x-20 < B.left:
+            print('1')
             return 1
         if A.y+30 > B.bottom and A.y-30 < B.top and A.x+20 > B.right and A.x-20 < B.right:
             return 2
         if A.y+31 > B.bottom and A.y-30 < B.bottom and A.x+20 > B.left and A.x-20 < B.right:
             return 4
         if A.y+30 > B.top and A.y-31 < B.top and A.x+20 > B.left and A.x-20 < B.right:
+            print('3')
             return 3
         else:
             return 0
@@ -720,7 +734,6 @@ def crush(A, B):
         return 2
     if A.y + 20 > B.top and A.y - 21 < B.top and A.x + 20 > B.left and A.x - 20 < B.right:
         return 3
-
     else:
         return 0
 
@@ -730,9 +743,23 @@ def backmove():
     global sonic
 
     if sonic.dir == 1:
-        bmx -= sonic.plus_move
+        if bmx > -(2357*2.3)+60 and sonic.x > 400:
+            if sonic.x - 0.6 <= 400:
+                bmx -= sonic.plus_move
+            else:
+                bmx -= sonic.plus_move*2
+            sonic.x -= sonic.plus_move*2
+            if sonic.x < 400:
+                sonic.x = 400
     elif sonic.dir == -1:
-        bmx += sonic.plus_move
+        if bmx < 0 and sonic.x < 600:
+            if sonic.x - 0.6 >= 600:
+                bmx += sonic.plus_move
+            else:
+                bmx += sonic.plus_move*2
+            sonic.x += sonic.plus_move*2
+            if sonic.x > 600:
+                sonic.x = 600
 
 def draw_back():                                   # 배경 그리기
     stage1_1.clip_draw(0, 0, 2357, 314, 1178.5*2.7+bmx, 157*2.7+bmy, 2357*2.7, 314*2.7)
@@ -757,10 +784,19 @@ def enter():
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0),Block(200, 230, 200, 170, 2),Block(230, 260, 200, 170, 2),Block(260, 290, 200, 170, 2)]
+    b = [Block(0, 431*2.7, 13*2.7, 0, 0),Block(431*2.7, 511*2.7, 29*2.7, 0, 0),Block(511*2.7, 603*2.7, 61*2.7, 0, 0),Block(603*2.7, 800*2.7, 13*2.7, 0, 0),
+         Block(800 * 2.7, 891 * 2.7, 29 * 2.7, 0, 0),Block(891 * 2.7, 975 * 2.7, 13 * 2.7, 0, 0),Block(975 * 2.7, 1005 * 2.7, 45 * 2.7, 0, 0),
+         Block(1005 * 2.7, 1164 * 2.7, 13 * 2.7, 0, 0),Block(1200 * 2.7, 1644 * 2.7, 13 * 2.7, 0, 0),Block(1679 * 2.7, 1759 * 2.7, 13 * 2.7, 0, 0),
+         Block(1758 * 2.7, 1790 * 2.7, 61 * 2.7, 0, 0),Block(1790 * 2.7, 2302 * 2.7, 13 * 2.7, 0, 0),Block(2334 * 2.7, 2357 * 2.7, 13 * 2.7, 0, 0),
+         # 땅
+
+         Block(2302 * 2.7, 2334 * 2.7, 45 * 2.7, 0, 0),
+         #파이프
+
+         Block(230, 260, 200, 170, 2),Block(260, 290, 200, 170, 2)]
     wm = []
-    ite = [item(300, 400, 1), item(500, 100, 2), item(700, 100, 3), item(230, 300, 4)]
-    fb=[]
+    ite = [item(300, 100, 1), item(500, 100, 2), item(700, 100, 3), item(100, 300, 4)]
+    fb = []
 
     sonic = player(30, 60)
     bmx = 0

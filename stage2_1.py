@@ -146,15 +146,15 @@ class item:
 
     def draw(self):
         if self.kind == 0:
-            coin.clip_draw(int(self.frame) * 20, 20, 20, 20, self.x, self.y, 20, 20)
+            coin.clip_draw(int(self.frame) * 20, 20, 20, 20, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
         if self.kind == 1:
-            it.clip_draw(int(self.frame) * 40, 160, 40, 40, self.x, self.y, 50, 50)
+            it.clip_draw(int(self.frame) * 40, 160, 40, 40, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
         elif self.kind == 2:
-            it.clip_draw(0, 120, 40, 40, self.x, self.y, 25, 25)
+            it.clip_draw(0, 120, 40, 40, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
         elif self.kind == 3:
-            it.clip_draw(40, 120, 40, 40, self.x, self.y, 25, 25)
+            it.clip_draw(40, 120, 40, 40, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
         elif self.kind == 4:
-            it.clip_draw(80, 120, 40, 40, self.x, self.y, 25, 25)
+            it.clip_draw(80, 120, 40, 40, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
 
 
 class Fire:
@@ -757,7 +757,7 @@ def backmove():
         bmx += sonic.plus_move
 
 def draw_back():                                   # 배경 그리기
-    stage1_1.clip_draw(0, 0, 2357, 314, 1178.5*2.7+bmx, 157*2.7+bmy, 2357*2.7, 314*2.7)
+    stage1_1.clip_draw(0, 0, 2357, 314, 1178.5*2.7, 157*2.7, 2357*2.7, 314*2.7)
 
 def enter():
     global sonic, b, wm, ite
@@ -781,7 +781,7 @@ def enter():
 
     b = [Block(0, 930, 25, 0, 0), Block(930, 1000, 70, 0, 0),Block(200, 230, 200, 170, 2),Block(230, 260, 200, 170, 2),Block(260, 290, 200, 170, 2)]
     wm = []
-    ite = [item(300, 100, 1), item(500, 100, 2), item(700, 100, 3), item(230, 300, 4)]
+    ite = [item(300, 100, 1), item(500, 100, 2), item(700, 100, 3), item(100, 300, 4)]
 
     sonic = player(30, 60)
     bmx = 0
