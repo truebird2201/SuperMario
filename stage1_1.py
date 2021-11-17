@@ -65,8 +65,8 @@ class item:
     bottom = 0
     frame = 0
     dir = 1
-    gravity = 0.01
-    jumpPower = 1.5
+    gravity = 0.005
+    jumpPower = 1.2
     jumpTime = 0
     downpower = 0
     savey = 0
@@ -86,49 +86,60 @@ class item:
 
     def update(self):
         if self.kind == 0:
-            self.frame = (self.frame + 0.025) % 10
+            self.frame = (self.frame + 0.035) % 10
         else:
-            self.frame = (self.frame + 0.02) % 7
+            self.frame = (self.frame + 0.03) % 10
         self.x = self.x2 + bmx
-        self.left = self.x - 20
-        self.right = self.x + 20
-        self.top = self.y + 20
-        self.bottom = self.y - 20
+
+        self.left = self.x - 10
+        self.right = self.x + 10
+        self.top = self.y + 10
+        self.bottom = self.y - 10
 
         if self.kind == 1:
-            self.x += self.dir * 0.7
+            self.x2 += self.dir * 0.7
         elif self.kind == 2:
-            self.x += self.dir * 0.5
+            self.x2 += self.dir * 0.5
 
 
 
 
     def move(self):
         if self.kind == 1:                                                              # 스타
-            self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
-                    self.jumpTime * self.jumpPower) + self.savey
-            self.jumpTime += 1
-            if self.y < self.savey:
-                self.y = self.savey
-                self.jumpTime = 0.0
+            # self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
+            #         self.jumpTime * self.jumpPower) + self.savey
+            # self.jumpTime += 1
+            # if self.y < self.savey:
+            #     self.y = self.savey
+            #     self.jumpTime = 0.0
+            #
+            #
+            # self.Ground = False
+            #
+            # if self.Ground == False:
+            #     self.savey = 0
+            #
+            # for i in b:
+            #     if crush(self, i) == 1:
+            #         self.dir = -1
+            #     elif crush(self, i) == 2:
+            #         self.dir = 1
+            #     elif crush(self, i) == 3:
+            #         self.y = i.top + 10
+            #         self.savey = self.y
+            #         self.jumpTime = 1.0
+            #         self.Ground = True
+            #         self.downpower = 0
 
+            self.y -= 0.5
             for i in b:
                 if crush(self, i) == 1:
                     self.dir = -1
                 elif crush(self, i) == 2:
                     self.dir = 1
                 elif crush(self, i) == 3:
-                    self.y = i.top + 20
-                    self.savey = self.y
-                    self.jumpTime = 1.0
-                    self.Ground = True
-                    self.downpower = 0
+                    self.y = i.top + 10
 
-            if self.Ground == False:
-                self.savey = 0
-                if self.Jumping == False:
-                    self.y -= 0.2 + self.downpower
-                    self.downpower += 0.015
 
         elif self.kind == 2:                                                            # 빨간 버섯
             self.y -= 0.5
@@ -138,7 +149,7 @@ class item:
                 elif crush(self, i) == 2:
                     self.dir = 1
                 elif crush(self, i) == 3:
-                    self.y = i.top + 20
+                    self.y = i.top + 10
 
         elif self.kind == 4:                                                            # 초록 버섯
             self.y -= 0.5
@@ -148,23 +159,21 @@ class item:
                 elif crush(self, i) == 2:
                     self.dir = 1
                 elif crush(self, i) == 3:
-                    self.y = i.top + 20
-                elif crush(self, i) == 4:
-                    self.y = i.top + 20
+                    self.y = i.top + 10
 
 
 
     def draw(self):
         if self.kind == 0:
-            coin.clip_draw(int(self.frame) * 20, 40, 20, 20, self.x, self.y, 20, 20)
+            coin.clip_draw(int(self.frame) * 20, 40, 20, 20, self.x, self.y,25,25)
         if self.kind == 1:
-            it.clip_draw(int(self.frame) * 40, 160, 40, 40, self.x, self.y, 50, 50)
+            it.clip_draw(int(self.frame) * 40, 160, 40, 40, self.x, self.y,20,20)
         elif self.kind == 2:
-            it.clip_draw(0, 120, 40, 40, self.x, self.y, 25, 25)
+            it.clip_draw(0, 120, 40, 40, self.x, self.y,20,20)
         elif self.kind == 3:
-            it.clip_draw(40, 120, 40, 40, self.x, self.y, 25, 25)
+            it.clip_draw(40, 120, 40, 40, self.x, self.y,20,20)
         elif self.kind == 4:
-            it.clip_draw(80, 120, 40, 40, self.x, self.y, 25, 25)
+            it.clip_draw(80, 120, 40, 40, self.x, self.y,20,20)
 
 
 class Fire:
@@ -241,8 +250,8 @@ class player:
     frame = 0
     dir = 0
     dir2 = 1
-    gravity = 0.01
-    jumpPower = 1.5
+    gravity = 0.02
+    jumpPower = 2.0
     jumpTime = 0
     downpower = 0
     savey = 0
@@ -276,9 +285,9 @@ class player:
                 self.depence = False
 
         if self.dir == 0:  # 프레임
-            self.frame = (self.frame + 0.015) % 8
+            self.frame = (self.frame + 0.02) % 8
         else:
-            self.frame = (self.frame + 0.03) % 8
+            self.frame = (self.frame + 0.04) % 8
 
         if self.size == 60:                         # 버섯
             self.left = self.x - 20
@@ -292,6 +301,11 @@ class player:
             self.top = self.y + 24
             self.bottom = self.y - 24
 
+        if sonic.die == False and sonic.top < 0:
+            global life
+            life -= 1
+            self.dir = 0
+            enter()
         for i in ite:                                                           # 아이템 감지
             if player_ground_crush(self, i) != 0:
                 if i.kind == 1:                                                 # 별
@@ -307,7 +321,6 @@ class player:
                     ite.remove(i)
                     if money == 50:
                         money = 0
-                        global life
                         life += 1
                 elif i.kind == 3:                                                # 꽃
                     self.firemode = True
@@ -376,13 +389,13 @@ class player:
                 self.jumpTime = 0.0
                 self.jumpcount = 2
 
-        if self.dir != 0 and self.plus_move < 0.6:
-            self.plus_move += 0.001
-            if self.plus_move > 0.6:
-                self.plus_move = 0.6
+        if self.dir != 0 and self.plus_move < 0.8:
+            self.plus_move += 0.0015
+            if self.plus_move > 0.8:
+                self.plus_move = 0.8
 
         elif self.dir == 0 and self.plus_move > 0:
-            self.plus_move -= 0.0015
+            self.plus_move -= 0.002
             if self.plus_move < 0:
                 self.plus_move = 0
 
@@ -409,7 +422,7 @@ class player:
             self.savey = 0
             if self.Jumping == False:
                 self.y -= 0.2 + self.downpower
-                self.downpower += 0.015
+                self.downpower += 0.025
 
         for i in b:
             if self.size == 60:
@@ -597,7 +610,7 @@ class Monster:
     dir = 1
     die = False
     global point
-    x=0;
+    x=0
 
 
     def __init__(self, x, y, Speed, kind):
@@ -630,11 +643,11 @@ class Monster:
                     if self.dir == 1:
                         if self.right > i.right:
                             self.dir = -1
-                            self.x += self.dir * self.Speed/10
+                            self.x += self.dir * self.Speed/8
                     else:
                         if self.left < i.left:
                             self.dir = 1
-                            self.x += self.dir * self.Speed/10
+                            self.x += self.dir * self.Speed/8
             self.Ground = False
             for i in b:
                 if crush(self, i) == 3:
@@ -695,6 +708,8 @@ class Block:                         # 블럭
             pass
         elif self.kind == 2:            # 벽돌
             brick.clip_draw(int(self.frame) * 60, 180, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
+        elif self.kind == 3:            # 버섯이든 블럭
+            brick.clip_draw(int(self.frame) * 60, 120, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
 
     def update(self):
         self.left = self.left2+bmx
@@ -715,14 +730,12 @@ def player_ground_crush(A,B):
             return 0
     elif sonic.size == 60:
         if A.y+30 > B.bottom and A.y-30 < B.top and A.x+20 > B.left and A.x-20 < B.left:
-            print('1')
             return 1
         if A.y+30 > B.bottom and A.y-30 < B.top and A.x+20 > B.right and A.x-20 < B.right:
             return 2
         if A.y+31 > B.bottom and A.y-30 < B.bottom and A.x+20 > B.left and A.x-20 < B.right:
             return 4
         if A.y+30 > B.top and A.y-31 < B.top and A.x+20 > B.left and A.x-20 < B.right:
-            print('3')
             return 3
         else:
             return 0
@@ -733,6 +746,16 @@ def crush(A, B):
     if A.y + 20 > B.bottom and A.y - 20 < B.top and A.x + 20 > B.right and A.x - 20 < B.right:
         return 2
     if A.y + 20 > B.top and A.y - 21 < B.top and A.x + 20 > B.left and A.x - 20 < B.right:
+        return 3
+    else:
+        return 0
+
+def crush(A, B):
+    if A.y + 10 > B.bottom and A.y - 10 < B.top and A.x + 10 > B.left and A.x - 10 < B.left:
+        return 1
+    if A.y + 10 > B.bottom and A.y - 10 < B.top and A.x + 10 > B.right and A.x - 10 < B.right:
+        return 2
+    if A.y + 10 > B.top and A.y - 11 < B.top and A.x + 10 > B.left and A.x - 10 < B.right:
         return 3
     else:
         return 0
@@ -784,18 +807,31 @@ def enter():
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(0, 431*2.7, 13*2.7, 0, 0),Block(431*2.7, 511*2.7, 29*2.7, 0, 0),Block(511*2.7, 603*2.7, 61*2.7, 0, 0),Block(603*2.7, 800*2.7, 13*2.7, 0, 0),
+    b = [Block(-100, 0, 500, 0, 0),Block(0, 431*2.7, 13*2.7, 0, 0),Block(431*2.7, 511*2.7, 29*2.7, 0, 0),Block(511*2.7, 603*2.7, 61*2.7, 0, 0),Block(603*2.7, 800*2.7, 13*2.7, 0, 0),
          Block(800 * 2.7, 891 * 2.7, 29 * 2.7, 0, 0),Block(891 * 2.7, 975 * 2.7, 13 * 2.7, 0, 0),Block(975 * 2.7, 1005 * 2.7, 45 * 2.7, 0, 0),
          Block(1005 * 2.7, 1164 * 2.7, 13 * 2.7, 0, 0),Block(1200 * 2.7, 1644 * 2.7, 13 * 2.7, 0, 0),Block(1679 * 2.7, 1759 * 2.7, 13 * 2.7, 0, 0),
          Block(1758 * 2.7, 1790 * 2.7, 61 * 2.7, 0, 0),Block(1790 * 2.7, 2302 * 2.7, 13 * 2.7, 0, 0),Block(2334 * 2.7, 2357 * 2.7, 13 * 2.7, 0, 0),
          # 땅
 
-         Block(2302 * 2.7, 2334 * 2.7, 45 * 2.7, 0, 0),
+         Block(2302 * 2.7, 2334 * 2.7, 45 * 2.7, 0, 1),
          #파이프
 
-         Block(230, 260, 200, 170, 2),Block(260, 290, 200, 170, 2)]
-    wm = []
-    ite = [item(300, 100, 1), item(500, 100, 2), item(700, 100, 3), item(100, 300, 4)]
+         Block(660, 690, 180, 150, 2),Block(840, 870, 195, 165, 3),Block(870, 900, 195, 165, 2),Block(1440, 1470, 290, 260, 2),
+         Block(1830, 1860, 165, 135, 2),Block(1860, 1890, 165, 135, 2),Block(1890, 1920, 165, 135, 2),Block(1860, 1890, 275, 245, 2),
+         Block(3655, 3685, 190, 160, 2),Block(3945, 3975, 200, 170, 2),Block(3975, 4005, 200, 170, 2),Block(4005, 4035, 200, 170, 2),
+         Block(4200, 4230, 200, 170, 2),Block(4230, 4260, 200, 170, 2),
+         Block(4930, 4960, 245, 215, 2),Block(4960, 4990, 245, 215, 3),Block(4990, 5020, 245, 215, 2),Block(5020, 5050, 245, 215, 2),Block(5050, 5080, 245, 215, 2),
+         Block(5600, 5630, 200, 170, 2),Block(5630, 5660, 200, 170, 2),Block(5660, 5690, 200, 170, 2),
+         Block(5690, 5720, 200, 170, 2),Block(5720, 5750, 200, 170, 2),Block(5750, 5780, 200, 170, 2),
+         Block(5780, 5810, 200, 170, 2),Block(5810, 5840, 200, 170, 2),Block(5840, 5870, 200, 170, 2),]
+
+    wm = [Monster(900,40,0.2,0),Monster(2500,40,0.2,0),Monster(4000,40,0.2,0),Monster(2900,40,0.2,0),Monster(5700,40,0.2,0)]
+    ite = [item(300, 85, 1), item(500, 100, 2), item(700, 100, 3), item(100, 300, 4),
+           item(1130, 115, 0),item(1160, 170, 0),item(1190, 170, 0),item(1350, 190, 0),item(1380, 250, 0),item(1410, 250, 0),
+           item(2215, 200, 0),item(2245, 245, 0),item(2275, 245, 0),item(2305, 215, 0),
+           item(3145, 170, 0),item(3175, 215, 0),item(3205, 215, 0),item(3235, 170, 0),
+           item(3400, 170, 0),item(3430, 215, 0),item(3460, 215, 0),item(3490, 170, 0),
+           item(5100, 225, 0),item(5110, 215, 0),item(5110, 235, 0),item(5120, 205, 0),item(5120, 245, 0),item(5140, 225, 0),item(5130, 215, 0),item(5130, 235, 0),]
     fb = []
 
     sonic = player(30, 60)
@@ -853,7 +889,7 @@ def handle_events():
                 elif event.key == SDLK_k:
                     wm.append(Monster(500, 200, 0.2, 1))
                 elif event.key == SDLK_l:
-                    ite.append(item(sonic.x+100, sonic.y, 0))
+                    ite.append(item(sonic.x+100+bmx, sonic.y, 0))
                 elif event.key == SDLK_UP:  # 위
                     if sonic.jumpcount == 2:
                         sonic.savey = sonic.y

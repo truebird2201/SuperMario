@@ -268,7 +268,7 @@ def handle_events():
                 sonic.GoDown = True
             elif event.key == SDLK_ESCAPE:  # ESC
                 game_framework.change_state(Title_state)
-            elif event.key == SDLK_SPACE:  # 스페이스
+            elif event.key == SDLK_UP:  # 스페이스
                 if sonic.jumpcount == 2:
                     sonic.savey = sonic.y
                     sonic.savey2 = sonic.y
