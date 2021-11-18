@@ -90,7 +90,7 @@ class item:
         else:
             self.frame = (self.frame + 0.03) % 10
         self.x = self.x2 + bmx
-
+        #
         self.left = self.x - 10
         self.right = self.x + 10
         self.top = self.y + 10
@@ -106,30 +106,30 @@ class item:
 
     def move(self):
         if self.kind == 1:                                                              # 스타
-            # self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
-            #         self.jumpTime * self.jumpPower) + self.savey
-            # self.jumpTime += 1
-            # if self.y < self.savey:
-            #     self.y = self.savey
-            #     self.jumpTime = 0.0
-            #
-            #
-            # self.Ground = False
-            #
-            # if self.Ground == False:
-            #     self.savey = 0
-            #
-            # for i in b:
-            #     if crush(self, i) == 1:
-            #         self.dir = -1
-            #     elif crush(self, i) == 2:
-            #         self.dir = 1
-            #     elif crush(self, i) == 3:
-            #         self.y = i.top + 10
-            #         self.savey = self.y
-            #         self.jumpTime = 1.0
-            #         self.Ground = True
-            #         self.downpower = 0
+            self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
+                    self.jumpTime * self.jumpPower) + self.savey
+            self.jumpTime += 1
+            if self.y < self.savey:
+                self.y = self.savey
+                self.jumpTime = 0.0
+
+
+            self.Ground = False
+
+            if self.Ground == False:
+                self.savey = 0
+
+            for i in b:
+                if crush(self, i) == 1:
+                    self.dir = -1
+                elif crush(self, i) == 2:
+                    self.dir = 1
+                elif crush(self, i) == 3:
+                    self.y = i.top + 10
+                    self.savey = self.y
+                    self.jumpTime = 1.0
+                    self.Ground = True
+                    self.downpower = 0
 
             self.y -= 0.5
             for i in b:
@@ -307,7 +307,7 @@ class player:
             self.dir = 0
             enter()
         for i in ite:                                                           # 아이템 감지
-            if player_ground_crush(self, i) != 0:
+            if crush(self, i) != 0:
                 if i.kind == 1:                                                 # 별
                     self.starmode = True
                     self.starcount = 3500
@@ -333,7 +333,7 @@ class player:
         for i in wm:
             if self.die == False and i.die == False:
                 if self.starmode == False:                                                 # 스타모드가 아니라면
-                    if self.depence == False and (player_ground_crush(self, i) == 1 or player_ground_crush(self, i) == 2):                  # 옆에서 부딪히면 소닉 죽음
+                    if self.depence == False and (crush(self, i) == 1 or crush(self, i) == 2):                  # 옆에서 부딪히면 소닉 죽음
                         if self.size == 60 or self.firemode == True:
                             self.size = 48
                             self.firemode = False
@@ -342,7 +342,7 @@ class player:
                             sonic.die = True
                             sonic.frame = 0
                             sonic.dir = 0
-                    if player_ground_crush(self, i) == 3:                                             # 위에서 소닉이 밟으면 굼바 죽음
+                    if crush(self, i) == 3:                                             # 위에서 소닉이 밟으면 굼바 죽음
                         if i.die == False:
                             global point
                             point += 2
@@ -414,7 +414,7 @@ class player:
         self.Ground = False
 
         for i in b:
-            if player_ground_crush(self, i) == 3:
+            if crush(self, i) == 3:
                 self.Ground = True
                 self.downpower = 0
 
@@ -426,14 +426,14 @@ class player:
 
         for i in b:
             if self.size == 60:
-                if player_ground_crush(self, i) == 1:
+                if crush(self, i) == 1:
                     self.x = i.left - 20
-                elif player_ground_crush(self, i) == 2:
+                elif crush(self, i) == 2:
                     self.x = i.right + 20
-                elif player_ground_crush(self, i) == 3:
+                elif crush(self, i) == 3:
                     self.y = i.top + 30
                     self.savey = self.y
-                elif player_ground_crush(self, i) == 4:
+                elif crush(self, i) == 4:
                     self.y = i.bottom-30
                     self.savey = 0
                     self.Jumping = False
@@ -441,19 +441,23 @@ class player:
                     self.jumpTime = 0.0
 
             elif self.size == 48:
-                if player_ground_crush(self, i) == 1:
+                if crush(self, i) == 1:
                     self.x = i.left - 16
-                elif player_ground_crush(self, i) == 2:
+                elif crush(self, i) == 2:
                     self.x = i.right + 16
-                elif player_ground_crush(self, i) == 3:
+                elif crush(self, i) == 3:
                     self.y = i.top + 24
                     self.savey = self.y
-                elif player_ground_crush(self, i) == 4:
+                elif crush(self, i) == 4:
                     self.y = i.bottom-24
                     self.savey = 0
                     self.Jumping = False
                     self.jumpcount = 2
                     self.jumpTime = 0.0
+                    if i.kind == 3:
+                        i.used = True
+
+
 
     def draw(self):
 
@@ -693,6 +697,7 @@ class Block:                         # 블럭
     bottom = 0
     kind = 0
     frame = 0
+    used = False
 
     def __init__(self, left, right, top, bottom, kind):
         self.left2 = left
@@ -710,55 +715,29 @@ class Block:                         # 블럭
             brick.clip_draw(int(self.frame) * 60, 180, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
         elif self.kind == 3:            # 버섯이든 블럭
             brick.clip_draw(int(self.frame) * 60, 120, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
+        if self.used == True:
+            brick.clip_draw(0, 60, 60, 60, self.left + (self.right - self.left) / 2,self.bottom + (self.right - self.left) / 2, self.right - self.left, self.top - self.bottom)
+
 
     def update(self):
         self.left = self.left2+bmx
         self.right = self.right2+bmx
         self.frame = (self.frame + 0.03) % 16
 
-def player_ground_crush(A,B):
-    if sonic.size == 48:
-        if A.y+24 > B.bottom and A.y-24 < B.top and A.x+16 > B.left and A.x-16 < B.left:
-            return 1
-        if A.y+24 > B.bottom and A.y-24 < B.top and A.x+16 > B.right and A.x-16 < B.right:
-            return 2
-        if A.y+25 > B.bottom and A.y-24 < B.bottom and A.x+16 > B.left and A.x-16 < B.right:
-            return 4
-        if A.y+24 > B.top and A.y-25 < B.top and A.x+16 > B.left and A.x-16 < B.right:
-            return 3
-        else:
-            return 0
-    elif sonic.size == 60:
-        if A.y+30 > B.bottom and A.y-30 < B.top and A.x+20 > B.left and A.x-20 < B.left:
-            return 1
-        if A.y+30 > B.bottom and A.y-30 < B.top and A.x+20 > B.right and A.x-20 < B.right:
-            return 2
-        if A.y+31 > B.bottom and A.y-30 < B.bottom and A.x+20 > B.left and A.x-20 < B.right:
-            return 4
-        if A.y+30 > B.top and A.y-31 < B.top and A.x+20 > B.left and A.x-20 < B.right:
-            return 3
-        else:
-            return 0
-
-def crush(A, B):
-    if A.y + 20 > B.bottom and A.y - 20 < B.top and A.x + 20 > B.left and A.x - 20 < B.left:
+def crush(A,B):
+    if A.y + 24 > B.bottom and A.y - 24 < B.top and A.x + 16 > B.left and A.x - 16 < B.left:
         return 1
-    if A.y + 20 > B.bottom and A.y - 20 < B.top and A.x + 20 > B.right and A.x - 20 < B.right:
+    if A.y + 24 > B.bottom and A.y - 24 < B.top and A.x + 16 > B.right and A.x - 16 < B.right:
         return 2
-    if A.y + 20 > B.top and A.y - 21 < B.top and A.x + 20 > B.left and A.x - 20 < B.right:
+    if A.y + 25 > B.bottom and A.y - 24 < B.bottom and A.x + 16 > B.left and A.x - 16 < B.right:
+        return 4
+    if A.y + 24 > B.top and A.y - 25 < B.top and A.x + 16 > B.left and A.x - 16 < B.right:
         return 3
     else:
         return 0
 
-def crush(A, B):
-    if A.y + 10 > B.bottom and A.y - 10 < B.top and A.x + 10 > B.left and A.x - 10 < B.left:
-        return 1
-    if A.y + 10 > B.bottom and A.y - 10 < B.top and A.x + 10 > B.right and A.x - 10 < B.right:
-        return 2
-    if A.y + 10 > B.top and A.y - 11 < B.top and A.x + 10 > B.left and A.x - 10 < B.right:
-        return 3
-    else:
-        return 0
+
+
 
 def backmove():
     global bmx
@@ -816,7 +795,7 @@ def enter():
          Block(2302 * 2.7, 2334 * 2.7, 45 * 2.7, 0, 1),
          #파이프
 
-         Block(660, 690, 180, 150, 2),Block(840, 870, 195, 165, 3),Block(870, 900, 195, 165, 2),Block(1440, 1470, 290, 260, 2),
+         Block(660, 690, 180, 150, 2),Block(840, 870, 180, 150, 3),Block(870, 900, 180, 150, 2),Block(1440, 1470, 290, 260, 2),
          Block(1830, 1860, 165, 135, 2),Block(1860, 1890, 165, 135, 2),Block(1890, 1920, 165, 135, 2),Block(1860, 1890, 275, 245, 2),
          Block(3655, 3685, 190, 160, 2),Block(3945, 3975, 200, 170, 2),Block(3975, 4005, 200, 170, 2),Block(4005, 4035, 200, 170, 2),
          Block(4200, 4230, 200, 170, 2),Block(4230, 4260, 200, 170, 2),
