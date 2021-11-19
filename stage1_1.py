@@ -414,8 +414,9 @@ class player:
         self.Ground = False
 
         for i in b:
-            if crush(self, i) == 3:
+            if crush(self,i) == 3:
                 self.Ground = True
+                # self.y = i.top + 30
                 self.downpower = 0
 
         if self.Ground == False:
@@ -426,29 +427,35 @@ class player:
 
         for i in b:                         # 블럭 충돌
             if self.size == 60:
-                if crush(self, i) == 1:
+                if self.top > i.bottom and self.bottom < i.top and self.right < i.left + 3 and self.right > i.left:
                     self.x = i.left - 20
-                elif crush(self, i) == 2:
+                if self.top > i.bottom and self.bottom < i.top and self.left > i.right - 3 and self.left < i.right:
                     self.x = i.right + 20
-                elif crush(self, i) == 3:
+                if self.bottom > i.top - 3 and self.bottom < i.top and self.right > i.left and self.left < i.right:
                     self.y = i.top + 30
                     self.savey = self.y
-                elif crush(self, i) == 4:
+                if self.top < i.bottom + 3 and self.top > i.bottom and self.right > i.left and self.left < i.right:
                     self.y = i.bottom-30
                     self.savey = 0
                     self.Jumping = False
                     self.jumpcount = 2
                     self.jumpTime = 0.0
+                    if i.kind == 3:
+                        if i.notused == 0:
+                            i.notused = 1
+                    if i.kind == 2:
+                        if i.notused == 0:
+                            i.notused = 1
 
             elif self.size == 48:
-                if crush(self, i) == 1:
+                if self.top > i.bottom and self.bottom < i.top and self.right < i.left + 3 and self.right > i.left:
                     self.x = i.left - 16
-                elif crush(self, i) == 2:
+                if self.top > i.bottom and self.bottom < i.top and self.left > i.right - 3 and self.left < i.right:
                     self.x = i.right + 16
-                elif crush(self, i) == 3:
+                if self.bottom > i.top - 3 and self.bottom < i.top and self.right > i.left and self.left < i.right:
                     self.y = i.top + 24
                     self.savey = self.y
-                elif crush(self, i) == 4:
+                if self.top < i.bottom + 3 and self.top > i.bottom and self.right > i.left and self.left < i.right:
                     self.y = i.bottom - 24
                     self.savey = 0
                     self.Jumping = False
@@ -898,6 +905,8 @@ def handle_events():
                         sonic.savey2 = sonic.y
                         sonic.Jumping = True
                         sonic.jumpcount -= 1
+                        if sonic.size == 60:
+                            sonic.y += 10
 
                     elif sonic.jumpcount == 1:
                         sonic.jumpTime = 0
