@@ -424,7 +424,7 @@ class player:
                 self.y -= 0.2 + self.downpower
                 self.downpower += 0.025
 
-        for i in b:
+        for i in b:                         # 블럭 충돌
             if self.size == 60:
                 if crush(self, i) == 1:
                     self.x = i.left - 20
@@ -449,13 +449,17 @@ class player:
                     self.y = i.top + 24
                     self.savey = self.y
                 elif crush(self, i) == 4:
-                    self.y = i.bottom-24
+                    self.y = i.bottom - 24
                     self.savey = 0
                     self.Jumping = False
                     self.jumpcount = 2
                     self.jumpTime = 0.0
                     if i.kind == 3:
-                        i.used = True
+                        if i.notused == 0:
+                            i.notused = 1
+                    if i.kind == 2:
+                        if i.notused == 0:
+                            i.notused = 1
 
 
 
@@ -698,12 +702,15 @@ class Block:                         # 블럭
     kind = 0
     frame = 0
     used = False
+    notused = 0
 
     def __init__(self, left, right, top, bottom, kind):
         self.left2 = left
         self.right2 = right
         self.top = top
         self.bottom = bottom
+        self.top2 = top
+        self.bottom2 = bottom
         self.kind = kind
 
     def draw(self):
@@ -724,14 +731,31 @@ class Block:                         # 블럭
         self.right = self.right2+bmx
         self.frame = (self.frame + 0.03) % 16
 
+    def move(self):
+        if self.notused == 1:
+            self.top += 0.2
+            self.bottom += 0.2
+            if self.top >= self.top2 + 5.0:
+                self.notused = 2
+
+        if self.notused == 2:
+            self.top -= 0.2
+            self.bottom -= 0.2
+            if self.top == self.top2:
+                self.notused = 3
+                if self.kind == 2:
+                    self.notused = 0
+                if self.kind == 3:
+                    self.used = True
+
 def crush(A,B):
-    if A.y + 24 > B.bottom and A.y - 24 < B.top and A.x + 16 > B.left and A.x - 16 < B.left:
+    if A.top > B.bottom and A.bottom < B.top and A.right > B.left and A.left < B.left:
         return 1
-    if A.y + 24 > B.bottom and A.y - 24 < B.top and A.x + 16 > B.right and A.x - 16 < B.right:
+    if A.top > B.bottom and A.bottom < B.top and A.right > B.right and A.left < B.right:
         return 2
-    if A.y + 25 > B.bottom and A.y - 24 < B.bottom and A.x + 16 > B.left and A.x - 16 < B.right:
+    if A.top+1 > B.bottom and A.bottom < B.bottom and A.right > B.left and A.left < B.right:
         return 4
-    if A.y + 24 > B.top and A.y - 25 < B.top and A.x + 16 > B.left and A.x - 16 < B.right:
+    if A.top > B.top and A.bottom-1 < B.top and A.right > B.left and A.left < B.right:
         return 3
     else:
         return 0
@@ -805,8 +829,7 @@ def enter():
          Block(5780, 5810, 200, 170, 2),Block(5810, 5840, 200, 170, 2),Block(5840, 5870, 200, 170, 2),]
 
     wm = [Monster(900,40,0.2,0),Monster(2500,40,0.2,0),Monster(4000,40,0.2,0),Monster(2900,40,0.2,0),Monster(5700,40,0.2,0)]
-    ite = [item(300, 85, 1), item(500, 100, 2), item(700, 100, 3), item(100, 300, 4),
-           item(1130, 115, 0),item(1160, 170, 0),item(1190, 170, 0),item(1350, 190, 0),item(1380, 250, 0),item(1410, 250, 0),
+    ite = [item(1130, 115, 0),item(1160, 170, 0),item(1190, 170, 0),item(1350, 190, 0),item(1380, 250, 0),item(1410, 250, 0),
            item(2215, 200, 0),item(2245, 245, 0),item(2275, 245, 0),item(2305, 215, 0),
            item(3145, 170, 0),item(3175, 215, 0),item(3205, 215, 0),item(3235, 170, 0),
            item(3400, 170, 0),item(3430, 215, 0),item(3460, 215, 0),item(3490, 170, 0),
@@ -900,6 +923,7 @@ def update():
     backmove()
     for i in b:
         i.update()
+        i.move()
     for i in wm:
         i.update()
         i.move()
@@ -924,7 +948,7 @@ def draw():
         i.draw()
     for i in fb:
         i.draw()
-    if sonic.depencetime%2 == 0:
+    if sonic.depencetime % 2 == 0:
         sonic.draw()
     update_canvas()
 
