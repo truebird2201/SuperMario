@@ -272,7 +272,6 @@ class player:
     depence = False
     depencetime = 0
 
-
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -362,9 +361,9 @@ class player:
 
 
         if self.die == True and int(self.frame) <= 2:                                        # 떨어지는 이미지
-            self.diedown -= 0.2
+            self.diedown -= 0.2 * game_framework.frame_time
         elif self.die == True and int(self.frame) <= 6:
-            self.diedown += 1
+            self.diedown += 1 * game_framework.frame_time
 
         if self.die == True and int(self.frame) == 7:                               # 죽으면 초기화
             life -= 1
@@ -389,13 +388,13 @@ class player:
                 self.jumpTime = 0.0
                 self.jumpcount = 2
 
-        if self.dir != 0 and self.plus_move < 0.8:
-            self.plus_move += 0.0015
-            if self.plus_move > 0.8:
-                self.plus_move = 0.8
+        if self.dir != 0 and self.plus_move < 250:
+            self.plus_move += 400 * game_framework.frame_time
+            if self.plus_move > 250:
+                self.plus_move = 250
 
         elif self.dir == 0 and self.plus_move > 0:
-            self.plus_move -= 0.002
+            self.plus_move -= 800 * game_framework.frame_time
             if self.plus_move < 0:
                 self.plus_move = 0
 
@@ -408,9 +407,9 @@ class player:
             self.x = 30
         else:
             if self.fast and self.dir != 0:  # 대시 on
-                self.x += (self.dir * 0.2) + (self.dir2 * self.plus_move)
+                self.x += ((self.dir * 0.2) + (self.dir2 * self.plus_move)) * game_framework.frame_time
             else:  # 대시 off
-                self.x += self.dir2 * self.plus_move
+                self.x += self.dir2 * self.plus_move * game_framework.frame_time
         self.Ground = False
 
         for i in b:
@@ -422,8 +421,8 @@ class player:
         if self.Ground == False:
             self.savey = 0
             if self.Jumping == False:
-                self.y -= 0.2 + self.downpower
-                self.downpower += 0.025
+                self.y -= (1000 + self.downpower) * game_framework.frame_time
+                self.downpower += 1000 * game_framework.frame_time
 
         for i in b:                         # 블럭 충돌
             if self.size == 60:
@@ -751,9 +750,53 @@ class Block:                         # 블럭
             if self.top == self.top2:
                 self.notused = 3
                 if self.kind == 2:
-                    self.notused = 0
+                    bb.append(BBlock(self.left2,self.right2,self.top2,self.bottom2))
+                    b.remove(self)
                 if self.kind == 3:
                     self.used = True
+
+class BBlock:                         # 블럭
+
+    global bmx
+    left = 0
+    right = 0
+    top = 0
+    bottom = 0
+    kind = 0
+    frame = 0
+    used = False
+    notused = 0
+    diespeed = 0
+
+
+    def __init__(self, left, right, top, bottom):
+        self.left = left
+        self.right = right
+        self.left2 = left
+        self.right2 = right
+        self.top = top
+        self.bottom = bottom
+
+    def draw(self):
+        brick.clip_draw(int(self.frame) * 60, 0, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left+10, self.top-self.bottom+10)
+
+
+
+    def update(self):
+        self.frame = (self.frame + 0.03) % 16
+        if self.frame > 3:
+            self.frame = 3
+            self.diespeed += 10 * game_framework.frame_time
+        if self.top < 0:
+            bb.remove(self)
+        self.left = self.left2+bmx
+        self.right = self.right2+bmx
+
+    def move(self):
+        if self.frame == 3:
+            self.top -= self.diespeed
+            self.bottom -= self.diespeed
+
 
 def crush(A,B):
     if A.top > B.bottom and A.bottom < B.top and A.right > B.left and A.left < B.left:
@@ -778,19 +821,19 @@ def backmove():
     if sonic.dir == 1:
         if bmx > -(2357*2.3)+60 and sonic.x > 400:
             if sonic.x - 0.6 <= 400:
-                bmx -= sonic.plus_move
+                bmx -= sonic.plus_move* game_framework.frame_time
             else:
-                bmx -= sonic.plus_move*2
-            sonic.x -= sonic.plus_move*2
+                bmx -= sonic.plus_move*2* game_framework.frame_time
+            sonic.x -= sonic.plus_move*2* game_framework.frame_time
             if sonic.x < 400:
                 sonic.x = 400
     elif sonic.dir == -1:
         if bmx < 0 and sonic.x < 600:
             if sonic.x - 0.6 >= 600:
-                bmx += sonic.plus_move
+                bmx += sonic.plus_move* game_framework.frame_time
             else:
-                bmx += sonic.plus_move*2
-            sonic.x += sonic.plus_move*2
+                bmx += sonic.plus_move*2* game_framework.frame_time
+            sonic.x += sonic.plus_move*2* game_framework.frame_time
             if sonic.x > 600:
                 sonic.x = 600
 
@@ -798,7 +841,7 @@ def draw_back():                                   # 배경 그리기
     stage1_1.clip_draw(0, 0, 2357, 314, 1178.5*2.7+bmx, 157*2.7+bmy, 2357*2.7, 314*2.7)
 
 def enter():
-    global sonic, b, wm, ite, fb
+    global sonic, b, wm, ite, fb, bb
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, point, money
     global sonic_sprite, stage1_1, num, score, it, star, fly_monster, brick,bmx,bmy
 
@@ -842,6 +885,7 @@ def enter():
            item(3400, 170, 0),item(3430, 215, 0),item(3460, 215, 0),item(3490, 170, 0),
            item(5100, 225, 0),item(5110, 215, 0),item(5110, 235, 0),item(5120, 205, 0),item(5120, 245, 0),item(5140, 225, 0),item(5130, 215, 0),item(5130, 235, 0),]
     fb = []
+    bb = []
 
     sonic = player(30, 60)
     bmx = 0
@@ -942,6 +986,9 @@ def update():
     for i in fb:
         i.update()
         i.move()
+    for i in bb:
+        i.update()
+        i.move()
     if life == 0:
         game_framework.change_state(GameOver)
 
@@ -956,6 +1003,8 @@ def draw():
     for i in ite:
         i.draw()
     for i in fb:
+        i.draw()
+    for i in bb:
         i.draw()
     if sonic.depencetime % 2 == 0:
         sonic.draw()
