@@ -3,6 +3,7 @@ from pico2d import *
 import game_framework
 import Title_state
 import stage1_1
+import stage1_2
 import stage2_1
 from math import *
 
@@ -130,7 +131,7 @@ class player:
             if self.frame > 7:
                 delay(0.1)
                 if self.GoDown2 == 1:
-                    game_framework.change_state(stage1_1)
+                    game_framework.change_state(stage1_2)
                 if self.GoDown2 == 2:
                     game_framework.change_state(stage2_1)
                 if self.GoDown2 == 3:

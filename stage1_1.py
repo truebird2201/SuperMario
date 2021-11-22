@@ -3,6 +3,7 @@ from pico2d import *
 import game_framework
 import Select_state
 import GameOver
+import stage1_2
 from math import *
 
 sonic_sprite = None
@@ -403,8 +404,10 @@ class player:
 
         if self.x > 970 and self.dir != -1:
             self.x = 970
-        elif self.x < 30 and self.dir != 1:
-            self.x = 30
+        elif self.x < 10 and self.dir != 1:
+            self.x = 10
+            self.dir = 0
+
         else:
             if self.fast and self.dir != 0:  # 대시 on
                 self.x += ((self.dir * 0.2) + (self.dir2 * self.plus_move)) * game_framework.frame_time
@@ -433,6 +436,11 @@ class player:
                 if self.bottom > i.top - 3 and self.bottom < i.top and self.right > i.left and self.left < i.right:
                     self.y = i.top + 30
                     self.savey = self.y
+                    if self.GoDown == True:
+                        if i.kind == 1:
+                            self.GoDown2 = 1
+                            self.frame = 0
+                            self.GoDown = False
                 if self.top < i.bottom + 3 and self.top > i.bottom and self.right > i.left and self.left < i.right:
                     self.y = i.bottom-30
                     self.savey = 0
@@ -454,6 +462,11 @@ class player:
                 if self.bottom > i.top - 3 and self.bottom < i.top and self.right > i.left and self.left < i.right:
                     self.y = i.top + 24
                     self.savey = self.y
+                    if self.GoDown == True:
+                        if i.kind == 1:
+                            self.GoDown2 = 1
+                            self.frame = 0
+                            self.GoDown = False
                 if self.top < i.bottom + 3 and self.top > i.bottom and self.right > i.left and self.left < i.right:
                     self.y = i.bottom - 24
                     self.savey = 0
@@ -481,6 +494,8 @@ class player:
                     sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, self.size, self.size)
                 if self.frame > 7:
                     delay(0.2)
+                    if self.GoDown2 == 1:
+                        game_framework.change_state(stage1_2)
                     self.GoDown2 = False
             else:
                 if self.starmode == False:                                                                          # 스타모드 아닐때
@@ -876,7 +891,7 @@ def enter():
          Block(4930, 4960, 245, 215, 2),Block(4960, 4990, 245, 215, 3),Block(4990, 5020, 245, 215, 2),Block(5020, 5050, 245, 215, 2),Block(5050, 5080, 245, 215, 2),
          Block(5600, 5630, 200, 170, 2),Block(5630, 5660, 200, 170, 2),Block(5660, 5690, 200, 170, 2),
          Block(5690, 5720, 200, 170, 2),Block(5720, 5750, 200, 170, 2),Block(5750, 5780, 200, 170, 2),
-         Block(5780, 5810, 200, 170, 2),Block(5810, 5840, 200, 170, 2),Block(5840, 5870, 200, 170, 2),]
+         Block(5780, 5810, 200, 170, 2),Block(5810, 5840, 200, 170, 2),Block(5840, 5870, 200, 170, 2),Block(6215, 6300, 120, 0, 1)]
 
     wm = [Monster(900,40,0.2,0),Monster(2500,40,0.2,0),Monster(4000,40,0.2,0),Monster(2900,40,0.2,0),Monster(5700,40,0.2,0)]
     ite = [item(1130, 115, 0),item(1160, 170, 0),item(1190, 170, 0),item(1350, 190, 0),item(1380, 250, 0),item(1410, 250, 0),
