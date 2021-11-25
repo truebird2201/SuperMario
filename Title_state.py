@@ -27,7 +27,7 @@ def enter():
 
     main_back = load_image('main_back.png')
     main_sonic = load_image('main_sonic.png')
-    Title = load_image('SuperSonic.png')
+    Title = load_image('SuperSonic_png.png')
     press = load_image('press.png')
 
 def exit():

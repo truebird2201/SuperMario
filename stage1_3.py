@@ -7,24 +7,6 @@ import stage1_2
 
 from math import *
 
-sonic_sprite = None
-star = None
-walk_monster = None
-fly_monster = None
-stage1_2 = None
-num = None
-item = None
-score = None
-coin = None
-star = None
-firesonic = None
-brick = None
-bmx = 0
-bmy = 0
-point = stage1_2.point
-money = stage1_2.money
-life = stage1_2.life
-
 def point_draw():
     global point
     score.clip_draw(0, 0, 170, 80, 80, 519, 130 ,50)
@@ -286,9 +268,9 @@ class player:
                 self.depence = False
 
         if self.dir == 0:  # 프레임
-            self.frame = (self.frame + 0.02) % 8
+            self.frame = (self.frame + 8 * game_framework.frame_time) % 8
         else:
-            self.frame = (self.frame + 0.04) % 8
+            self.frame = (self.frame + 16 * game_framework.frame_time) % 8
 
         if self.size == 60:                         # 버섯
             self.left = self.x - 20
@@ -834,7 +816,7 @@ def backmove():
     global sonic
 
     if sonic.dir == 1:
-        if bmx > -370 and sonic.x > 400:
+        if bmx > -(1056*1.8)+60 and sonic.x > 400:
             if sonic.x - 0.6 <= 400:
                 bmx -= sonic.plus_move* game_framework.frame_time
             else:
@@ -853,17 +835,17 @@ def backmove():
                 sonic.x = 600
 
 def draw_back():                                   # 배경 그리기
-    stage1_2.clip_draw(0, 0, 508, 187, 254*2.7+bmx, 187*1.6+bmy, 508*2.7, 187*3.2)
+    stage1_3.clip_draw(0, 0, 1056, 316, 528*2.7+bmx, 158*2.7+bmy, 1056*2.7, 316*2.7)
 
 def enter():
     global sonic, b, wm, ite, fb, bb, life
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, money
-    global sonic_sprite, stage1_2, num, score, it, star, fly_monster, brick,bmx,bmy
+    global sonic_sprite, stage1_3, num, score, it, star, fly_monster, brick,bmx,bmy
 
-    sonic_sprite = load_image('sonic.png')
+    sonic_sprite = load_image('sonic_sprite.png')
     walk_monster = load_image('walk_monster.png')
     fly_monster = load_image('fly_monster.png')
-    stage1_2 = load_image('1-1-2.png')
+    stage1_3 = load_image('1-1-3.png')
     num = load_image('number.png')
     score = load_image('score.png')
     it = load_image('item.png')
@@ -875,9 +857,10 @@ def enter():
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(-100, 513, 35, 0, 0),Block(-10, 30, 514, 0, 0),Block(600, 1400, 35, 0, 0)
-         ,Block(994, 1200, 90, 0, 0),Block(1124, 1400, 140, 0, 0),Block(1250, 1400, 510, 0, 0)
-         ,Block(1195, 1400, 245, 0, 1)]
+    b = [Block(-100*2.7, 0, 500*2.7, -10*2.7, 0),Block(-100*2.7, 84*2.7, 14*2.7, -10*2.7, 0)
+         ,Block(82*2.7, 113*2.7, 46*2.7, -10*2.7, 0)
+         ,Block(110*2.7, 353*2.7, 14*2.7, -10*2.7, 0),Block(404*2.7, 1100*2.7, 14*2.7, -10*2.7, 0)
+         ,Block(803*2.7, 833*2.7, 30*2.7, -10*2.7, 0)]
 
     wm = []
     ite = []
@@ -888,9 +871,12 @@ def enter():
     bmx = 0
     bmy = 0
 
-    point = stage1_2.point
-    money = stage1_2.money
-    life = stage1_2.life
+    # point = stage1_2.point
+    # money = stage1_2.money
+    # life = stage1_2.life
+    point = 0
+    money = 0
+    life = 3
 
 def exit():
     global sonic, b,wm, ite
@@ -938,6 +924,8 @@ def handle_events():
                     wm.append(Monster(100, 100, 0.2, 0))
                 elif event.key == SDLK_k:
                     wm.append(Monster(500, 200, 0.2, 1))
+                elif event.key == SDLK_r:
+                    sonic.dir=0
                 elif event.key == SDLK_l:
                     ite.append(item(sonic.x+100+bmx, sonic.y, 0))
                 elif event.key == SDLK_UP:  # 위

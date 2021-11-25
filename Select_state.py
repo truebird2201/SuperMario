@@ -3,7 +3,7 @@ from pico2d import *
 import game_framework
 import Title_state
 import stage1_1
-import stage1_2
+import stage1_3
 import stage2_1
 from math import *
 
@@ -224,7 +224,7 @@ def enter():
     global WIDTH, HEIGHT, frame, x, y
     global sonic_sprite, coin, red_coin, fly
     global pipe, stage1, select, select_Stage, select_Stage2
-    sonic_sprite = load_image('sonic.png')
+    sonic_sprite = load_image('sonic_sprite.png')
     pipe = load_image('pipe.png')
     select = load_image('select_back.png')
     select_Stage = load_image('select_Stage.png')

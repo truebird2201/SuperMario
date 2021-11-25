@@ -6,24 +6,6 @@ import GameOver
 import stage1_2
 from math import *
 
-sonic_sprite = None
-star = None
-walk_monster = None
-fly_monster = None
-stage1_1 = None
-num = None
-item = None
-score = None
-coin = None
-star = None
-firesonic = None
-brick = None
-bmx = 0
-bmy = 0
-point = 0
-money = 0
-life = 3
-
 def point_draw():
     global point
     score.clip_draw(0, 0, 170, 80, 80, 519, 130 ,50)
@@ -87,9 +69,9 @@ class item:
 
     def update(self):
         if self.kind == 0:
-            self.frame = (self.frame + 0.035) % 10
+            self.frame = (self.frame + 15* game_framework.frame_time) % 10
         else:
-            self.frame = (self.frame + 0.03) % 10
+            self.frame = (self.frame + 12* game_framework.frame_time) % 10
         self.x = self.x2 + bmx
         #
         self.left = self.x - 10
@@ -196,13 +178,13 @@ class Fire:
 
 
     def __init__(self,x,y,dir):
-        self.x = x
-        self.y = y
+        self.x2 = x
+        self.y2 = y
         self.dir = dir
 
     def update(self):
 
-        self.frame = (self.frame + 0.1) % 10
+        self.frame = (self.frame + 40* game_framework.frame_time) % 10
 
         self.left = self.x - 6
         self.right = self.x + 6
@@ -266,7 +248,7 @@ class player:
     plus_move = 0
     die = False
     starmode = False
-    firemode = False
+    firemode = True
     starcount = 0
     diedown = 0
     size = 48
@@ -285,9 +267,9 @@ class player:
                 self.depence = False
 
         if self.dir == 0:  # 프레임
-            self.frame = (self.frame + 0.02) % 8
+            self.frame = (self.frame + 8 * game_framework.frame_time) % 8
         else:
-            self.frame = (self.frame + 0.04) % 8
+            self.frame = (self.frame + 16 * game_framework.frame_time) % 8
 
         if self.size == 60:                         # 버섯
             self.left = self.x - 20
@@ -382,7 +364,7 @@ class player:
         if self.Jumping:                                                            # 점프
             self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
                         self.jumpTime * self.jumpPower) + self.savey2
-            self.jumpTime += 1
+            self.jumpTime += 400* game_framework.frame_time
             if self.y < self.savey:
                 self.y = self.savey
                 self.Jumping = False
@@ -641,10 +623,10 @@ class Monster:
 
     def update(self):
         if self.kind==0:                    # 굼바 프레임
-            self.frame = (self.frame + 0.03) % 16
+            self.frame = (self.frame + 12* game_framework.frame_time) % 16
 
         elif self.kind == 1:                # 부끄부끄 프레임
-            self.frame = (self.frame + 0.05) % 8
+            self.frame = (self.frame + 20* game_framework.frame_time) % 8
         self.x = self.x2+bmx
         self.left = self.x - 30
         self.right = self.x + 30
@@ -657,25 +639,22 @@ class Monster:
 
     def move(self):
         if self.kind == 0:                                      # 굼바
-            self.x2 += self.dir * self.Speed
+            self.x2 += self.dir * self.Speed*400* game_framework.frame_time
             for i in b:
                 if crush(self, i) == 3:
                     if self.dir == 1:
                         if self.right > i.right:
                             self.dir = -1
-                            self.x += self.dir * self.Speed/8
+                            self.x2 += self.dir * self.Speed*400* game_framework.frame_time
                     else:
                         if self.left < i.left:
                             self.dir = 1
-                            self.x += self.dir * self.Speed/8
+                            self.x2 += self.dir * self.Speed*400* game_framework.frame_time
             self.Ground = False
             for i in b:
                 if crush(self, i) == 3:
                     self.Ground = True
                     self.downpower = 0
-
-            if self.Ground == False:
-                self.y -= 3
 
         elif self.kind == 1:                                    # 부끄부끄
             pass
@@ -741,7 +720,7 @@ class Block:                         # 블럭
     def update(self):
         self.left = self.left2+bmx
         self.right = self.right2+bmx
-        self.frame = (self.frame + 0.03) % 16
+        self.frame = (self.frame + 12* game_framework.frame_time) % 16
 
     def move(self):
         if self.notused == 1:
@@ -776,12 +755,12 @@ class BBlock:                         # 블럭
 
 
     def __init__(self, left, right, top, bottom):
-        self.left = left
-        self.right = right
-        self.left2 = left
-        self.right2 = right
-        self.top = top
-        self.bottom = bottom
+        self.left = left-5
+        self.right = right+5
+        self.left2 = left-5
+        self.right2 = right+5
+        self.top = top+5
+        self.bottom = bottom-5
 
     def draw(self):
         brick.clip_draw(int(self.frame) * 60, 0, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left+10, self.top-self.bottom+10)
@@ -789,7 +768,7 @@ class BBlock:                         # 블럭
 
 
     def update(self):
-        self.frame = (self.frame + 0.03) % 16
+        self.frame = (self.frame + 12* game_framework.frame_time) % 16
         if self.frame > 3:
             self.frame = 3
             self.diespeed += 10 * game_framework.frame_time
@@ -851,7 +830,7 @@ def enter():
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, point, money
     global sonic_sprite, stage1_1, num, score, it, star, fly_monster, brick,bmx,bmy
 
-    sonic_sprite = load_image('sonic.png')
+    sonic_sprite = load_image('sonic_sprite.png')
     walk_monster = load_image('walk_monster.png')
     fly_monster = load_image('fly_monster.png')
     stage1_1 = load_image('1-1-1.png')
@@ -949,6 +928,8 @@ def handle_events():
                     wm.append(Monster(500, 200, 0.2, 1))
                 elif event.key == SDLK_l:
                     ite.append(item(sonic.x+100+bmx, sonic.y, 0))
+                elif event.key == SDLK_r:
+                    sonic.dir=0
                 elif event.key == SDLK_UP:  # 위
                     if sonic.jumpcount == 2:
                         sonic.savey = sonic.y

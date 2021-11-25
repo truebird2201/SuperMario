@@ -3,27 +3,10 @@ from pico2d import *
 import game_framework
 import Select_state
 import GameOver
-import stage1_2
 import stage1_1
+import stage1_3
 from math import *
 
-sonic_sprite = None
-star = None
-walk_monster = None
-fly_monster = None
-stage1_2 = None
-num = None
-item = None
-score = None
-coin = None
-star = None
-firesonic = None
-brick = None
-bmx = 0
-bmy = 0
-point = stage1_1.point
-money = stage1_1.money
-life = stage1_1.life
 
 def point_draw():
     global point
@@ -495,7 +478,7 @@ class player:
                 if self.frame > 7:
                     delay(0.2)
                     if self.GoDown2 == 1:
-                        game_framework.change_state(stage1_1)
+                        game_framework.change_state(stage1_3)
                     self.GoDown2 = False
             else:
                 if self.starmode == False:                                                                          # 스타모드 아닐때
@@ -860,7 +843,7 @@ def enter():
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, money
     global sonic_sprite, stage1_2, num, score, it, star, fly_monster, brick,bmx,bmy
 
-    sonic_sprite = load_image('sonic.png')
+    sonic_sprite = load_image('sonic_sprite.png')
     walk_monster = load_image('walk_monster.png')
     fly_monster = load_image('fly_monster.png')
     stage1_2 = load_image('1-1-2.png')
