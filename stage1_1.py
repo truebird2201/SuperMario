@@ -251,8 +251,8 @@ class player:
     frame = 0
     dir = 0
     dir2 = 1
-    gravity = 0.02
-    jumpPower = 2.0
+    gravity = 0.015
+    jumpPower = 1.5
     jumpTime = 0
     downpower = 0
     savey = 0
@@ -424,61 +424,52 @@ class player:
         if self.Ground == False:
             self.savey = 0
             if self.Jumping == False:
-                self.y -= (1000 + self.downpower) * game_framework.frame_time
-                self.downpower += 1000 * game_framework.frame_time
+                self.y -= (700 + self.downpower) * game_framework.frame_time
+                self.downpower += 700 * game_framework.frame_time
 
         for i in b:                         # 블럭 충돌
-            if self.size == 60:
-                if self.top > i.bottom and self.bottom < i.top and self.right < i.left + 3 and self.right > i.left:
-                    self.x = i.left - 20
-                if self.top > i.bottom and self.bottom < i.top and self.left > i.right - 3 and self.left < i.right:
-                    self.x = i.right + 20
-                if self.bottom > i.top - 3 and self.bottom < i.top and self.right > i.left and self.left < i.right:
-                    self.y = i.top + 30
-                    self.savey = self.y
-                    if self.GoDown == True:
-                        if i.kind == 1:
-                            self.GoDown2 = 1
-                            self.frame = 0
-                            self.GoDown = False
-                if self.top < i.bottom + 3 and self.top > i.bottom and self.right > i.left and self.left < i.right:
-                    self.y = i.bottom-30
-                    self.savey = 0
-                    self.Jumping = False
-                    self.jumpcount = 2
-                    self.jumpTime = 0.0
-                    if i.kind == 3:
-                        if i.notused == 0:
-                            i.notused = 1
-                    if i.kind == 2:
-                        if i.notused == 0:
-                            i.notused = 1
+            if self.top > i.bottom and self.bottom < i.top and self.right > i.left and self.left < i.left:
 
-            elif self.size == 48:
-                if self.top > i.bottom and self.bottom < i.top and self.right < i.left + 3 and self.right > i.left:
-                    self.x = i.left - 16
-                if self.top > i.bottom and self.bottom < i.top and self.left > i.right - 3 and self.left < i.right:
-                    self.x = i.right + 16
-                if self.bottom > i.top - 3 and self.bottom < i.top and self.right > i.left and self.left < i.right:
-                    self.y = i.top + 24
-                    self.savey = self.y
-                    if self.GoDown == True:
-                        if i.kind == 1:
-                            self.GoDown2 = 1
-                            self.frame = 0
-                            self.GoDown = False
-                if self.top < i.bottom + 3 and self.top > i.bottom and self.right > i.left and self.left < i.right:
-                    self.y = i.bottom - 24
-                    self.savey = 0
-                    self.Jumping = False
-                    self.jumpcount = 2
-                    self.jumpTime = 0.0
-                    if i.kind == 3:
-                        if i.notused == 0:
-                            i.notused = 1
-                    if i.kind == 2:
-                        if i.notused == 0:
-                            i.notused = 1
+                if self.fast and self.dir != 0:  # 대시 on
+                    self.x -= ((self.dir * 0.2) + (self.dir2 * self.plus_move)) * game_framework.frame_time + 0.005
+                else:  # 대시 off
+                    self.x -= self.dir2 * self.plus_move * game_framework.frame_time + 0.005
+                self.plus_move = 0
+
+            if self.top > i.bottom and self.bottom < i.top and self.left < i.right and self.right > i.right:
+
+                if self.fast and self.dir != 0:  # 대시 on
+                    self.x -= ((self.dir * 0.2) + (self.dir2 * self.plus_move)) * game_framework.frame_time + 0.005
+                else:  # 대시 off
+                    self.x -= self.dir2 * self.plus_move * game_framework.frame_time + 0.005
+                self.plus_move = 0
+
+            if self.bottom > i.top and self.bottom-2 < i.top and self.right > i.left and self.left < i.right:
+                if self.Jumping == False:
+                    self.y += (700 + self.downpower) * game_framework.frame_time
+                else:
+                    self.y = i.top+24
+
+                self.savey = self.y
+                if self.GoDown == True:
+                    if i.kind == 1:
+                        self.GoDown2 = 1
+                        self.frame = 0
+                        self.GoDown = False
+            if self.top+2 > i.bottom and self.bottom < i.bottom and self.right > i.left and self.left < i.right:
+                self.y = i.top - 24
+                self.savey = 0
+                self.Jumping = False
+                self.jumpcount = 2
+                self.jumpTime = 0.0
+                if i.kind == 3:
+                    if i.notused == 0:
+                        i.notused = 1
+                if i.kind == 2:
+                    if i.notused == 0:
+                        i.notused = 1
+
+
 
 
 
@@ -856,7 +847,7 @@ def draw_back():                                   # 배경 그리기
     stage1_1.clip_draw(0, 0, 2357, 314, 1178.5*2.7+bmx, 157*2.7+bmy, 2357*2.7, 314*2.7)
 
 def enter():
-    global sonic, b, wm, ite, fb, bb
+    global sonic, b, wm, ite, fb, bb, life
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, point, money
     global sonic_sprite, stage1_1, num, score, it, star, fly_monster, brick,bmx,bmy
 
@@ -875,7 +866,7 @@ def enter():
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(-100, 0, 500, 0, 0),Block(0, 431*2.7, 13*2.7, 0, 0),Block(431*2.7, 511*2.7, 29*2.7, 0, 0),Block(511*2.7, 603*2.7, 61*2.7, 0, 0),Block(603*2.7, 800*2.7, 13*2.7, 0, 0),
+    b = [Block(-100, 0, 500, 0, 0),Block(0, 434*2.7, 13*2.7, 0, 0),Block(431*2.7, 511*2.7, 29*2.7, 0, 0),Block(511*2.7, 603*2.7, 61*2.7, 0, 0),Block(603*2.7, 800*2.7, 13*2.7, 0, 0),
          Block(800 * 2.7, 891 * 2.7, 29 * 2.7, 0, 0),Block(891 * 2.7, 975 * 2.7, 13 * 2.7, 0, 0),Block(975 * 2.7, 1005 * 2.7, 45 * 2.7, 0, 0),
          Block(1005 * 2.7, 1164 * 2.7, 13 * 2.7, 0, 0),Block(1200 * 2.7, 1644 * 2.7, 13 * 2.7, 0, 0),Block(1679 * 2.7, 1759 * 2.7, 13 * 2.7, 0, 0),
          Block(1758 * 2.7, 1790 * 2.7, 61 * 2.7, 0, 0),Block(1790 * 2.7, 2302 * 2.7, 13 * 2.7, 0, 0),Block(2334 * 2.7, 2357 * 2.7, 13 * 2.7, 0, 0),
@@ -905,12 +896,14 @@ def enter():
     sonic = player(30, 60)
     bmx = 0
     bmy = 0
+
     point = 0
     money = 0
+    life = 3
 
 def exit():
     global sonic, b,wm, ite
-    global WIDTH, HEIGHT, frame, x, y, money, point
+    global WIDTH, HEIGHT, frame, x, y, money, point, life
     global sonic_sprite, stage1_1, num, score,star, it, coin, firesonic, brick
 
     del(sonic_sprite)
@@ -924,8 +917,6 @@ def exit():
     del(star)
     del(coin)
     del(firesonic)
-    del(money)
-    del(point)
     del(brick)
 
 def handle_events():

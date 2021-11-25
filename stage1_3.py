@@ -4,7 +4,7 @@ import game_framework
 import Select_state
 import GameOver
 import stage1_2
-import stage1_1
+
 from math import *
 
 sonic_sprite = None
@@ -21,9 +21,9 @@ firesonic = None
 brick = None
 bmx = 0
 bmy = 0
-point = stage1_1.point
-money = stage1_1.money
-life = stage1_1.life
+point = stage1_2.point
+money = stage1_2.money
+life = stage1_2.life
 
 def point_draw():
     global point
@@ -495,7 +495,7 @@ class player:
                 if self.frame > 7:
                     delay(0.2)
                     if self.GoDown2 == 1:
-                        game_framework.change_state(stage1_1)
+                        game_framework.change_state(Select_state)
                     self.GoDown2 = False
             else:
                 if self.starmode == False:                                                                          # 스타모드 아닐때
@@ -888,9 +888,9 @@ def enter():
     bmx = 0
     bmy = 0
 
-    point = stage1_1.point
-    money = stage1_1.money
-    life = stage1_1.life
+    point = stage1_2.point
+    money = stage1_2.money
+    life = stage1_2.life
 
 def exit():
     global sonic, b,wm, ite
