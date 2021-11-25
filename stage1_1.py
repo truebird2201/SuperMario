@@ -175,17 +175,19 @@ class Fire:
     jumpcount = 2
     Ground = True
     Jumping = False
+    x=0
 
 
     def __init__(self,x,y,dir):
         self.x2 = x
-        self.y2 = y
+        self.y = y
         self.dir = dir
 
     def update(self):
 
         self.frame = (self.frame + 40* game_framework.frame_time) % 10
 
+        self.x = self.x2 + bmx
         self.left = self.x - 6
         self.right = self.x + 6
         self.top = self.y + 6
@@ -217,7 +219,7 @@ class Fire:
 
 
     def move(self):
-        self.x += self.dir * 1
+        self.x2 += self.dir * 400* game_framework.frame_time
 
     def draw(self):
         coin.clip_draw(int(self.frame) * 20, 0, 20, 20, self.x, self.y, 20, 20)

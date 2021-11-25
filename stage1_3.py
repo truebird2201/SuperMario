@@ -794,6 +794,38 @@ class BBlock:                         # 블럭
             self.top -= self.diespeed
             self.bottom -= self.diespeed
 
+class Flag:                         # 블럭
+
+    global bmx
+    left = 0
+    right = 0
+    top = 0
+    bottom = 0
+    kind = 0
+    frame = 0
+    used = False
+    notused = 0
+    diespeed = 0
+
+
+    def __init__(self):
+        self.left = 776*2.7
+        self.right = 816*2.7
+        self.left2 = 776*2.7
+        self.right2 = 816*2.7
+        self.top = 156*2.7
+        self.bottom = 132*2.7
+
+    def draw(self):
+        flag_png.clip_draw(int(self.frame) * 155, 0, 155, 130, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
+
+    def update(self):
+        self.frame = (self.frame + 0.03) % 25
+        self.left = self.left2+bmx
+        self.right = self.right2+bmx
+
+    def move(self):
+        pass
 
 def crush(A,B):
     if A.top > B.bottom and A.bottom < B.top and A.right > B.left and A.left < B.left:
@@ -837,10 +869,11 @@ def backmove():
 def draw_back():                                   # 배경 그리기
     stage1_3.clip_draw(0, 0, 1056, 316, 528*2.7+bmx, 158*2.7+bmy, 1056*2.7, 316*2.7)
 
+
 def enter():
-    global sonic, b, wm, ite, fb, bb, life
+    global sonic, b, wm, ite, fb, bb, life,fg
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, money
-    global sonic_sprite, stage1_3, num, score, it, star, fly_monster, brick,bmx,bmy
+    global sonic_sprite, stage1_3, num, score, it, star, fly_monster, brick,bmx,bmy,flag_png
 
     sonic_sprite = load_image('sonic_sprite.png')
     walk_monster = load_image('walk_monster.png')
@@ -853,6 +886,7 @@ def enter():
     firesonic = load_image('firesonic.png')
     coin = load_image('coin.png')
     brick = load_image('brick.png')
+    flag_png = load_image('flag_sprite.png')
 
     WIDTH = 1000
     HEIGHT = 800
@@ -868,6 +902,7 @@ def enter():
     bb = []
 
     sonic = player(77, 400)
+    fg=Flag()
     bmx = 0
     bmy = 0
 
@@ -879,10 +914,11 @@ def enter():
     life = 3
 
 def exit():
-    global sonic, b,wm, ite
+    global sonic, b,wm, ite,fg
     global WIDTH, HEIGHT, frame, x, y, money, point
-    global sonic_sprite, stage1_2, num, score,star, it, coin, firesonic, brick
+    global sonic_sprite, stage1_2, num, score,star, it, coin, firesonic, brick,flag_png
 
+    del(fg)
     del(sonic_sprite)
     del(stage1_2)
     del(sonic)
@@ -895,6 +931,7 @@ def exit():
     del(coin)
     del(firesonic)
     del(brick)
+    del(flag_png)
 
 def handle_events():
     global sonic
@@ -974,6 +1011,9 @@ def update():
     for i in bb:
         i.update()
         i.move()
+    fg.update()
+    fg.move()
+
     if life == 0:
         game_framework.change_state(GameOver)
 
@@ -981,6 +1021,7 @@ def draw():
     clear_canvas()
     draw_back()
     point_draw()
+    fg.draw()
     for i in b:
         i.draw()
     for i in wm:
