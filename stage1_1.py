@@ -187,7 +187,7 @@ class Fire:
 
         self.frame = (self.frame + 40* game_framework.frame_time) % 10
 
-        self.x = self.x2 + bmx
+        self.x = self.x2
         self.left = self.x - 6
         self.right = self.x + 6
         self.top = self.y + 6
@@ -279,7 +279,7 @@ class player:
             self.top = self.y + 30
             self.bottom = self.y - 30
 
-        elif self.size == 48:                       # 기본
+        if self.size == 48:                       # 기본
             self.left = self.x - 16
             self.right = self.x + 16
             self.top = self.y + 24
@@ -365,20 +365,20 @@ class player:
 
         if self.Jumping:                                                            # 점프
             self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
-                        self.jumpTime * self.jumpPower) + self.savey2
-            self.jumpTime += 400* game_framework.frame_time
+                        self.jumpTime * self.jumpPower) + self.savey2 +0.5
+            self.jumpTime += 400 * game_framework.frame_time
             if self.y < self.savey:
                 self.y = self.savey
                 self.Jumping = False
                 self.jumpTime = 0.0
                 self.jumpcount = 2
 
-        if self.dir != 0 and self.plus_move < 250:
+        if self.dir != 0 and self.plus_move < 250:                      # 움직이는 중
             self.plus_move += 400 * game_framework.frame_time
             if self.plus_move > 250:
                 self.plus_move = 250
 
-        elif self.dir == 0 and self.plus_move > 0:
+        elif self.dir == 0 and self.plus_move > 0:                      # 멈추고 미끄러짐
             self.plus_move -= 800 * game_framework.frame_time
             if self.plus_move < 0:
                 self.plus_move = 0
@@ -399,62 +399,36 @@ class player:
                 self.x += self.dir2 * self.plus_move * game_framework.frame_time
         self.Ground = False
 
-        for i in b:
-            if crush(self,i) == 3:
-                self.Ground = True
-                # self.y = i.top + 30
-                self.downpower = 0
-
-        if self.Ground == False:
-            self.savey = 0
-            if self.Jumping == False:
-                self.y -= (700 + self.downpower) * game_framework.frame_time
-                self.downpower += 700 * game_framework.frame_time
-
         for i in b:                         # 블럭 충돌
-            if self.top > i.bottom and self.bottom < i.top and self.right > i.left and self.left < i.left:
 
-                if self.fast and self.dir != 0:  # 대시 on
-                    self.x -= ((self.dir * 0.2) + (self.dir2 * self.plus_move)) * game_framework.frame_time + 0.005
-                else:  # 대시 off
-                    self.x -= self.dir2 * self.plus_move * game_framework.frame_time + 0.005
-                self.plus_move = 0
+            if crush(self, i) == 1:             # 왼 -> 오
+                self.x = i.left - 16
+                print("1")
 
-            if self.top > i.bottom and self.bottom < i.top and self.left < i.right and self.right > i.right:
+            elif crush(self, i) == 2:           # 오 -> 왼
+                self.x = i.right + 16
+                print("2")
 
-                if self.fast and self.dir != 0:  # 대시 on
-                    self.x -= ((self.dir * 0.2) + (self.dir2 * self.plus_move)) * game_framework.frame_time + 0.005
-                else:  # 대시 off
-                    self.x -= self.dir2 * self.plus_move * game_framework.frame_time + 0.005
-                self.plus_move = 0
-
-            if self.bottom > i.top and self.bottom-2 < i.top and self.right > i.left and self.left < i.right:
-                if self.Jumping == False:
-                    self.y += (700 + self.downpower) * game_framework.frame_time
-                else:
-                    self.y = i.top+24
-
+            if crush(self, i) == 3:             # 위 -> 아래
+                self.y = i.top + 24
                 self.savey = self.y
-                if self.GoDown == True:
-                    if i.kind == 1:
-                        self.GoDown2 = 1
-                        self.frame = 0
-                        self.GoDown = False
-            if self.top+2 > i.bottom and self.bottom < i.bottom and self.right > i.left and self.left < i.right:
-                self.y = i.top - 24
+                self.Ground = True
+                print("3")
+
+
+            elif crush(self, i) == 4:           # 아래 -> 위
+                self.y = i.bottom - 24
                 self.savey = 0
                 self.Jumping = False
                 self.jumpcount = 2
                 self.jumpTime = 0.0
-                if i.kind == 3:
-                    if i.notused == 0:
-                        i.notused = 1
-                if i.kind == 2:
-                    if i.notused == 0:
-                        i.notused = 1
+                print("4")
 
-
-
+        if self.Ground == False:
+            self.savey = 0
+            if self.Jumping == False:
+                self.y -= (500 + self.downpower) * game_framework.frame_time
+                self.downpower += 500 * game_framework.frame_time
 
 
     def draw(self):
@@ -647,12 +621,17 @@ class Monster:
                     if self.dir == 1:
                         if self.right > i.right:
                             self.dir = -1
-                            self.x2 += self.dir * self.Speed*400* game_framework.frame_time
                     else:
                         if self.left < i.left:
                             self.dir = 1
-                            self.x2 += self.dir * self.Speed*400* game_framework.frame_time
+
+                if crush(self, i) == 1:
+                    self.dir = -1
+                if crush(self, i) == 2:
+                    self.dir = 1
+
             self.Ground = False
+
             for i in b:
                 if crush(self, i) == 3:
                     self.Ground = True
@@ -792,10 +771,14 @@ def crush(A,B):
         return 2
     if A.top+1 > B.bottom and A.bottom < B.bottom and A.right > B.left and A.left < B.right:
         return 4
-    if A.top > B.top and A.bottom-1 < B.top and A.right > B.left and A.left < B.right:
-        return 3
+
+    if A == sonic and A.Jumping == True:
+        if A.top > B.top and A.bottom < B.top and A.right > B.left and A.left < B.right:
+            return 3
     else:
-        return 0
+        if A.top > B.top and A.bottom-1 < B.top and A.right > B.left and A.left < B.right:
+            return 3
+    return 0
 
 
 
@@ -865,7 +848,7 @@ def enter():
          Block(5690, 5720, 200, 170, 2),Block(5720, 5750, 200, 170, 2),Block(5750, 5780, 200, 170, 2),
          Block(5780, 5810, 200, 170, 2),Block(5810, 5840, 200, 170, 2),Block(5840, 5870, 200, 170, 2),Block(6215, 6300, 120, 0, 1)]
 
-    wm = [Monster(900,40,0.2,0),Monster(2500,40,0.2,0),Monster(4000,40,0.2,0),Monster(2900,40,0.2,0),Monster(5700,40,0.2,0)]
+    wm = [Monster(900,45,0.2,0),Monster(2500,45,0.2,0),Monster(4000,45,0.2,0),Monster(2900,45,0.2,0),Monster(5700,45,0.2,0)]
     ite = [item(1130, 115, 0),item(1160, 170, 0),item(1190, 170, 0),item(1350, 190, 0),item(1380, 250, 0),item(1410, 250, 0),
            item(2215, 200, 0),item(2245, 245, 0),item(2275, 245, 0),item(2305, 215, 0),
            item(3145, 170, 0),item(3175, 215, 0),item(3205, 215, 0),item(3235, 170, 0),
@@ -874,7 +857,7 @@ def enter():
     fb = []
     bb = []
 
-    sonic = player(30, 60)
+    sonic = player(30, 500)
     bmx = 0
     bmy = 0
 

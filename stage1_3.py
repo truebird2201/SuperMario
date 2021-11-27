@@ -906,12 +906,12 @@ def enter():
     bmx = 0
     bmy = 0
 
-    # point = stage1_2.point
-    # money = stage1_2.money
-    # life = stage1_2.life
-    point = 0
-    money = 0
-    life = 3
+    point = stage1_2.point
+    money = stage1_2.money
+    life = stage1_2.life
+    # point = 0
+    # money = 0
+    # life = 3
 
 def exit():
     global sonic, b,wm, ite,fg
