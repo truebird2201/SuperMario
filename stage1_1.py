@@ -6,6 +6,10 @@ import GameOver
 import stage1_2
 from math import *
 
+point = 0
+money = 0
+life = 3
+
 def point_draw():
     global point
     score.clip_draw(0, 0, 170, 80, 80, 519, 130 ,50)
@@ -253,7 +257,7 @@ class player:
     firemode = True
     starcount = 0
     diedown = 0
-    size = 48
+    size = 54
     depence = False
     depencetime = 0
 
@@ -273,11 +277,11 @@ class player:
         else:
             self.frame = (self.frame + 16 * game_framework.frame_time) % 8
 
-        if self.size == 60:                         # 버섯
-            self.left = self.x - 20
-            self.right = self.x + 20
-            self.top = self.y + 30
-            self.bottom = self.y - 30
+        if self.size == 54:                         # 버섯
+            self.left = self.x - 16
+            self.right = self.x + 16
+            self.top = self.y + 27
+            self.bottom = self.y - 27
 
         if self.size == 48:                       # 기본
             self.left = self.x - 16
@@ -297,7 +301,7 @@ class player:
                     self.starcount = 3500
                     ite.remove(i)
                 elif i.kind == 2:                                                # 버섯
-                    self.size = 60
+                    self.size = 54
                     ite.remove(i)
                 elif i.kind == 0:                                                # 동전
                     global money
@@ -309,7 +313,7 @@ class player:
                 elif i.kind == 3:                                                # 꽃
                     self.firemode = True
                     ite.remove(i)
-                    self.size = 60
+                    self.size = 54
                 elif i.kind == 4:                                                # 초록 버섯
                     life += 1
                     ite.remove(i)
@@ -400,45 +404,87 @@ class player:
         self.Ground = False
 
         for i in b:                         # 블럭 충돌
+            if self.size==48:
+                if self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right and self.Jumping == True:
+                    self.y = i.top + 24
+                    self.savey = self.y
+                    self.Ground = True
 
-            if self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right and self.Jumping == True:
-                self.y = i.top + 24
-                self.savey = self.y
-                self.Ground = True
-                print("3")
+                elif self.bottom + 10 > i.top and self.bottom - 1 < i.top and self.right > i.left and self.left < i.right and self.Jumping == False:
+                    self.y = i.top + 24
+                    self.savey = self.y
+                    self.Ground = True
+                    if self.GoDown == True:
+                        if i.kind == 1:
+                            self.GoDown2 = True
+                            self.frame = 0
+                            self.GoDown = False
 
-            elif self.bottom + 10 > i.top and self.bottom - 1 < i.top and self.right > i.left and self.left < i.right and self.Jumping == False:
-                self.y = i.top + 24
-                self.savey = self.y
-                self.Ground = True
-                print("3")
+                elif self.top+1 > i.bottom and self.bottom < i.bottom and self.right > i.left and self.left < i.right and self.Jumping==True:           # 아래 -> 위
+                    self.y = i.bottom - 24
+                    self.savey = 0
+                    self.Jumping = False
+                    self.jumpcount = 2
+                    self.jumpTime = 0.0
+                    if i.kind == 3:
+                        if i.notused == 0:
+                            i.notused = 1
+                    if i.kind == 2:
+                        if i.notused == 0:
+                            i.notused = 1
 
-            elif self.top+1 > i.bottom and self.bottom < i.bottom and self.right > i.left and self.left < i.right and self.Jumping==True:           # 아래 -> 위
-                self.y = i.bottom - 24
-                self.savey = 0
-                self.Jumping = False
-                self.jumpcount = 2
-                self.jumpTime = 0.0
-                if i.kind == 3:
-                    if i.notused == 0:
-                        i.notused = 1
-                if i.kind == 2:
-                    if i.notused == 0:
-                        i.notused = 1
+                elif self.top > i.bottom and self.bottom < i.top and self.right > i.left and self.left < i.left:             # 왼 -> 오
+                    if self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
+                        pass
+                    else:
+                        self.x = i.left - 16
 
-            elif self.top > i.bottom and self.bottom < i.top and self.right > i.left and self.left < i.left:             # 왼 -> 오
-                if self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
-                    pass
-                else:
-                    self.x = i.left - 16
-                print("1")
+                elif self.top > i.bottom and self.bottom < i.top and self.right > i.right and self.left < i.right:           # 오 -> 왼
+                    if self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
+                        pass
+                    else:
+                        self.x = i.right + 16
 
-            elif self.top > i.bottom and self.bottom < i.top and self.right > i.right and self.left < i.right:           # 오 -> 왼
-                if self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
-                    pass
-                else:
-                    self.x = i.right + 16
-                print("2")
+            elif self.size == 54:
+                if self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right and self.Jumping == True:
+                    self.y = i.top + 27
+                    self.savey = self.y
+                    self.Ground = True
+
+                elif self.bottom + 10 > i.top and self.bottom - 1 < i.top and self.right > i.left and self.left < i.right and self.Jumping == False:
+                    self.y = i.top + 27
+                    self.savey = self.y
+                    self.Ground = True
+                    if self.GoDown == True:
+                        if i.kind == 1:
+                            self.GoDown2 = True
+                            self.frame = 0
+                            self.GoDown = False
+
+                elif self.top + 1 > i.bottom and self.bottom < i.bottom and self.right > i.left and self.left < i.right and self.Jumping == True:  # 아래 -> 위
+                    self.y = i.bottom - 27
+                    self.savey = 0
+                    self.Jumping = False
+                    self.jumpcount = 2
+                    self.jumpTime = 0.0
+                    if i.kind == 3:
+                        if i.notused == 0:
+                            i.notused = 1
+                    if i.kind == 2:
+                        if i.notused == 0:
+                            i.notused = 1
+
+                elif self.top > i.bottom and self.bottom < i.top and self.right > i.left and self.left < i.left:  # 왼 -> 오
+                    if self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
+                        pass
+                    else:
+                        self.x = i.left - 16
+
+                elif self.top > i.bottom and self.bottom < i.top and self.right > i.right and self.left < i.right:  # 오 -> 왼
+                    if self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
+                        pass
+                    else:
+                        self.x = i.right + 16
 
 
         if self.Ground == False:
@@ -693,7 +739,7 @@ class Block:                         # 블럭
     used = False
     notused = 0
 
-    def __init__(self, left, right, top, bottom, kind,check):
+    def __init__(self, left, right, top, bottom, kind):
         self.left2 = left
         self.right2 = right
         self.top = top
@@ -701,7 +747,7 @@ class Block:                         # 블럭
         self.top2 = top
         self.bottom2 = bottom
         self.kind = kind
-        self.check = check
+
         # check = 0 전부
         # check = 1 왼,위,아래만
         # check = 2 우,위,아래만
@@ -738,8 +784,11 @@ class Block:                         # 블럭
             if self.top == self.top2:
                 self.notused = 3
                 if self.kind == 2:
-                    bb.append(BBlock(self.left2,self.right2,self.top2,self.bottom2))
-                    b.remove(self)
+                    if sonic.size== 48:
+                        self.notused = 0
+                    elif sonic.size == 54:
+                        bb.append(BBlock(self.left2,self.right2,self.top2,self.bottom2))
+                        b.remove(self)
                 if self.kind == 3:
                     self.used = True
 
@@ -847,23 +896,23 @@ def enter():
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(-100, 0, 500, 0, 0,0),Block(0, 434*2.7, 13*2.7, 0, 0,0),Block(431*2.7, 511*2.7, 29*2.7, 0, 0,0),Block(511*2.7, 603*2.7, 61*2.7, 0, 0,0),Block(593*2.7, 805*2.7, 13*2.7, 0, 0,0),
-         Block(800 * 2.7, 891 * 2.7, 29 * 2.7, 0, 0,0),Block(885 * 2.7, 980 * 2.7, 13 * 2.7, 0, 0,0),Block(975 * 2.7, 1005 * 2.7, 45 * 2.7, 0, 0,0),
-         Block(1000 * 2.7, 1164 * 2.7, 13 * 2.7, 0, 0,0),Block(1200 * 2.7, 1644 * 2.7, 13 * 2.7, 0, 0,0),Block(1679 * 2.7, 1762 * 2.7, 13 * 2.7, 0, 0,0),
-         Block(1758 * 2.7, 1790 * 2.7, 61 * 2.7, 0, 0,0),Block(1785 * 2.7, 2305 * 2.7, 13 * 2.7, 0, 0,0),Block(2330 * 2.7, 2357 * 2.7, 13 * 2.7, 0, 0,0),
+    b = [Block(-100, 0, 500, 0, 0),Block(0, 434*2.7, 13*2.7, 0, 0),Block(431*2.7, 511*2.7, 29*2.7, 0, 0),Block(511*2.7, 603*2.7, 61*2.7, 0, 0),Block(593*2.7, 805*2.7, 13*2.7, 0, 0),
+         Block(800 * 2.7, 891 * 2.7, 29 * 2.7, 0, 0,),Block(885 * 2.7, 980 * 2.7, 13 * 2.7, 0, 0),Block(975 * 2.7, 1005 * 2.7, 45 * 2.7, 0, 0),
+         Block(1000 * 2.7, 1164 * 2.7, 13 * 2.7, 0, 0),Block(1200 * 2.7, 1644 * 2.7, 13 * 2.7, 0, 0),Block(1679 * 2.7, 1762 * 2.7, 13 * 2.7, 0, 0),
+         Block(1758 * 2.7, 1790 * 2.7, 61 * 2.7, 0, 0),Block(1785 * 2.7, 2305 * 2.7, 13 * 2.7, 0, 0),Block(2330 * 2.7, 2357 * 2.7, 13 * 2.7, 0, 0),
          # 땅
 
-         Block(2302 * 2.7, 2334 * 2.7, 45 * 2.7, 0, 1,0),
+         Block(2302 * 2.7, 2334 * 2.7, 45 * 2.7, 0, 1),
          #파이프
 
-         Block(660, 690, 180, 150, 2,0),Block(840, 870, 180, 150, 3,0),Block(870, 900, 180, 150, 2,0),Block(1440, 1470, 290, 260, 2,0),
-         Block(1830, 1860, 165, 135, 2,0),Block(1860, 1890, 165, 135, 2,0),Block(1890, 1920, 165, 135, 2,0),Block(1860, 1890, 275, 245, 2,0),
-         Block(3655, 3685, 190, 160, 2,0),Block(3945, 3975, 200, 170, 2,0),Block(3975, 4005, 200, 170, 2,0),Block(4005, 4035, 200, 170, 2,0),
-         Block(4200, 4230, 200, 170, 2,0),Block(4230, 4260, 200, 170, 2,0),
-         Block(4930, 4960, 245, 215, 2,0),Block(4960, 4990, 245, 215, 3,0),Block(4990, 5020, 245, 215, 2,0),Block(5020, 5050, 245, 215, 2,0),Block(5050, 5080, 245, 215, 2,0),
-         Block(5600, 5630, 200, 170, 2,0),Block(5630, 5660, 200, 170, 2,0),Block(5660, 5690, 200, 170, 2,0),
-         Block(5690, 5720, 200, 170, 2,0),Block(5720, 5750, 200, 170, 2,0),Block(5750, 5780, 200, 170, 2,0),
-         Block(5780, 5810, 200, 170, 2,0),Block(5810, 5840, 200, 170, 2,0),Block(5840, 5870, 200, 170, 2,0),Block(6215, 6300, 120, 0, 1,0)]
+         Block(660, 690, 180, 150, 2),Block(840, 870, 180, 150, 3),Block(870, 900, 180, 150, 2),Block(1440, 1470, 290, 260, 2),
+         Block(1830, 1860, 165, 135, 2),Block(1860, 1890, 165, 135, 2),Block(1890, 1920, 165, 135, 2),Block(1860, 1890, 275, 245, 2),
+         Block(5780, 5810, 200, 170, 2),Block(5810, 5840, 200, 170, 2),Block(5840, 5870, 200, 170, 2),Block(6215, 6300, 120, 0, 1),
+         Block(3655, 3685, 190, 160, 2),Block(3945, 3975, 200, 170, 2),Block(3975, 4005, 200, 170, 2),Block(4005, 4035, 200, 170, 2),
+         Block(4200, 4230, 200, 170, 2),Block(4230, 4260, 200, 170, 2),
+         Block(4930, 4960, 245, 215, 2),Block(4960, 4990, 245, 215, 3),Block(4990, 5020, 245, 215, 2),Block(5020, 5050, 245, 215, 2),Block(5050, 5080, 245, 215, 2),
+         Block(5600, 5630, 200, 170, 2),Block(5630, 5660, 200, 170, 2),Block(5660, 5690, 200, 170, 2),
+         Block(5690, 5720, 200, 170, 2),Block(5720, 5750, 200, 170, 2),Block(5750, 5780, 200, 170, 2)]
 
     wm = [Monster(900,45,0.2,0),Monster(2500,45,0.2,0),Monster(4000,45,0.2,0),Monster(2900,45,0.2,0),Monster(5700,45,0.2,0)]
     ite = [item(1130, 115, 0),item(1160, 170, 0),item(1190, 170, 0),item(1350, 190, 0),item(1380, 250, 0),item(1410, 250, 0),
@@ -878,9 +927,6 @@ def enter():
     bmx = 0
     bmy = 0
 
-    point = 0
-    money = 0
-    life = 3
 
 def exit():
     global sonic, b,wm, ite
@@ -908,7 +954,7 @@ def handle_events():
             game_framework.quit()
 
         elif event.type == SDL_KEYDOWN:  # 키 다운
-            if sonic.die == False:
+            if sonic.die == False and sonic.GoDown2 == False:
                 if event.key == SDLK_RIGHT:  # 오른쪽
                     sonic.plus_move = 0
                     sonic.dir2 = 1
