@@ -493,15 +493,15 @@ class player:
                             self.x = i.right + 16
 
             elif i.kind == 6:
-                if crush(self,i)!=0:
+                if crush(self,i)==5:
                     if fg.bottom > 30 * 2.7:
                         fg.top -= 400 * game_framework.frame_time
                         fg.bottom -= 400 * game_framework.frame_time
 
             elif i.kind == 7:
-                if crush(self,i)!=0:
-                    self.y = 14 * 2.7
-                    self.x = 999 * 2.7
+                if crush(self,i)==5:
+                    self.y = 80
+                    self.x = 830
                     self.GoDown2 = True
                     self.frame = 0
 
@@ -520,9 +520,9 @@ class player:
         else:
             if self.GoDown2 == True:
                 if self.firemode == True:
-                    firesonic.clip_draw(int(self.frame) * 40, 140, 40, 40, self.x, self.y, self.size, self.size)
+                    firesonic.clip_draw(int(self.frame) * 40, 100, 40, 40, self.x, self.y, self.size, self.size)
                 else:
-                    sonic_sprite.clip_draw(int(self.frame) * 40, 140, 40, 40, self.x, self.y, self.size, self.size)
+                    sonic_sprite.clip_draw(int(self.frame) * 40, 100, 40, 40, self.x, self.y, self.size, self.size)
                 if self.frame > 7:
                     delay(0.2)
                     if self.GoDown2 == 1:
@@ -899,6 +899,8 @@ def crush(A,B):
         return 4
     if A.top > B.top and A.bottom-1 < B.top and A.right > B.left and A.left < B.right:
         return 3
+    if A.top > B.bottom and A.bottom < B.top and A.right > B.left and A.left < B.right:
+        return 5
     return 0
 
 def backmove():
@@ -973,11 +975,11 @@ def enter():
 def exit():
     global sonic, b,wm, ite,fg
     global WIDTH, HEIGHT, frame, x, y, money, point
-    global sonic_sprite, stage1_2, num, score,star, it, coin, firesonic, brick,flag_png
+    global sonic_sprite, stage1_3, num, score,star, it, coin, firesonic, brick,flag_png
 
     del(fg)
     del(sonic_sprite)
-    del(stage1_2)
+    del(stage1_3)
     del(sonic)
     del(b)
     del(num)
