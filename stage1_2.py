@@ -7,6 +7,8 @@ import stage1_1
 import stage1_3
 
 diecount=0
+size = 0
+firecheck = False
 
 def point_draw():
     global point
@@ -397,9 +399,11 @@ class player:
             self.dir = 0
 
         else:
-            if self.fast and self.dir != 0:  # 대시 on
-                self.x += ((self.dir * 0.2) + (self.dir2 * self.plus_move)) * game_framework.frame_time
-            else:  # 대시 off
+            if self.fast == False and self.dir != 0:  # 대시 off
+                self.x += ((self.dir2 * self.plus_move)) * game_framework.frame_time
+            elif self.fast == True and self.dir != 0:  # 대시 on
+                self.x += ((self.dir2 * self.plus_move)) * game_framework.frame_time * 1.3
+            else:  # 멈춤
                 self.x += self.dir2 * self.plus_move * game_framework.frame_time
         self.Ground = False
 
@@ -890,6 +894,7 @@ def enter():
     global sonic, b, wm, ite, fb, bb, life, diecount
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, money
     global sonic_sprite, stage1_2, num, score, it, star, fly_monster, brick, bmx, bmy
+    global stage1_1,size,firecheck
 
     sonic_sprite = load_image('sonic_sprite.png')
     walk_monster = load_image('walk_monster.png')
@@ -922,6 +927,9 @@ def enter():
     point = stage1_1.point
     money = stage1_1.money
     life = stage1_1.life - diecount
+
+    size = stage1_1.size
+    firecheck = stage1_1.firecheck
 
 
 def exit():
@@ -1001,7 +1009,7 @@ def handle_events():
                 sonic.fast = False
 
 def update():
-    global life
+    global life, size, firecheck
     sonic.update()
     sonic.move()
     backmove()
@@ -1022,6 +1030,10 @@ def update():
         i.move()
     if life == 0:
         game_framework.change_state(GameOver)
+    sonic.size = size
+    sonic.firemode = firecheck
+    size = sonic.size
+    firecheck = sonic.firemode
 
 def draw():
     clear_canvas()

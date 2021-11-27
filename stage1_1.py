@@ -9,6 +9,8 @@ from math import *
 point = 0
 money = 0
 life = 3
+size = 0
+firecheck = False
 
 def point_draw():
     global point
@@ -397,9 +399,11 @@ class player:
             self.dir = 0
 
         else:
-            if self.fast and self.dir != 0:  # 대시 on
-                self.x += ((self.dir * 0.2) + (self.dir2 * self.plus_move)) * game_framework.frame_time
-            else:  # 대시 off
+            if self.fast == False and self.dir != 0:  # 대시 off
+                self.x += ((self.dir2 * self.plus_move)) * game_framework.frame_time
+            elif self.fast == True and self.dir != 0:  # 대시 on
+                self.x += ((self.dir2 * self.plus_move)) * game_framework.frame_time * 1.3
+            else:  # 멈춤
                 self.x += self.dir2 * self.plus_move * game_framework.frame_time
         self.Ground = False
 
@@ -638,7 +642,6 @@ class player:
                                 star.clip_composite_draw(int(self.frame) * 40, 180, 40, 40, 0, 'h', self.x,self.y, self.size, self.size)
                         else:
                             star.clip_composite_draw(int(self.frame) * 40, 340, 40, 40, 0, 'h', self.x, self.y,self.size, self.size)
-
 
 class Monster:
 
@@ -879,7 +882,7 @@ def draw_back():                                   # 배경 그리기
 def enter():
     global sonic, b, wm, ite, fb, bb, life
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, point, money
-    global sonic_sprite, stage1_1, num, score, it, star, fly_monster, brick,bmx,bmy
+    global sonic_sprite, stage1_1, num, score, it, star, fly_monster, brick, bmx, bmy
 
     sonic_sprite = load_image('sonic_sprite.png')
     walk_monster = load_image('walk_monster.png')
@@ -1006,6 +1009,8 @@ def handle_events():
 
 def update():
     global life
+    global size
+    global firecheck
     sonic.update()
     sonic.move()
     backmove()
@@ -1026,6 +1031,8 @@ def update():
         i.move()
     if life == 0:
         game_framework.change_state(GameOver)
+    size = sonic.size
+    firecheck = sonic.firemode
 
 def draw():
     clear_canvas()

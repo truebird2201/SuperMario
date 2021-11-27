@@ -397,9 +397,11 @@ class player:
             self.dir = 0
 
         else:
-            if self.fast and self.dir != 0:  # 대시 on
-                self.x += ((self.dir * 0.2) + (self.dir2 * self.plus_move)) * game_framework.frame_time
-            else:  # 대시 off
+            if self.fast == False and self.dir != 0:  # 대시 off
+                self.x += ((self.dir2 * self.plus_move)) * game_framework.frame_time
+            elif self.fast == True and self.dir != 0:  # 대시 on
+                self.x += ((self.dir2 * self.plus_move)) * game_framework.frame_time * 1.3
+            else:  # 멈춤
                 self.x += self.dir2 * self.plus_move * game_framework.frame_time
         self.Ground = False
 
@@ -499,9 +501,10 @@ class player:
                         fg.bottom -= 400 * game_framework.frame_time
 
             elif i.kind == 7:
-                if crush(self,i)==5:
+                if crush(self,i)==5 and self.GoDown==True:
+                    self.GoDown = False
                     self.y = 80
-                    self.x = 830
+                    self.x = 850
                     self.GoDown2 = True
                     self.frame = 0
 

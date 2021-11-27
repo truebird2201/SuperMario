@@ -131,7 +131,7 @@ class player:
             if self.frame > 7:
                 delay(0.1)
                 if self.GoDown2 == 1:
-                    game_framework.change_state(stage1_3)
+                    game_framework.change_state(stage1_1)
                 if self.GoDown2 == 2:
                     game_framework.change_state(stage2_1)
                 if self.GoDown2 == 3:
