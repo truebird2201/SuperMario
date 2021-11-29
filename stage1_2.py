@@ -9,6 +9,9 @@ import stage1_3
 diecount=0
 size = 0
 firecheck = False
+money=0
+point=0
+life=0
 
 def point_draw():
     global point

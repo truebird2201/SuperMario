@@ -3,7 +3,6 @@ from pico2d import *
 import game_framework
 import Title_state
 import stage1_1
-import stage1_3
 import stage2_1
 from math import *
 

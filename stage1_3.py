@@ -9,6 +9,9 @@ import stage1_2
 diecount=0
 size = 0
 firecheck = False
+money=0
+point=0
+life=0
 
 def point_draw():
     global point
@@ -240,7 +243,7 @@ class player:
     dir = 0
     dir2 = 1
     gravity = 0.015
-    jumpPower = 1.7
+    jumpPower = 1.5
     jumpTime = 0
     downpower = 0
     savey = 0
@@ -974,11 +977,13 @@ def enter():
     bmx = 0
     bmy = 0
 
+    point = stage1_2.point
+    money = stage1_2.money
+    life = stage1_2.life - diecount
+
     diecount = stage1_2.diecount
     size = stage1_2.size
     firecheck = stage1_2.firecheck
-
-    life = stage1_1.life - diecount
 
 def exit():
     global sonic, b,wm, ite,fg
