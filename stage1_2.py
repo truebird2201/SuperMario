@@ -240,7 +240,7 @@ class player:
     dir = 0
     dir2 = 1
     gravity = 0.015
-    jumpPower = 1.5
+    jumpPower = 1.7
     jumpTime = 0
     downpower = 0
     savey = 0
