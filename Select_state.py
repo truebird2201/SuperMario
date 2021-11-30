@@ -13,7 +13,7 @@ select = None
 select_Stage = None
 select_Stage2 = None
 
-lock = 2
+lock = 3
 
 main_frame = 0
 main_move = False
@@ -189,16 +189,16 @@ class Block:                         # 파이프
         elif self.kind == 1:
             pipe.clip_draw(0, 300 - (self.top - self.bottom), 100, (self.top - self.bottom),(self.right + self.left) / 2, (self.top + self.bottom) / 2)
         elif self.kind == 2:
-            if lock == 2:
+            if lock > 2:
                 pipe.clip_draw(100, 300 - (self.top - self.bottom), 100, (self.top - self.bottom),(self.right + self.left) / 2, (self.top + self.bottom) / 2)
             else:
                 pipe.clip_draw(0, 300 - (self.top - self.bottom), 100, (self.top - self.bottom),(self.right + self.left) / 2, (self.top + self.bottom) / 2)
 
         elif self.kind == 3:
-            if lock == 1:
-                pipe.clip_draw(0, 300 - (self.top - self.bottom), 100, (self.top - self.bottom),(self.right + self.left) / 2, (self.top + self.bottom) / 2)
-            else:
+            if lock > 1:
                 pipe.clip_draw(100, 300 - (self.top - self.bottom), 100, (self.top - self.bottom),(self.right + self.left) / 2, (self.top + self.bottom) / 2)
+            else:
+                pipe.clip_draw(0, 300 - (self.top - self.bottom), 100, (self.top - self.bottom),(self.right + self.left) / 2, (self.top + self.bottom) / 2)
 def crush(A,B):
 
     if A.y+30 > B.bottom and B.top > A.y-30 and A.x+20 > B.left and B.left > A.x-20:

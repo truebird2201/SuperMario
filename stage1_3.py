@@ -501,10 +501,11 @@ class player:
                             self.x = i.right + 16
 
             elif i.kind == 6:
-                if crush(self,i)==5:
+                if crush(self,i) == 5:
                     if fg.bottom > 30 * 2.7:
                         fg.top -= 400 * game_framework.frame_time
                         fg.bottom -= 400 * game_framework.frame_time
+                    Select_state.lock = 2
 
             elif i.kind == 7:
                 if crush(self,i)==5 and self.GoDown==True:

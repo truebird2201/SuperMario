@@ -938,7 +938,6 @@ def exit():
 
     del(sonic_sprite)
     del(stage1_1)
-    del(sonic)
     del(b)
     del(num)
     del(score)
