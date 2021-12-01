@@ -172,22 +172,24 @@ class Fire:
     bottom = 0
     frame = 0
     dir = 1
-    gravity = 0.01
-    jumpPower = 1.5
+    gravity = 0.03
+    jumpPower = 1.3
     jumpTime = 0
     downpower = 0
     savey = 0
     savey2 = 0
     jumpcount = 2
-    Ground = True
-    Jumping = False
+    Ground = False
+    Jumping = True
     x=0
+    check = False
 
 
     def __init__(self,x,y,dir):
         self.x2 = x
         self.y = y
         self.dir = dir
+        self.savey = y
 
     def update(self):
 
@@ -199,14 +201,17 @@ class Fire:
         self.top = self.y + 6
         self.bottom = self.y - 6
 
-
         for i in b:
-            if crush(self, i) == 1:
+            if self.top > i.bottom and self.bottom < i.top and self.right > i.left and self.left < i.left:
                 fb.remove(self)
-            elif crush(self, i) == 2:
+            elif self.top > i.bottom and self.bottom < i.top and self.right > i.right and self.left < i.right:
                 fb.remove(self)
-            elif crush(self, i) == 3:
-                self.y = i.top + 20
+            elif self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
+                self.y = i.top + 6
+                self.savey = self.y
+                self.Jumping = True
+                self.jumpTime = 0.0
+
 
         for i in wm:
             if i.die == False:
@@ -224,8 +229,14 @@ class Fire:
             fb.remove(self)
 
 
+
     def move(self):
-        self.x2 += self.dir * 400* game_framework.frame_time
+        if self.Jumping:                                                            # 점프
+            self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
+                        self.jumpTime * self.jumpPower) + self.savey
+            self.jumpTime += 400 * game_framework.frame_time
+
+        self.x2 += self.dir * 500* game_framework.frame_time
 
     def draw(self):
         coin.clip_draw(int(self.frame) * 20, 0, 20, 20, self.x, self.y, 20, 20)
@@ -256,7 +267,7 @@ class player:
     plus_move = 0
     die = False
     starmode = False
-    firemode = False
+    firemode = True
     starcount = 0
     diedown = 0
     size = 48
