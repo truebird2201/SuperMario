@@ -114,15 +114,13 @@ class player:
                     if i.kind == 1:
                         self.GoDown2 = 1
                         self.frame = 0
-                        self.GoDown = False
-                    if i.kind == 2:
+                    if i.kind == 2 and lock < 3:
                         self.GoDown2 = 2
                         self.frame = 0
-                        self.GoDown = False
-                    if i.kind == 3:
+                    if i.kind == 3 and lock < 2:
                         self.GoDown2 = 3
                         self.frame = 0
-                        self.GoDown = False
+                    self.GoDown = False
                 self.y = i.top + 30
                 self.savey = self.y
 
