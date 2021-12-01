@@ -221,12 +221,15 @@ class Fire:
                         point += 2
                     i.die = True
                     i.frame = 0
-                    fb.remove(self)
+                    if self in fb:
+                        fb.remove(self)
 
         if self.left > 1000:
-            fb.remove(self)
+            if self in fb:
+                fb.remove(self)
         if self.left < 0:
-            fb.remove(self)
+            if self in fb:
+                fb.remove(self)
 
 
 
