@@ -704,11 +704,11 @@ class Block:                         # 블럭
         # check = 3 위,아래만
 
     def draw(self):
-        if self.kind == 0:              # 닿으면 죽는 벽돌
+        if self.kind == 2:              # 닿으면 죽는 벽돌
             pass
         elif self.kind == 1:            # 파이프
             pass
-        elif self.kind == 2:            # 벽돌
+        elif self.kind == 0:            # 벽돌
             brick.clip_draw(int(self.frame) * 60, 180, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.top-self.bottom)/2, self.right-self.left, self.top-self.bottom)
         elif self.kind == 3:            # 버섯이든 블럭
             brick.clip_draw(int(self.frame) * 60, 120, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.top-self.bottom)/2, self.right-self.left, self.top-self.bottom)
@@ -863,7 +863,7 @@ def enter():
          Block(1778 * 3.2, 1902 * 3.2, 42 * 3.2, 0 * 3.2, 2),]
 
     wm = [Monster(436*3.2,100*3.2,80,3),Monster(187*3.2,120*3.2,50,2),Monster(881*3.2,27*3.2,50,2),Monster(1075*3.2,110*3.2,50,2),Monster(1554*3.2,11*3.2,50,2),
-          Monster(1220*3.2,100*3.2,50,2),Monster(646*3.2,100*3.2,50,2),Monster(905*3.2,140*3.2,80,3),Monster(1652*3.2,140*3.2,80,3),]
+          Monster(1220*3.2,100*3.2,50,2),Monster(646*3.2,100*3.2 ,50,2),Monster(905*3.2,140*3.2,80,3),Monster(1652*3.2,140*3.2,80,3),]
     ite = []
     fb = []
     bb = []
