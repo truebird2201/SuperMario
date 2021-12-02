@@ -3,7 +3,6 @@ from pico2d import *
 import game_framework
 import Select_state
 import GameOver
-import stage1_2
 from math import *
 
 point = 0
@@ -63,7 +62,9 @@ class item:
     jumpcount = 2
     Ground = True
     Jumping = False
+    useable = False
     x=0
+    pluscount = 0
 
 
 
@@ -85,50 +86,24 @@ class item:
         self.top = self.y + 10
         self.bottom = self.y - 10
 
-        if self.kind == 1:
-            self.x2 += self.dir * 0.7
+        if self.kind == 1 and self.useable == False:
+            self.y += 0.01
+            self.pluscount += 0.01
+            if self.pluscount == 15:
+                self.useable = True
+
+        if self.kind == 1 and self.useable == True:
+            self.x2 += self.dir * game_framework.frame_time
         elif self.kind == 2:
-            self.x2 += self.dir * 0.5
+            self.x2 += self.dir * game_framework.frame_time
 
 
 
 
     def move(self):
         if self.kind == 1:                                                              # 스타
-            self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
-                    self.jumpTime * self.jumpPower) + self.savey
-            self.jumpTime += 1
-            if self.y < self.savey:
-                self.y = self.savey
-                self.jumpTime = 0.0
-
-
-            self.Ground = False
-
-            if self.Ground == False:
-                self.savey = 0
-
-            for i in b:
-                if crush(self, i) == 1:
-                    self.dir = -1
-                elif crush(self, i) == 2:
-                    self.dir = 1
-                elif crush(self, i) == 3:
-                    self.y = i.top + 10
-                    self.savey = self.y
-                    self.jumpTime = 1.0
-                    self.Ground = True
-                    self.downpower = 0
-
-            self.y -= 0.5
-            for i in b:
-                if crush(self, i) == 1:
-                    self.dir = -1
-                elif crush(self, i) == 2:
-                    self.dir = 1
-                elif crush(self, i) == 3:
-                    self.y = i.top + 10
-
+            self.y -= (100 + self.downpower) * game_framework.frame_time
+            self.downpower += 100 * game_framework.frame_time
 
         elif self.kind == 2:                                                            # 빨간 버섯
             self.y -= 0.5
@@ -336,6 +311,7 @@ class player:
                 else:
                     if crush(sonic, i) != 0:
                         if i.die == False:
+                            global point
                             point += 2
                         i.die = True
                         i.frame = 0
@@ -455,7 +431,8 @@ class player:
                 if self.frame > 7:
                     delay(0.2)
                     if self.GoDown2 == 1:
-                        game_framework.change_state(stage1_2)
+                        game_framework.change_state(Select_state)
+                        Select_state.lock=1
                     self.GoDown2 = False
             else:
                 if self.starmode == False:                                                                          # 스타모드 아닐때
@@ -782,6 +759,7 @@ class Block:                         # 블럭
                         b.remove(self)
                 if self.kind == 3:
                     self.used = True
+                    ite.append(item(self.left2+(self.right2-self.left2)/2, self.bottom2+(self.top2 - self.bottom2)/2, 1))
 
 class BBlock:                         # 블럭
 
