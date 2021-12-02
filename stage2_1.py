@@ -399,17 +399,47 @@ class player:
         self.Ground = False
 
         for i in b:                         # 블럭 충돌
-            if crush(self,i) == 5 and self.die == False:
+
+            if crush(self,i) == 5 and self.die == False and i.kind == 2:
                 self.die = True
                 self.frame = 0
                 self.dir = 0
+
+            if self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right and self.Jumping == True:
+                self.y = i.top + 24
+                self.savey = self.y
+                self.Ground = True
+
+            elif self.bottom + 10 > i.top and self.bottom - 1 < i.top and self.right > i.left and self.left < i.right and self.Jumping == False:
+                self.y = i.top + 24
+                self.savey = self.y
+                self.Ground = True
+                if self.GoDown == True:
+                    if i.kind == 1:
+                        self.GoDown2 = True
+                        self.frame = 0
+                        self.GoDown = False
+
+            elif self.top + 1 > i.bottom and self.bottom < i.bottom and self.right > i.left and self.left < i.right and self.Jumping == True:  # 아래 -> 위
+                self.y = i.bottom - 27
+                self.savey = 0
+                self.Jumping = False
+                self.jumpcount = 2
+                self.jumpTime = 0.0
+                if i.kind == 3:
+                    if i.notused == 0:
+                        i.notused = 1
+                if i.kind == 2:
+                    if i.notused == 0:
+                        i.notused = 1
+
 
 
         if self.Ground == False:
             self.savey = 0
             if self.Jumping == False and self.die == False:
-                self.y -= (150 + self.downpower) * game_framework.frame_time
-                self.downpower += 150 * game_framework.frame_time
+                self.y -= (100 + self.downpower) * game_framework.frame_time
+                self.downpower += 100 * game_framework.frame_time
 
 
     def draw(self):
@@ -625,7 +655,7 @@ class Monster:
             pass
 
         elif self.kind == 2 or self.kind == 3:                                    # 물고기
-            if self.x < 900 and self.x > 50 and self.y < 600 and self.y > 0:
+            if self.x < 900 and self.x > 50 and self.y < 600 and self.y > 0 and self.die==False:
                 if self.x <= sonic.x:
                     self.x2 += self.Speed * game_framework.frame_time
                     self.dir = 1
@@ -639,6 +669,11 @@ class Monster:
 
                 if self.y >= sonic.y:
                     self.y -= self.Speed * game_framework.frame_time
+            if self.die == True:
+                self.y += self.Speed * game_framework.frame_time * 5
+                if self.bottom > 600:
+                    wm.remove(self)
+
 
 
     def draw(self):
@@ -664,17 +699,23 @@ class Monster:
                 fly_monster.clip_draw(int(self.frame) * 40, 0, 40, 40, self.x, self.y, 45, 45)
 
         elif self.kind == 2:                               # 물고기 그리기
-            if self.dir == 1:  # 오른쪽
+            if self.die == True:
                 fish_monster.clip_composite_draw((int(self.frame)) * 111, 105, 111, 105, 0, 'h', self.x, self.y, 30, 30)
+            else:
+                if self.dir == 1:  # 오른쪽
+                    fish_monster.clip_composite_draw((int(self.frame)) * 111, 315, 111, 105, 0, 'h', self.x, self.y, 30, 30)
 
-            elif self.dir == -1:  # 왼쪽
-                fish_monster.clip_draw((int(self.frame)) * 111, 105, 111, 105, self.x, self.y, 30, 30)
+                elif self.dir == -1:  # 왼쪽
+                    fish_monster.clip_draw((int(self.frame)) * 111, 105, 111, 315, self.x, self.y, 30, 30)
         elif self.kind == 3:                               # 물고기 그리기
-            if self.dir == 1:  # 오른쪽
+            if self.die == True:
                 fish_monster.clip_composite_draw((int(self.frame)) * 111, 0, 111, 105, 0, 'h', self.x, self.y, 30, 30)
+            else:
+                if self.dir == 1:  # 오른쪽
+                    fish_monster.clip_composite_draw((int(self.frame)) * 111, 210, 111, 105, 0, 'h', self.x, self.y, 30, 30)
 
-            elif self.dir == -1:  # 왼쪽
-                fish_monster.clip_draw((int(self.frame)) * 111, 0, 111, 105, self.x, self.y, 30, 30)
+                elif self.dir == -1:  # 왼쪽
+                    fish_monster.clip_draw((int(self.frame)) * 111, 210, 111, 105, self.x, self.y, 30, 30)
 
 
 class Block:                         # 블럭
@@ -849,7 +890,8 @@ def enter():
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(0, 780*3.2, 13*3.2, -20*3.2, 2),Block(0, 108*3.2, 29*3.2, 0, 2),Block(0, 92*3.2, 44*3.2, 0, 2),Block(0, 77*3.2, 60*3.2, 0, 2),Block(0, 60*3.2, 76*3.2, 0, 2),Block(0, 45*3.2, 93*3.2, 0, 2),
+    b = [Block(100*3.2, 100*3.2+30, 100*3.2+30, 100*3.2, 3),
+         Block(0, 108*3.2, 29*3.2, 0, 2),Block(0, 92*3.2, 44*3.2, 0, 2),Block(0, 77*3.2, 60*3.2, 0, 2),Block(0, 60*3.2, 76*3.2, 0, 2),Block(0, 45*3.2, 93*3.2, 0, 2),
          Block(0, 31*3.2, 188*3.2, 172*3.2, 2),Block(61*3.2, 1889*3.2, 188*3.2, 172*3.2, 2),Block(79*3.2, 172*3.2, 188*3.2, 160*3.2, 2),Block(94*3.2, 156*3.2, 188*3.2, 143*3.2, 2),Block(111*3.2, 140*3.2, 188*3.2, 127*3.2, 2),
          Block(304*3.2, 427*3.2, 29*3.2, 0*3.2, 2),Block(320*3.2, 411*3.2, 45*3.2, 0*3.2, 2),Block(336*3.2, 395*3.2, 60*3.2, 0*3.2, 2),Block(352*3.2, 380*3.2, 76*3.2, 0*3.2, 2),
          Block(448*3.2, 507*3.2, 188*3.2, 160*3.2, 2),Block(464*3.2, 492*3.2, 188*3.2, 144*3.2, 2),
