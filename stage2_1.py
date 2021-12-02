@@ -93,7 +93,7 @@ class item:
                 self.useable = True
 
         if self.kind == 1 and self.useable == True:
-            self.x2 += self.dir * game_framework.frame_time
+            self.x2 += self.dir * game_framework.frame_time * 200
         elif self.kind == 2:
             self.x2 += self.dir * game_framework.frame_time
 
@@ -374,6 +374,14 @@ class player:
                 self.x += self.dir2 * self.plus_move * game_framework.frame_time
         self.Ground = False
 
+
+
+        if self.Ground == False:
+            self.savey = 0
+            if self.Jumping == False and self.die == False:
+                self.y -= (100 + self.downpower) * game_framework.frame_time
+                self.downpower += 100 * game_framework.frame_time
+
         for i in b:                         # 블럭 충돌
 
             if crush(self,i) == 5 and self.die == False and i.kind == 2:
@@ -382,12 +390,12 @@ class player:
                 self.dir = 0
 
             if self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right and self.Jumping == True:
-                self.y = i.top + 24
+                self.y = i.top + 10
                 self.savey = self.y
                 self.Ground = True
 
             elif self.bottom + 10 > i.top and self.bottom - 1 < i.top and self.right > i.left and self.left < i.right and self.Jumping == False:
-                self.y = i.top + 24
+                self.y = i.top + 10
                 self.savey = self.y
                 self.Ground = True
                 if self.GoDown == True:
@@ -397,7 +405,7 @@ class player:
                         self.GoDown = False
 
             elif self.top + 1 > i.bottom and self.bottom < i.bottom and self.right > i.left and self.left < i.right and self.Jumping == True:  # 아래 -> 위
-                self.y = i.bottom - 27
+                self.y = i.bottom - 10
                 self.savey = 0
                 self.Jumping = False
                 self.jumpcount = 2
@@ -410,12 +418,6 @@ class player:
                         i.notused = 1
 
 
-
-        if self.Ground == False:
-            self.savey = 0
-            if self.Jumping == False and self.die == False:
-                self.y -= (100 + self.downpower) * game_framework.frame_time
-                self.downpower += 100 * game_framework.frame_time
 
 
     def draw(self):
@@ -683,7 +685,7 @@ class Monster:
                     fish_monster.clip_composite_draw((int(self.frame)) * 111, 315, 111, 105, 0, 'h', self.x, self.y, 30, 30)
 
                 elif self.dir == -1:  # 왼쪽
-                    fish_monster.clip_draw((int(self.frame)) * 111, 105, 111, 315, self.x, self.y, 30, 30)
+                    fish_monster.clip_draw((int(self.frame)) * 111, 315, 111, 105, self.x, self.y, 30, 30)
         elif self.kind == 3:                               # 물고기 그리기
             if self.die == True:
                 fish_monster.clip_composite_draw((int(self.frame)) * 111, 0, 111, 105, 0, 'h', self.x, self.y, 30, 30)
@@ -727,7 +729,7 @@ class Block:                         # 블럭
         elif self.kind == 1:            # 파이프
             pass
         elif self.kind == 0:            # 벽돌
-            brick.clip_draw(int(self.frame) * 60, 180, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.top-self.bottom)/2, self.right-self.left, self.top-self.bottom)
+            brick.clip_draw(int(self.frame) * 60, 180, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.top-self.bottom)/2-5, self.right-self.left, self.top-self.bottom)
         elif self.kind == 3:            # 버섯이든 블럭
             brick.clip_draw(int(self.frame) * 60, 120, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.top-self.bottom)/2, self.right-self.left, self.top-self.bottom)
         if self.used == True:
@@ -868,7 +870,7 @@ def enter():
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(100*3.2, 100*3.2+30, 100*3.2+30, 100*3.2, 3),
+    b = [Block(30*3.2, 30*3.2+30, 130*3.2+30, 130*3.2, 3),Block(30, 30+30, 88*3.2+30, 88*3.2, 0),Block(60, 60+30, 88*3.2+30, 88*3.2, 0),Block(90, 90+30, 88*3.2+30, 88*3.2, 0),
          Block(0, 108*3.2, 29*3.2, 0, 2),Block(0, 92*3.2, 44*3.2, 0, 2),Block(0, 77*3.2, 60*3.2, 0, 2),Block(0, 60*3.2, 76*3.2, 0, 2),Block(0, 45*3.2, 93*3.2, 0, 2),
          Block(0, 31*3.2, 188*3.2, 172*3.2, 2),Block(61*3.2, 1889*3.2, 188*3.2, 172*3.2, 2),Block(79*3.2, 172*3.2, 188*3.2, 160*3.2, 2),Block(94*3.2, 156*3.2, 188*3.2, 143*3.2, 2),Block(111*3.2, 140*3.2, 188*3.2, 127*3.2, 2),
          Block(304*3.2, 427*3.2, 29*3.2, 0*3.2, 2),Block(320*3.2, 411*3.2, 45*3.2, 0*3.2, 2),Block(336*3.2, 395*3.2, 60*3.2, 0*3.2, 2),Block(352*3.2, 380*3.2, 76*3.2, 0*3.2, 2),
@@ -882,7 +884,16 @@ def enter():
          Block(1588 * 3.2, 1916 * 3.2, 13 * 3.2, 0 * 3.2, 2),Block(1698 * 3.2, 1917 * 3.2, 28 * 3.2, 0 * 3.2, 2),Block(1778 * 3.2, 1853 * 3.2, 60 * 3.2, 0 * 3.2, 2),
          Block(1778 * 3.2, 1902 * 3.2, 42 * 3.2, 0 * 3.2, 2),]
 
-    wm = [Monster(436*3.2,100*3.2,80,3),Monster(187*3.2,120*3.2,50,2),Monster(881*3.2,27*3.2,50,2),Monster(1075*3.2,110*3.2,50,2),Monster(1554*3.2,11*3.2,50,2),
+    wm = [Monster(178*3.2,50*3.2,80,3),Monster(189*3.2,80*3.2,80,3),Monster(274*3.2,100*3.2,150,3),Monster(412*3.2,100*3.2,80,3),Monster(352*3.2,120*3.2,80,3),
+          Monster(376 * 3.2, 80 * 3.2, 80, 3),Monster(400*3.2,110*3.2,80,3),Monster(200*3.2,75*3.2,80,3),Monster(250*3.2,152*3.2,80,3),
+
+          Monster(190 * 3.2, 20 * 3.2, 50, 2), Monster(180 * 3.2, 105 * 3.2, 50, 2),
+          Monster(273 * 3.2, 120 * 3.2, 50, 2), Monster(275 * 3.2, 84 * 3.2, 50, 2),
+          Monster(401 * 3.2, 110 * 3.2, 50, 2),
+          Monster(376 * 3.2, 76 * 3.2, 50, 2), Monster(227 * 3.2, 46 * 3.2, 50, 2),
+          Monster(316 * 3.2, 59 * 3.2, 50, 2), Monster(250 * 3.2, 98 * 3.2, 50, 2),
+
+          Monster(436*3.2,100*3.2,80,3),Monster(187*3.2,120*3.2,50,2),Monster(881*3.2,27*3.2,50,2),Monster(1075*3.2,110*3.2,50,2),Monster(1554*3.2,11*3.2,50,2),
           Monster(1220*3.2,100*3.2,50,2),Monster(646*3.2,100*3.2 ,50,2),Monster(905*3.2,140*3.2,80,3),Monster(1652*3.2,140*3.2,80,3),]
     ite = []
     fb = []
