@@ -420,7 +420,7 @@ class player:
             if self.fast == False and self.dir != 0:  # 대시 off
                 self.x += ((self.dir2 * self.plus_move)) * game_framework.frame_time
             elif self.fast == True and self.dir != 0:  # 대시 on
-                self.x += ((self.dir2 * self.plus_move)) * game_framework.frame_time * 1.3
+                self.x += ((self.dir2 * self.plus_move)) * game_framework.frame_time * 2.0
             else:  # 멈춤
                 self.x += self.dir2 * self.plus_move * game_framework.frame_time
         self.Ground = False
@@ -698,38 +698,43 @@ class Monster:
         self.bottom = self.y - 30
 
 
+
+
         if self.kind==0 and self.die == True and int(self.frame) == 10:
             wm.remove(self)
         if self.kind==2 and self.die == True and int(self.frame) == 4:
             self.frame = 4
 
     def move(self):
+
         if self.kind == 0:                                      # 굼바
             self.x2 += self.dir * self.Speed*400* game_framework.frame_time
             for i in b:
-                if crush(self, i) == 3:
+                if self.bottom + 1 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
                     if self.dir == 1:
                         if self.right > i.right:
                             self.dir = -1
                     else:
                         if self.left < i.left:
                             self.dir = 1
+                    self.y = i.top+15
 
                 if crush(self, i) == 1:
                     self.dir = -1
                 if crush(self, i) == 2:
                     self.dir = 1
 
-        if self.kind == 2:                                      # 굼바
+        if self.kind == 2:                                      # 거북이
             self.x2 += self.dir * self.Speed*400* game_framework.frame_time
             for i in b:
-                if crush(self, i) == 3:
+                if self.bottom + 1 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
                     if self.dir == 1:
                         if self.right > i.right:
                             self.dir = -1
                     else:
                         if self.left < i.left:
                             self.dir = 1
+                    self.y = i.top + 15
 
                 if crush(self, i) == 1:
                     self.dir = -1
@@ -884,7 +889,7 @@ class BBlock:                         # 블럭
             self.top -= self.diespeed
             self.bottom -= self.diespeed
 
-class Shell:                         # 블럭
+class Shell:                         # 등딱지
 
     global bmx
     left = 0
@@ -1014,7 +1019,7 @@ def enter():
          Block(5600, 5630, 200, 170, 2),Block(5630, 5660, 200, 170, 2),Block(5660, 5690, 200, 170, 2),
          Block(5690, 5720, 200, 170, 2),Block(5720, 5750, 200, 170, 2),Block(5750, 5780, 200, 170, 2)]
 
-    wm = [Monster(100,45,0.2,2),Monster(900,45,0.2,0),Monster(900,45,0.2,0),Monster(2500,45,0.2,0),Monster(4000,45,0.2,0),Monster(2900,45,0.2,0),Monster(5700,45,0.2,0)]
+    wm = [Monster(100,13*2.7+15,0.2,2),Monster(758*2.7,13*2.7+15,0.2,0),Monster(642*2.7,13*2.7+15,0.4,0),Monster(849*2.7,29*2.7+15,0.2,2),]
     ite = [item(1130, 115, 0),item(1160, 170, 0),item(1190, 170, 0),item(1350, 190, 0),item(1380, 250, 0),item(1410, 250, 0),
            item(2215, 200, 0),item(2245, 245, 0),item(2275, 245, 0),item(2305, 215, 0),
            item(3145, 170, 0),item(3175, 215, 0),item(3205, 215, 0),item(3235, 170, 0),
