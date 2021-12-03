@@ -727,7 +727,7 @@ class Monster:
         if self.kind == 2:                                      # 거북이
             self.x2 += self.dir * self.Speed*400* game_framework.frame_time
             for i in b:
-                if self.bottom + 1 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
+                if self.bottom > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
                     if self.dir == 1:
                         if self.right > i.right:
                             self.dir = -1
@@ -906,23 +906,23 @@ class Shell:                         # 등딱지
         self.y = y
 
     def draw(self):
-        turtle_monster.clip_draw(int(self.frame) * 25, 0, 25, 20, self.x, self.y, 30, 20)
+        turtle_monster.clip_draw(int(self.frame) * 25, 0, 25, 20, self.x2, self.y, 30, 20)
 
     def update(self):
         self.frame = (self.frame + 12* game_framework.frame_time) % 8
         self.x = self.x2+bmx
-        self.left = self.x-15
-        self.right = self.x + 15
+        self.left = self.x2-15
+        self.right = self.x2 + 15
         self.top = self.y + 10
         self.bottom = self.y - 10
 
         self.y -= 100 * game_framework.frame_time
 
         for i in b:
-            if self.top > i.bottom and self.bottom < i.top and self.right > i.left and self.left < i.left:
-                self.dir *= -1
-            if self.top > i.bottom and self.bottom < i.top and self.right > i.right and self.left < i.right:
-                self.dir *= -1
+            if self.top > i.bottom and self.bottom < i.top and self.right > i.left and self.left < i.left and self.dir == 1:
+                self.dir = -1
+            if self.top > i.bottom and self.bottom < i.top and self.right > i.right and self.left < i.right and self.dir == -1:
+                self.dir = 1
             if self.bottom + 1 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
                 self.y = i.top + 10
 
@@ -1019,7 +1019,8 @@ def enter():
          Block(5600, 5630, 200, 170, 2),Block(5630, 5660, 200, 170, 2),Block(5660, 5690, 200, 170, 2),
          Block(5690, 5720, 200, 170, 2),Block(5720, 5750, 200, 170, 2),Block(5750, 5780, 200, 170, 2)]
 
-    wm = [Monster(100,13*2.7+15,0.2,2),Monster(758*2.7,13*2.7+15,0.2,0),Monster(642*2.7,13*2.7+15,0.4,0),Monster(849*2.7,29*2.7+15,0.2,2),]
+    wm = [Monster(100,13*2.7+15,0.2,2),Monster(758*2.7,13*2.7+15,0.2,0),Monster(642*2.7,13*2.7+15,0.4,0),Monster(1855*2.7,13*2.7+15,0.2,2),
+          Monster(1855*2.7,13*2.7+15,0.4,0),]
     ite = [item(1130, 115, 0),item(1160, 170, 0),item(1190, 170, 0),item(1350, 190, 0),item(1380, 250, 0),item(1410, 250, 0),
            item(2215, 200, 0),item(2245, 245, 0),item(2275, 245, 0),item(2305, 215, 0),
            item(3145, 170, 0),item(3175, 215, 0),item(3205, 215, 0),item(3235, 170, 0),
