@@ -203,9 +203,11 @@ class Fire:
 
         for i in b:
             if self.top > i.bottom and self.bottom < i.top and self.right > i.left and self.left < i.left:
-                fb.remove(self)
+                if self in fb:
+                    fb.remove(self)
             elif self.top > i.bottom and self.bottom < i.top and self.right > i.right and self.left < i.right:
-                fb.remove(self)
+                if self in fb:
+                    fb.remove(self)
             elif self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
                 self.y = i.top + 6
                 self.savey = self.y
@@ -919,7 +921,7 @@ class Shell:                         # 등딱지
         self.y -= 100 * game_framework.frame_time
 
         for i in b:
-            if self.top > i.bottom and self.bottom < i.top and self.right > i.left and self.left < i.left and self.dir == 1:
+            if self.top > i.bottom and self.bottom < i.top and   self.right > i.left and self.left < i.left and self.dir == 1:
                 self.dir = -1
             if self.top > i.bottom and self.bottom < i.top and self.right > i.right and self.left < i.right and self.dir == -1:
                 self.dir = 1
@@ -936,7 +938,7 @@ class Shell:                         # 등딱지
                     i.frame = 0
 
     def move(self):
-        self.x2 += self.dir * 400* game_framework.frame_time
+        self.x2 += self.dir * 300* game_framework.frame_time
 
 
 def crush(A,B):
@@ -1019,8 +1021,8 @@ def enter():
          Block(5600, 5630, 200, 170, 2),Block(5630, 5660, 200, 170, 2),Block(5660, 5690, 200, 170, 2),
          Block(5690, 5720, 200, 170, 2),Block(5720, 5750, 200, 170, 2),Block(5750, 5780, 200, 170, 2)]
 
-    wm = [Monster(100,13*2.7+15,0.2,2),Monster(758*2.7,13*2.7+15,0.2,0),Monster(642*2.7,13*2.7+15,0.4,0),Monster(1855*2.7,13*2.7+15,0.2,2),
-          Monster(1855*2.7,13*2.7+15,0.4,0),]
+    wm = [Monster(680*2.7,13*2.7+15,0.5,0),Monster(671*2.7,13*2.7+15,0.5,2),Monster(931*2.7,13*2.7+15,0.5,2),Monster(120*2.7,13*2.7+15,0.5,0),Monster(100*2.7,13*2.7+15,0.2,2),Monster(758*2.7,13*2.7+15,0.2,0),Monster(642*2.7,13*2.7+15,0.4,0),Monster(1855*2.7,13*2.7+15,0.2,2),
+          Monster(1855*2.7,13*2.7+15,0.4,0),Monster(1830*2.7,13*2.7+15,0.2,0),Monster(2050*2.7,13*2.7+15,0.6,0),Monster(2080*2.7,13*2.7+15,0.8,0),Monster(1855*2.7,13*2.7+15,0.6,0),]
     ite = [item(1130, 115, 0),item(1160, 170, 0),item(1190, 170, 0),item(1350, 190, 0),item(1380, 250, 0),item(1410, 250, 0),
            item(2215, 200, 0),item(2245, 245, 0),item(2275, 245, 0),item(2305, 215, 0),
            item(3145, 170, 0),item(3175, 215, 0),item(3205, 215, 0),item(3235, 170, 0),
