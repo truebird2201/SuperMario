@@ -63,7 +63,9 @@ class item:
     jumpcount = 2
     Ground = True
     Jumping = False
-    x=0
+    useable = False
+    x = 0
+    pluscount = 0
 
 
 
@@ -85,10 +87,16 @@ class item:
         self.top = self.y + 10
         self.bottom = self.y - 10
 
-        if self.kind == 1:
-            self.x2 += self.dir * 0.7
-        elif self.kind == 2:
-            self.x2 += self.dir * 0.5
+        if self.useable == False:
+            self.y += game_framework.frame_time * 50
+            self.pluscount += game_framework.frame_time * 50
+            if self.pluscount > 15:
+                self.useable = True
+        else:
+            if self.kind == 1:
+                self.x2 += self.dir * game_framework.frame_time * 200
+            elif self.kind == 2 or self.kind == 4:
+                self.x2 += self.dir * game_framework.frame_time * 200
 
 
 
@@ -120,7 +128,9 @@ class item:
                     self.Ground = True
                     self.downpower = 0
 
-            self.y -= 0.5
+            if self.useable == True:
+                self.y -= game_framework.frame_time * 400
+
             for i in b:
                 if crush(self, i) == 1:
                     self.dir = -1
@@ -131,24 +141,26 @@ class item:
 
 
         elif self.kind == 2:                                                            # 빨간 버섯
-            self.y -= 0.5
-            for i in b:
-                if crush(self, i) == 1:
-                    self.dir = -1
-                elif crush(self, i) == 2:
-                    self.dir = 1
-                elif crush(self, i) == 3:
-                    self.y = i.top + 10
+            if self.useable == True:
+                self.y -= game_framework.frame_time * 400
+                for i in b:
+                    if crush(self, i) == 1:
+                        self.dir = -1
+                    elif crush(self, i) == 2:
+                        self.dir = 1
+                    elif crush(self, i) == 3:
+                        self.y = i.top + 10
 
         elif self.kind == 4:                                                            # 초록 버섯
-            self.y -= 0.5
-            for i in b:
-                if crush(self, i) == 1:
-                    self.dir = -1
-                elif crush(self, i) == 2:
-                    self.dir = 1
-                elif crush(self, i) == 3:
-                    self.y = i.top + 10
+            if self.useable == True:
+                self.y -= game_framework.frame_time * 400
+                for i in b:
+                    if crush(self, i) == 1:
+                        self.dir = -1
+                    elif crush(self, i) == 2:
+                        self.dir = 1
+                    elif crush(self, i) == 3:
+                        self.y = i.top + 10
 
 
 
@@ -340,7 +352,7 @@ class player:
             if self.die == False and i.die == False:
                 if self.starmode == False:                                                 # 스타모드가 아니라면
                     if self.depence == False and (crush(self, i) == 1 or crush(self, i) == 2):                  # 옆에서 부딪히면 소닉 죽음
-                        if self.size == 60 or self.firemode == True:
+                        if self.size == 54 or self.firemode == True:
                             self.size = 48
                             self.firemode = False
                             self.depence = True
@@ -795,6 +807,7 @@ class Block:                         # 블럭
     frame = 0
     used = False
     notused = 0
+    itemc = False
 
     def __init__(self, left, right, top, bottom, kind):
         self.left2 = left
@@ -848,6 +861,11 @@ class Block:                         # 블럭
                         b.remove(self)
                 if self.kind == 3:
                     self.used = True
+                    if self.itemc == False:
+                        ite.append(item(self.left2+(self.right2-self.left2)/2, self.bottom2+(self.top2 - self.bottom2)/2, 2))
+                        self.itemc = True
+                    else:
+                        ite.append(item(self.left2+(self.right2-self.left2)/2, self.bottom2+(self.top2 - self.bottom2)/2, 4))
 
 class BBlock:                         # 블럭
 
@@ -923,8 +941,10 @@ class Shell:                         # 등딱지
         for i in b:
             if self.top > i.bottom and self.bottom < i.top and   self.right > i.left and self.left < i.left and self.dir == 1:
                 self.dir = -1
-            if self.top > i.bottom and self.bottom < i.top and self.right > i.right and self.left < i.right and self.dir == -1:
+                self.x2 -= 200 * game_framework.frame_time
+            elif self.top > i.bottom and self.bottom < i.top and self.right > i.right and self.left < i.right and self.dir == -1:
                 self.dir = 1
+                self.x2 += 200 * game_framework.frame_time
             if self.bottom + 1 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
                 self.y = i.top + 10
 

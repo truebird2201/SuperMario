@@ -326,7 +326,7 @@ class player:
             if self.die == False and i.die == False:
                 if self.starmode == False:                                                 # 스타모드가 아니라면
                     if self.depence == False and (crush(self, i) == 1 or crush(self, i) == 2):                  # 옆에서 부딪히면 소닉 죽음
-                        if self.size == 60 or self.firemode == True:
+                        if self.size == 54 or self.firemode == True:
                             self.size = 48
                             self.firemode = False
                             self.depence = True
