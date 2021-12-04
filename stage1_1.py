@@ -462,7 +462,7 @@ class player:
                     self.Jumping = False
                     self.jumpcount = 2
                     self.jumpTime = 0.0
-                    if i.kind == 3:
+                    if i.kind == 3 or i.kind == 4:
                         if i.notused == 0:
                             i.notused = 1
                     if i.kind == 2:
@@ -830,7 +830,7 @@ class Block:                         # 블럭
             pass
         elif self.kind == 2:            # 벽돌
             brick.clip_draw(int(self.frame) * 60, 180, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
-        elif self.kind == 3:            # 버섯이든 블럭
+        elif self.kind == 3 or 4:            # 버섯이든 블럭
             brick.clip_draw(int(self.frame) * 60, 120, 60, 60, self.left+(self.right-self.left)/2, self.bottom+(self.right-self.left)/2, self.right-self.left, self.top-self.bottom)
         if self.used == True:
             brick.clip_draw(0, 60, 60, 60, self.left + (self.right - self.left) / 2,self.bottom + (self.right - self.left) / 2, self.right - self.left, self.top - self.bottom)
@@ -861,11 +861,10 @@ class Block:                         # 블럭
                         b.remove(self)
                 if self.kind == 3:
                     self.used = True
-                    if self.itemc == False:
-                        ite.append(item(self.left2+(self.right2-self.left2)/2, self.bottom2+(self.top2 - self.bottom2)/2, 2))
-                        self.itemc = True
-                    else:
-                        ite.append(item(self.left2+(self.right2-self.left2)/2, self.bottom2+(self.top2 - self.bottom2)/2, 4))
+                    ite.append(item(self.left2+(self.right2-self.left2)/2, self.bottom2+(self.top2 - self.bottom2)/2, 2))
+                if self.kind == 4:
+                    self.used = True
+                    ite.append(item(self.left2+(self.right2-self.left2)/2, self.bottom2+(self.top2 - self.bottom2)/2, 4))
 
 class BBlock:                         # 블럭
 
@@ -1037,7 +1036,7 @@ def enter():
          Block(5780, 5810, 200, 170, 2),Block(5810, 5840, 200, 170, 2),Block(5840, 5870, 200, 170, 2),Block(6215, 6300, 120, 0, 1),
          Block(3655, 3685, 190, 160, 2),Block(3945, 3975, 200, 170, 2),Block(3975, 4005, 200, 170, 2),Block(4005, 4035, 200, 170, 2),
          Block(4200, 4230, 200, 170, 2),Block(4230, 4260, 200, 170, 2),
-         Block(4930, 4960, 245, 215, 2),Block(4960, 4990, 245, 215, 3),Block(4990, 5020, 245, 215, 2),Block(5020, 5050, 245, 215, 2),Block(5050, 5080, 245, 215, 2),
+         Block(4930, 4960, 245, 215, 2),Block(4960, 4990, 245, 215, 4),Block(4990, 5020, 245, 215, 2),Block(5020, 5050, 245, 215, 2),Block(5050, 5080, 245, 215, 2),
          Block(5600, 5630, 200, 170, 2),Block(5630, 5660, 200, 170, 2),Block(5660, 5690, 200, 170, 2),
          Block(5690, 5720, 200, 170, 2),Block(5720, 5750, 200, 170, 2),Block(5750, 5780, 200, 170, 2)]
 
@@ -1168,11 +1167,11 @@ def draw():
     clear_canvas()
     draw_back()
     point_draw()
+    for i in ite:
+        i.draw()
     for i in b:
         i.draw()
     for i in wm:
-        i.draw()
-    for i in ite:
         i.draw()
     for i in fb:
         i.draw()
