@@ -416,6 +416,10 @@ class player:
                 if i.kind == 2:
                     if i.notused == 0:
                         i.notused = 1
+                if i.kind == 1:
+                    Select_state.lock = 1
+                    game_framework.change_state(Select_state)
+
 
 
 
@@ -434,7 +438,7 @@ class player:
                     delay(0.2)
                     if self.GoDown2 == 1:
                         game_framework.change_state(Select_state)
-                        Select_state.lock=1
+                        Select_state.lock = 1
                     self.GoDown2 = False
             else:
                 if self.starmode == False:                                                                          # 스타모드 아닐때
@@ -873,7 +877,7 @@ def enter():
     HEIGHT = 800
 
     b = [Block(30*3.2, 30*3.2+30, 130*3.2+30, 130*3.2, 3),Block(30, 30+30, 88*3.2+30, 88*3.2, 0),Block(60, 60+30, 88*3.2+30, 88*3.2, 0),Block(90, 90+30, 88*3.2+30, 88*3.2, 0),
-         Block(31 * 3.2, 61 * 3.2 + 30, 188 * 3.2 + 30, 142 * 3.2, 4),Block(1888 * 3.2, 1917 * 3.2 + 30, 188 * 3.2 + 30, 142 * 3.2, 3),
+         Block(31 * 3.2, 61 * 3.2 + 30, 188 * 3.2 + 30, 142 * 3.2, 4),Block(1888 * 3.2, 1917 * 3.2 + 30, 188 * 3.2 + 30, 142 * 3.2, 1),
          Block(0, 108*3.2, 29*3.2, 0, 2),Block(0, 92*3.2, 44*3.2, 0, 2),Block(0, 77*3.2, 60*3.2, 0, 2),Block(0, 60*3.2, 76*3.2, 0, 2),Block(0, 45*3.2, 93*3.2, 0, 2),
          Block(0, 31*3.2, 188*3.2, 172*3.2, 2),Block(61*3.2, 1889*3.2, 188*3.2, 172*3.2, 2),Block(79*3.2, 172*3.2, 188*3.2, 160*3.2, 2),Block(94*3.2, 156*3.2, 188*3.2, 143*3.2, 2),Block(111*3.2, 140*3.2, 188*3.2, 127*3.2, 2),
          Block(304*3.2, 427*3.2, 29*3.2, 0*3.2, 2),Block(320*3.2, 411*3.2, 45*3.2, 0*3.2, 2),Block(336*3.2, 395*3.2, 60*3.2, 0*3.2, 2),Block(352*3.2, 380*3.2, 76*3.2, 0*3.2, 2),
@@ -985,8 +989,7 @@ def update():
     global life
     global size
     global firecheck
-    sonic.update()
-    sonic.move()
+
     backmove()
     for i in ite:
         i.update()
@@ -1004,6 +1007,8 @@ def update():
     for i in bb:
         i.update()
         i.move()
+    sonic.update()
+    sonic.move()
 
     if life == 0:
         game_framework.change_state(GameOver)
