@@ -324,9 +324,9 @@ class player:
 
         for i in wm:
             if self.die == False and i.die == False:
-                if self.starmode == False:                                                 # 스타모드가 아니라면
-                    if self.depence == False and (crush(self, i) == 1 or crush(self, i) == 2):                  # 옆에서 부딪히면 소닉 죽음
-                        if self.size == 54 or self.firemode == True:
+                if self.starmode == False:  # 스타모드가 아니라면
+                    if self.depence == False and crush(self, i) == 5:  # 옆에서 부딪히면 소닉 죽음
+                        if self.size == 60 or self.firemode == True:
                             self.size = 48
                             self.firemode = False
                             self.depence = True
@@ -334,20 +334,11 @@ class player:
                             sonic.die = True
                             sonic.frame = 0
                             sonic.dir = 0
-                    if crush(self, i) == 3:                                             # 위에서 소닉이 밟으면 굼바 죽음
-                        if i.die == False:
-                            global point
-                            point += 2
-                        i.die = True
-                        i.frame = 0
-
-                        self.Jumping = True
-                        self.jumpTime = 0.0
-                        self.jumpcount = 1
 
                 else:
                     if crush(sonic, i) != 0:
                         if i.die == False:
+                            global point
                             point += 2
                         i.die = True
                         i.frame = 0
@@ -718,7 +709,24 @@ class Monster:
                     self.downpower = 0
 
         elif self.kind == 1:                                    # 부끄부끄
-            pass
+            if self.x < 900 and self.x > 50 and self.y < 600 and self.y > 0 and self.die == False:
+                if self.x <= sonic.x:
+                    self.x2 += self.Speed * game_framework.frame_time
+                    self.dir = 1
+
+                if self.y <= sonic.y:
+                    self.y += self.Speed * game_framework.frame_time
+
+                if self.x >= sonic.x:
+                    self.x2 -= self.Speed * game_framework.frame_time
+                    self.dir = -1
+
+                if self.y >= sonic.y:
+                    self.y -= self.Speed * game_framework.frame_time
+            if self.die == True:
+                self.y += self.Speed * game_framework.frame_time * 5
+                if self.bottom > 600:
+                    wm.remove(self)
 
 
     def draw(self):
@@ -737,10 +745,10 @@ class Monster:
                     walk_monster.clip_draw(int(self.frame) * 81, 0, 81, 93, self.x, self.y, 30, 30)
 
         elif self.kind == 1:                               # 부끄부끄 그리기
-            if self.dir == 1:  # 오른쪽
+            if self.dir == -1:  # 오른쪽
                 fly_monster.clip_composite_draw(int(self.frame) * 40, 0, 40, 40, 0, 'h', self.x, self.y, 45, 45)
 
-            elif self.dir == -1:  # 왼쪽
+            elif self.dir == 1:  # 왼쪽
                 fly_monster.clip_draw(int(self.frame) * 40, 0, 40, 40, self.x, self.y, 45, 45)
 
 
@@ -918,7 +926,7 @@ def enter():
         , Block(994, 1200, 90, 0, 0), Block(1124, 1400, 140, 0, 0), Block(1250, 1400, 510, 0, 0)
         , Block(1195, 1400, 245, 0, 1)]
 
-    wm = []
+    wm = [Monster(108*3.2,129*3.2,80,1),Monster(206*3.2,10*3.2,80,1),Monster(395*3.2,160*3.2,80,1),]
     ite = []
     fb = []
     bb = []
