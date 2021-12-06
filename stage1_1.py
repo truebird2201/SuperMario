@@ -503,7 +503,7 @@ class player:
                     self.Jumping = False
                     self.jumpcount = 2
                     self.jumpTime = 0.0
-                    if i.kind == 3:
+                    if i.kind == 3 or i.kind == 4:
                         if i.notused == 0:
                             i.notused = 1
                     if i.kind == 2:
