@@ -17,7 +17,7 @@ def point_draw():
     hp.clip_draw(0, wm[0].life*20, 800, 20, 500, 560, 800, 20)
     score.clip_draw(0, 0, 170, 80, 80, 519, 130 ,50)
     coin.clip_draw(0, 40, 20, 20, 120, 485, 20, 20)
-    sonic_sprite.clip_draw(0, 460, 40, 40, 120, 560, 40, 40)
+    sonic_sprite.clip_draw(0, 460, 40, 40, 20, 560, 40, 40)
 
     for i in range(0, 9+1):                                                 # 점수
         if point//1000000 == i:
@@ -43,9 +43,9 @@ def point_draw():
 
     for i in range(0, 9+1):                                                 # 목숨
         if (life//10)%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 130+20, 560, 25, 25)
+            num.clip_draw(0+80*i, 0, 80, 80, 40+20, 560, 25, 25)
         if life%10 == i:
-            num.clip_draw(0+80*i, 0, 80, 80, 130+40, 560, 25, 25)
+            num.clip_draw(0+80*i, 0, 80, 80, 40+40, 560, 25, 25)
 
 
 class item:
@@ -235,8 +235,11 @@ class Fire:
                         global point
                         point += 2
                     i.life -= 1
+                    sonic.Sfirework.set_volume(64)
+                    sonic.Sfirework.play(1)
                     if self in fb:
                         fb.remove(self)
+
 
         if self.left > 1000:
             if self in fb:
@@ -257,6 +260,9 @@ class Fire:
 
     def draw(self):
         coin.clip_draw(int(self.frame) * 20, 0, 20, 20, self.x, self.y, 20, 20)
+
+
+
 
 
 
@@ -304,6 +310,8 @@ class player:
         self.backsound = load_music('S3-1.mp3')
         self.Sdie = load_music('Sdie.mp3')
         self.Skill = load_wav('Skill.wav')
+        self.Sfire = load_wav('Sfireball.wav')
+        self.Sfirework = load_wav('Sfirework.wav')
         self.backsound.set_volume(64)
         self.backsound.repeat_play()
 
@@ -710,7 +718,7 @@ class Monster:
                 self.check = False
 
         if self.hit == 1:
-            self.x -= 600 * game_framework.frame_time
+            self.x -= 800 * game_framework.frame_time
             if self.right < 0:
                 self.x = 1200
                 self.check1=True
@@ -719,7 +727,6 @@ class Monster:
                 self.x = 920
                 self.hit=0
                 self.hitcount=0
-                print("asdf")
 
 
     def draw(self):
@@ -939,6 +946,8 @@ def handle_events():
                 elif event.key == SDLK_SPACE:  # 스페이스
                     if sonic.firemode == True:
                         fb.append(Fire(sonic.x,sonic.y,sonic.dir2))
+                    sonic.Sfire.set_volume(64)
+                    sonic.Sfire.play(1)
                 elif event.key == SDLK_ESCAPE:  # ESC
                     game_framework.change_state(Select_state)
                 elif event.key == SDLK_j:
