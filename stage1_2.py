@@ -677,6 +677,9 @@ class Monster:
         self.y = y
         self.Speed = Speed
         self.kind = kind
+        self.Sboo = load_wav('Sboo.wav')
+        self.Sboo.set_volume(64)
+        self.Sboo.play(3)
 
     def update(self):
         if self.kind==0:                    # 굼바 프레임
