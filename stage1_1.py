@@ -285,7 +285,7 @@ class player:
     plus_move = 0
     die = False
     starmode = False
-    firemode = True
+    firemode = False
     starcount = 0
     diedown = 0
     size = 48

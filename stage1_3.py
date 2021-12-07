@@ -274,6 +274,7 @@ class player:
         self.Snotbrick = load_wav('Snotbrick.wav')
         self.backsound = load_music('S1-1.mp3')
         self.Sdie = load_music('Sdie.mp3')
+        self.Sclear = load_wav('Sclear.wav')
         self.backsound.set_volume(64)
         self.backsound.repeat_play()
 
@@ -513,6 +514,10 @@ class player:
 
             elif i.kind == 6:
                 if crush(self,i) == 5:
+                    if fg.bottom == 132*2.7:
+                        self.Sclear.set_volume(100)
+                        self.Sclear.play(1)
+                        self.backsound.stop()
                     if fg.bottom > 30 * 2.7:
                         fg.top -= 400 * game_framework.frame_time
                         fg.bottom -= 400 * game_framework.frame_time
