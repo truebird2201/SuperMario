@@ -7,6 +7,7 @@ main_move = False
 
 back = None
 press = None
+backsound = None
 
 def draw_back():                                   # 배경 그리기
     back.clip_draw(0, 0, 1000, 600, 500, 300)
@@ -15,10 +16,13 @@ def draw_back():                                   # 배경 그리기
         press.clip_draw(0, 0, 800, 300, 500, 400, 400, 150)
 
 def enter():
-    global back,press
+    global back,press,backsound
 
     back = load_image('gameover.png')
     press = load_image('press.png')
+    backsound = load_music('Sgameover.mp3')
+    backsound.set_volume(64)
+    backsound.play(1)
 
 def exit():
     global back,press

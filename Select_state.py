@@ -4,6 +4,7 @@ import game_framework
 import Title_state
 import stage1_1
 import stage2_1
+import stage3_1
 from math import *
 
 sonic_sprite = None
@@ -139,7 +140,7 @@ class player:
                 if self.GoDown2 == 2:
                     game_framework.change_state(stage2_1)
                 if self.GoDown2 == 3:
-                    game_framework.change_state(Title_state)
+                    game_framework.change_state(stage3_1)
         else:
             if self.dir == 1:  # 오른쪽
                 if self.fast:  # 대시
