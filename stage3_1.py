@@ -3,8 +3,6 @@ from pico2d import *
 import game_framework
 import Select_state
 import GameOver
-import time
-import stage1_2
 from math import *
 
 point = 0
@@ -15,6 +13,7 @@ firecheck = False
 
 def point_draw():
     global point
+    hp.clip_draw(0, wm[0].life*20, 800, 20, 500, 560, 800, 20)
     score.clip_draw(0, 0, 170, 80, 80, 519, 130 ,50)
     coin.clip_draw(0, 40, 20, 20, 120, 485, 20, 20)
     sonic_sprite.clip_draw(0, 460, 40, 40, 120, 560, 40, 40)
@@ -186,7 +185,7 @@ class Fire:
     frame = 0
     dir = 1
     gravity = 0.03
-    jumpPower = 1.3
+    jumpPower = 1.7
     jumpTime = 0
     downpower = 0
     savey = 0
@@ -234,8 +233,7 @@ class Fire:
                     if i.die == False:
                         global point
                         point += 2
-                    i.die = True
-                    i.frame = 0
+                    i.life -= 1
                     if self in fb:
                         fb.remove(self)
 
@@ -285,7 +283,7 @@ class player:
     plus_move = 0
     die = False
     starmode = False
-    firemode = False
+    firemode = True
     starcount = 0
     diedown = 0
     size = 48
@@ -302,7 +300,7 @@ class player:
         self.Scoin = load_wav('Scoin.wav')
         self.Snotbrick = load_wav('Snotbrick.wav')
         self.Sshell = load_wav('Sshell.wav')
-        self.backsound = load_music('S1-1.mp3')
+        self.backsound = load_music('S3-1.mp3')
         self.Sdie = load_music('Sdie.mp3')
         self.Skill = load_wav('Skill.wav')
         self.backsound.set_volume(64)
@@ -400,11 +398,6 @@ class player:
                             point += 2
                         i.die = True
                         i.frame = 0
-            if i.die == True and crush(self, i) == 1 and i.kind == 2:           # 등껍질
-                wm.remove(i)
-                ts.append(Shell(self.x, self.y))
-                self.Sshell.set_volume(64)
-                self.Sshell.play(1)
 
 
 
@@ -565,15 +558,7 @@ class player:
                 sonic_sprite.clip_draw(int(self.frame) * 40, 260, 40, 40, self.x, self.y-self.diedown, self.size, self.size)
         else:
             if self.GoDown2 == True:
-                if self.firemode == True:
-                    firesonic.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, self.size, self.size)
-                else:
-                    sonic_sprite.clip_draw(int(self.frame) * 40, 300, 40, 40, self.x, self.y, self.size, self.size)
-                if self.frame > 7:
-                    delay(0.2)
-                    if self.GoDown2 == 1:
-                        game_framework.change_state(stage1_2)
-                    self.GoDown2 = False
+                pass
             else:
                 if self.starmode == False:                                                                          # 스타모드 아닐때
                     if self.dir == 1:  # 오른쪽
@@ -711,118 +696,59 @@ class Monster:
     top = 0
     bottom = 0
     frame = 0
-    Ground = False
-    dir = 1
+    life = 19
     die = False
-    global point
-    x=0
+    check = False
+    check1 = False
+    hitcount = 0
+    hit = 0
 
 
-    def __init__(self, x, y, Speed, kind):
-        self.x2 = x
+    def __init__(self, x, y):
+        self.x = x
         self.y = y
-        self.Speed = Speed
-        self.kind = kind
 
     def update(self):
-        if self.kind==0:                    # 굼바 프레임
-            self.frame = (self.frame + 12* game_framework.frame_time) % 16
+        self.frame = (self.frame + 12* game_framework.frame_time) % 7
 
-        elif self.kind == 1:                # 부끄부끄 프레임
-            self.frame = (self.frame + 20* game_framework.frame_time) % 8
 
-        elif self.kind == 2:                # 엉금엉금 프레임
-            self.frame = (self.frame + 20 * game_framework.frame_time) % 10
-
-        self.x = self.x2+bmx
         self.left = self.x - 30
         self.right = self.x + 30
         self.top = self.y + 30
         self.bottom = self.y - 30
 
+        if self.hit == 0:
+            self.hitcount += 1
 
+        if self.hitcount > 1000:
+            self.hit = 1
 
-
-        if self.kind==0 and self.die == True and int(self.frame) == 10:
-            wm.remove(self)
-        if self.kind==2 and self.die == True and int(self.frame) == 4:
-            self.frame = 4
 
     def move(self):
+        if self.check==False:
+            self.y += 50 * game_framework.frame_time
+            if self.y > 115:
+                self.check=True
+        else:
+            self.y -= 50 * game_framework.frame_time
+            if self.y < 100:
+                self.check = False
 
-        if self.kind == 0:                                      # 굼바
-            self.x2 += self.dir * self.Speed*400* game_framework.frame_time
-            for i in b:
-                if self.bottom + 1 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
-                    if self.dir == 1:
-                        if self.right > i.right:
-                            self.dir = -1
-                    else:
-                        if self.left < i.left:
-                            self.dir = 1
-                    self.y = i.top+15
-
-                if crush(self, i) == 1:
-                    self.dir = -1
-                if crush(self, i) == 2:
-                    self.dir = 1
-
-        if self.kind == 2:                                      # 거북이
-            self.x2 += self.dir * self.Speed*400* game_framework.frame_time
-            for i in b:
-                if self.bottom > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
-                    if self.dir == 1:
-                        if self.right > i.right:
-                            self.dir = -1
-                    else:
-                        if self.left < i.left:
-                            self.dir = 1
-                    self.y = i.top + 15
-
-                if crush(self, i) == 1:
-                    self.dir = -1
-                if crush(self, i) == 2:
-                    self.dir = 1
-
-
-        elif self.kind == 1:                                    # 부끄부끄
-            pass
+        if self.hit == 1:
+            self.x -= 400 * game_framework.frame_time
+            if self.right < 0:
+                self.x = 1200
+                self.check1=True
+            if self.x<920 and self.check1==True:
+                self.check1 = False
+                self.x = 920
+                self.hit=0
+                self.hitcount=0
+                print("asdf")
 
 
     def draw(self):
-
-        if self.kind == 0:                                  # 굼바 그리기
-            if self.die == True:
-                if self.dir == 1:  # 오른쪽
-                    walk_monster.clip_composite_draw(1296, 0, 109, 93, 0, 'h', self.x, self.y, 40, 30)
-                elif self.dir == -1:  # 왼쪽
-                    walk_monster.clip_draw(1296, 0, 109, 93, self.x, self.y, 40, 30)
-            else:
-                if self.dir == 1:  # 오른쪽
-                    walk_monster.clip_composite_draw(int(self.frame) * 81, 0, 81, 93, 0, 'h', self.x, self.y, 30, 30)
-
-                elif self.dir == -1:  # 왼쪽
-                    walk_monster.clip_draw(int(self.frame) * 81, 0, 81, 93, self.x, self.y, 30, 30)
-
-        elif self.kind == 1:                               # 부끄부끄 그리기
-            if self.dir == 1:  # 오른쪽
-                fly_monster.clip_composite_draw(int(self.frame) * 40, 0, 40, 40, 0, 'h', self.x, self.y, 45, 45)
-
-            elif self.dir == -1:  # 왼쪽
-                fly_monster.clip_draw(int(self.frame) * 40, 0, 40, 40, self.x, self.y, 45, 45)
-
-        if self.kind == 2:                                  # 엉금엉금 그리기
-            if self.die == True:
-                if self.dir == 1:  # 오른쪽
-                    turtle_monster.clip_composite_draw(int(self.frame)* 25, 42, 25, 42, 0, 'h', self.x, self.y+6, 30, 45)
-                elif self.dir == -1:  # 왼쪽
-                    turtle_monster.clip_draw(int(self.frame)* 25, 42, 25, 42, self.x, self.y+6, 30, 45)
-            else:
-                if self.dir == 1:  # 오른쪽
-                    turtle_monster.clip_composite_draw(int(self.frame) * 25, 84, 25, 42, 0, 'h', self.x, self.y+6, 30, 45)
-
-                elif self.dir == -1:  # 왼쪽
-                    turtle_monster.clip_draw(int(self.frame) * 25, 84, 25, 42, self.x, self.y+6, 30, 45)
+        boss.clip_draw(int(self.frame) * 80, 0, 80, 55, self.x, self.y, 90, 70)
 
 
 class Block:                         # 블럭
@@ -945,59 +871,6 @@ class BBlock:                         # 블럭
             self.top -= self.diespeed
             self.bottom -= self.diespeed
 
-class Shell:                         # 등딱지
-
-    global bmx
-    left = 0
-    right = 0
-    top = 0
-    bottom = 0
-    frame = 0
-    dir = 1
-
-
-    def __init__(self, x, y):
-        self.x2 = x
-        self.x = x
-        self.y = y
-
-    def draw(self):
-        turtle_monster.clip_draw(int(self.frame) * 25, 0, 25, 20, self.x2, self.y, 30, 20)
-
-    def update(self):
-        self.frame = (self.frame + 12* game_framework.frame_time) % 8
-        self.x = self.x2+bmx
-        self.left = self.x2-15
-        self.right = self.x2 + 15
-        self.top = self.y + 10
-        self.bottom = self.y - 10
-
-        self.y -= 100 * game_framework.frame_time
-
-        for i in b:
-            if self.top > i.bottom and self.bottom < i.top and   self.right > i.left and self.left < i.left and self.dir == 1:
-                self.dir = -1
-                self.x2 -= 200 * game_framework.frame_time
-            elif self.top > i.bottom and self.bottom < i.top and self.right > i.right and self.left < i.right and self.dir == -1:
-                self.dir = 1
-                self.x2 += 200 * game_framework.frame_time
-            if self.bottom + 1 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
-                self.y = i.top + 10
-
-        for i in wm:
-            if i.die == False:
-                if crush(self, i) != 0:
-                    if i.die == False:
-                        global point
-                        point += 2
-                    i.die = True
-                    i.frame = 0
-                    sonic.Skill.set_volume(64)
-                    sonic.Skill.play(1)
-
-    def move(self):
-        self.x2 += self.dir * 300 * game_framework.frame_time
-
 
 def crush(A,B):
     if A.top > B.bottom and A.bottom < B.top and A.right > B.left and A.left < B.left:
@@ -1011,44 +884,18 @@ def crush(A,B):
     return 0
 
 
-
-
-def backmove():
-    global bmx
-    global bmy
-    global sonic
-
-    if sonic.dir == 1:
-        if bmx > -(2357*2.3)+60 and sonic.x > 400:
-            if sonic.x - 0.6 <= 400:
-                bmx -= sonic.plus_move* game_framework.frame_time
-            else:
-                bmx -= sonic.plus_move*2* game_framework.frame_time
-            sonic.x -= sonic.plus_move*2* game_framework.frame_time
-            if sonic.x < 400:
-                sonic.x = 400
-    elif sonic.dir == -1:
-        if bmx < 0 and sonic.x < 600:
-            if sonic.x - 0.6 >= 600:
-                bmx += sonic.plus_move* game_framework.frame_time
-            else:
-                bmx += sonic.plus_move*2* game_framework.frame_time
-            sonic.x += sonic.plus_move*2* game_framework.frame_time
-            if sonic.x > 600:
-                sonic.x = 600
-
 def draw_back():                                   # 배경 그리기
-    stage1_1.clip_draw(0, 0, 2357, 314, 1178.5*2.7+bmx, 157*2.7+bmy, 2357*2.7, 314*2.7)
+    stage3_1.clip_draw(0, 0, 1000, 600, 500, 300, 1000, 600)
 
 def enter():
     global sonic, b, wm, ite, fb, bb, life, turtle_monster,ts
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, point, money
-    global sonic_sprite, stage1_1, num, score, it, star, fly_monster, brick, bmx, bmy
+    global sonic_sprite, stage3_1, num, score, it, star, fly_monster, brick, bmx, bmy,boss,hp
 
     sonic_sprite = load_image('sonic_sprite.png')
     walk_monster = load_image('walk_monster.png')
     fly_monster = load_image('fly_monster.png')
-    stage1_1 = load_image('1-1-1.png')
+    stage3_1 = load_image('3-1.png')
     num = load_image('number.png')
     score = load_image('score.png')
     it = load_image('item.png')
@@ -1057,35 +904,16 @@ def enter():
     coin = load_image('coin.png')
     brick = load_image('brick.png')
     turtle_monster = load_image('troopa.png')
+    boss = load_image('boss.png')
+    hp = load_image('hp.png')
 
     WIDTH = 1000
     HEIGHT = 800
 
-    b = [Block(-100, 0, 500, 0, 0),Block(0, 434*2.7, 13*2.7, 0, 0),Block(431*2.7, 511*2.7, 29*2.7, 0, 0),Block(511*2.7, 603*2.7, 61*2.7, 0, 0),Block(593*2.7, 805*2.7, 13*2.7, 0, 0),
-         Block(800 * 2.7, 891 * 2.7, 29 * 2.7, 0, 0,),Block(885 * 2.7, 980 * 2.7, 13 * 2.7, 0, 0),Block(975 * 2.7, 1005 * 2.7, 45 * 2.7, 0, 0),
-         Block(1000 * 2.7, 1164 * 2.7, 13 * 2.7, 0, 0),Block(1200 * 2.7, 1644 * 2.7, 13 * 2.7, 0, 0),Block(1679 * 2.7, 1762 * 2.7, 13 * 2.7, 0, 0),
-         Block(1758 * 2.7, 1790 * 2.7, 61 * 2.7, 0, 0),Block(1785 * 2.7, 2305 * 2.7, 13 * 2.7, 0, 0),Block(2330 * 2.7, 2357 * 2.7, 13 * 2.7, 0, 0),
-         # 땅
+    b = [Block(-100, 0, 500, 0, 0),Block(1000, 1200, 500, 0, 0),Block(-200, 1200, 57, 0, 0)]
 
-         Block(2302 * 2.7, 2334 * 2.7, 45 * 2.7, 0, 1),
-         #파이프
-
-         Block(660, 690, 180, 150, 2),Block(840, 870, 180, 150, 3),Block(870, 900, 180, 150, 2),Block(1440, 1470, 290, 260, 2),
-         Block(1830, 1860, 165, 135, 2),Block(1860, 1890, 165, 135, 2),Block(1890, 1920, 165, 135, 2),Block(1860, 1890, 275, 245, 2),
-         Block(5780, 5810, 200, 170, 2),Block(5810, 5840, 200, 170, 2),Block(5840, 5870, 200, 170, 2),Block(6215, 6300, 120, 0, 1),
-         Block(3655, 3685, 190, 160, 2),Block(3945, 3975, 200, 170, 2),Block(3975, 4005, 200, 170, 2),Block(4005, 4035, 200, 170, 2),
-         Block(4200, 4230, 200, 170, 2),Block(4230, 4260, 200, 170, 2),
-         Block(4930, 4960, 245, 215, 2),Block(4960, 4990, 245, 215, 4),Block(4990, 5020, 245, 215, 2),Block(5020, 5050, 245, 215, 2),Block(5050, 5080, 245, 215, 2),
-         Block(5600, 5630, 200, 170, 2),Block(5630, 5660, 200, 170, 2),Block(5660, 5690, 200, 170, 2),
-         Block(5690, 5720, 200, 170, 2),Block(5720, 5750, 200, 170, 2),Block(5750, 5780, 200, 170, 2)]
-
-    wm = [Monster(680*2.7,13*2.7+15,0.5,0),Monster(671*2.7,13*2.7+15,0.5,2),Monster(931*2.7,13*2.7+15,0.5,2),Monster(120*2.7,13*2.7+15,0.5,0),Monster(100*2.7,13*2.7+15,0.2,2),Monster(758*2.7,13*2.7+15,0.2,0),Monster(642*2.7,13*2.7+15,0.4,0),Monster(1855*2.7,13*2.7+15,0.2,2),
-          Monster(1855*2.7,13*2.7+15,0.4,0),Monster(1830*2.7,13*2.7+15,0.2,0),Monster(2050*2.7,13*2.7+15,0.6,0),Monster(2080*2.7,13*2.7+15,0.8,0),Monster(1855*2.7,13*2.7+15,0.6,0),]
-    ite = [item(1130, 115, 0),item(1160, 170, 0),item(1190, 170, 0),item(1350, 190, 0),item(1380, 250, 0),item(1410, 250, 0),
-           item(2215, 200, 0),item(2245, 245, 0),item(2275, 245, 0),item(2305, 215, 0),
-           item(3145, 170, 0),item(3175, 215, 0),item(3205, 215, 0),item(3235, 170, 0),
-           item(3400, 170, 0),item(3430, 215, 0),item(3460, 215, 0),item(3490, 170, 0),
-           item(5100, 225, 0),item(5110, 215, 0),item(5110, 235, 0),item(5120, 205, 0),item(5120, 245, 0),item(5140, 225, 0),item(5130, 215, 0),item(5130, 235, 0),]
+    wm = [Monster(920,100)]
+    ite = []
     fb = []
     bb = []
     ts = []
@@ -1098,10 +926,10 @@ def enter():
 def exit():
     global sonic, b,wm, ite, turtle_monster,ts
     global WIDTH, HEIGHT, frame, x, y, money, point, life
-    global sonic_sprite, stage1_1, num, score,star, it, coin, firesonic, brick
+    global sonic_sprite, stage3_1, num, score,star, it, coin, firesonic, brick
 
     del(sonic_sprite)
-    del(stage1_1)
+    del(stage3_1)
     del(b)
     del(num)
     del(score)
@@ -1179,7 +1007,6 @@ def update():
     global firecheck
     sonic.update()
     sonic.move()
-    backmove()
     for i in b:
         i.update()
         i.move()
@@ -1201,6 +1028,8 @@ def update():
         i.move()
     if life == 0:
         game_framework.change_state(GameOver)
+    if wm[0].life == 0:
+        game_framework.change_state(ClearState)
     size = sonic.size
     firecheck = sonic.firemode
 
