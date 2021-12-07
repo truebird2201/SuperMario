@@ -3,6 +3,7 @@ from pico2d import *
 import game_framework
 import Select_state
 import GameOver
+import ClearState
 from math import *
 
 point = 0
