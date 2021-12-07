@@ -8,23 +8,29 @@ image = None
 logo_time = 0.0
 
 
+
+
 def enter():
-    global image
+    global image, backsound
     image = load_image('start.png')
 
+
+
 def exit():
-    global image
+    global image, backsound
     del(image)
 
 
 
+
 def update():
-    global logo_time
+    global logo_time, backsound, check
     if (logo_time > 1.0):
         logo_time = 0
         game_framework.change_state(Title_state)
     delay(0.01)
     logo_time += 0.01
+
 
 def draw():
     global image

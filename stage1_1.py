@@ -916,12 +916,12 @@ class Shell:                         # 등딱지
     top = 0
     bottom = 0
     frame = 0
-    x = 0
     dir = 1
 
 
     def __init__(self, x, y):
         self.x2 = x
+        self.x = x
         self.y = y
 
     def draw(self):
@@ -957,7 +957,7 @@ class Shell:                         # 등딱지
                     i.frame = 0
 
     def move(self):
-        self.x2 += self.dir * 300* game_framework.frame_time
+        self.x2 += self.dir * 300 * game_framework.frame_time
 
 
 def crush(A,B):

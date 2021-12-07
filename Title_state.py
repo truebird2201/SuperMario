@@ -11,6 +11,9 @@ main_sonic = None
 Title = None
 press = None
 
+backsound=None
+check = False
+
 def draw_back():                                   # 배경 그리기
     global main_frame
     global main_move
@@ -23,19 +26,21 @@ def draw_back():                                   # 배경 그리기
         press.clip_draw(0, 0, 800, 300, 500, 350, 400, 150)
 
 def enter():
-    global main_back, main_sonic, Title, press
+    global main_back, main_sonic, Title, press,backsound
 
     main_back = load_image('main_back.png')
     main_sonic = load_image('main_sonic.png')
     Title = load_image('SuperSonic_png.png')
     press = load_image('press.png')
+    backsound = load_music('Stitle.mp3')
 
 def exit():
-    global main_back, main_sonic, Title, press
+    global main_back, main_sonic, Title, press,backsound
     del(main_back)
     del(main_sonic)
     del(Title)
     del(press)
+    backsound.stop()
 
 def handle_events():
     events = get_events()
@@ -55,7 +60,7 @@ def draw():
 
 def update():
     global main_frame
-    global main_move
+    global main_move, check, backsound
 
     if main_move == True:                           # 메인 움직임
         main_frame = main_frame + 0.1
@@ -65,6 +70,10 @@ def update():
         main_frame = main_frame - 0.1
     if main_frame < 0:
         main_move = True
+    if check==False:
+        backsound.set_volume(64)
+        backsound.repeat_play()
+        check = True
 
 
 def pause():
