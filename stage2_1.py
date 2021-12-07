@@ -241,6 +241,16 @@ class player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.Sjump = load_wav('Sjump.wav')
+        self.Spipe = load_wav('Spipe.wav')
+        self.backsound = load_music('S2-1.mp3')
+        self.Sbrick = load_wav('Sbrick.wav')
+        self.Snotbrick = load_wav('Snotbrick.wav')
+        self.Sshell = load_wav('Sshell.wav')
+        self.Sitem = load_wav('Sitem.wav')
+        self.Sstar = load_wav('Sstar.wav')
+        self.backsound.set_volume(64)
+        self.backsound.repeat_play()
 
     def update(self):
         if self.depence == True:
@@ -276,6 +286,10 @@ class player:
                 if i.kind == 1:                                                 # 별
                     self.starmode = True
                     self.starcount = 3500
+                    self.Sitem.set_volume(64)
+                    self.Sitem.play(1)
+                    self.Sstar.set_volume(64)
+                    self.Sstar.play(1)
                     ite.remove(i)
                 elif i.kind == 2:                                                # 버섯
                     self.size = 54
@@ -330,6 +344,7 @@ class player:
 
         if self.starcount == 0 and self.starmode == True:                           # 스타모드 끝
             self.starmode = False
+            self.Sstar.stop()
 
 
 
@@ -767,6 +782,8 @@ class Block:                         # 블럭
                         b.remove(self)
                 if self.kind == 3:
                     self.used = True
+                    sonic.Sshell.set_volume(64)
+                    sonic.Sshell.play(1)
                     ite.append(item(self.left2+(self.right2-self.left2)/2, self.bottom2+(self.top2 - self.bottom2)/2, 1))
 
 class BBlock:                         # 블럭
@@ -962,17 +979,14 @@ def handle_events():
                     ite.append(item(sonic.x+100+bmx, sonic.y, 0))
                 elif event.key == SDLK_r:
                     sonic.dir=0
-                elif event.key == SDLK_UP:  # 위
-                    if sonic.jumpcount == 2:
-                        sonic.savey = sonic.y
-                        sonic.savey2 = sonic.y
-                        sonic.Jumping = True
-                        sonic.jumpcount -= 1
+                elif event.key == SDLK_UP:  # 스페이스
 
-                    elif sonic.jumpcount == 1:
                         sonic.jumpTime = 0
                         sonic.savey2 = sonic.y
                         sonic.Jumping = True
+                        sonic.jumpcount -= 1
+                        sonic.Sjump.set_volume(64)
+                        sonic.Sjump.play(1)
 
                 elif event.key == SDLK_LSHIFT or event.key == SDLK_RSHIFT:  # 쉬프트
                     sonic.fast = True

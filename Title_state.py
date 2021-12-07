@@ -40,7 +40,7 @@ def exit():
     del(main_sonic)
     del(Title)
     del(press)
-    backsound.stop()
+    del(backsound)
 
 def handle_events():
     events = get_events()

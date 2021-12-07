@@ -13,12 +13,9 @@ select = None
 select_Stage = None
 select_Stage2 = None
 
-lock = 3
-backsound = None
+lock = 1
 main_frame = 0
 main_move = False
-
-
 
 class player:
 
@@ -47,6 +44,8 @@ class player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+        self.Sjump = load_wav('Sjump.wav')
+        self.Spipe = load_wav('Spipe.wav')
 
     def update(self):
         if sonic.dir == 0:  # 프레임
@@ -114,12 +113,18 @@ class player:
                     if i.kind == 1:
                         self.GoDown2 = 1
                         self.frame = 0
+                        sonic.Spipe.set_volume(64)
+                        sonic.Spipe.play(1)
                     if i.kind == 2 and lock < 3:
                         self.GoDown2 = 2
                         self.frame = 0
+                        sonic.Spipe.set_volume(64)
+                        sonic.Spipe.play(1)
                     if i.kind == 3 and lock < 2:
                         self.GoDown2 = 3
                         self.frame = 0
+                        sonic.Spipe.set_volume(64)
+                        sonic.Spipe.play(1)
                     self.GoDown = False
                 self.y = i.top + 30
                 self.savey = self.y
@@ -180,6 +185,9 @@ class Block:                         # 파이프
         self.right = right
         self.top = top
         self.bottom = bottom
+        self.backsound = load_music('Stitle.mp3')
+        self.backsound.set_volume(64)
+        self.backsound.repeat_play()
 
     def draw(self):
         if self.kind == 0:              # 땅
@@ -238,6 +246,7 @@ def enter():
     select = load_image('select_back.png')
     select_Stage = load_image('select_Stage.png')
     select_Stage2 = load_image('select_Stage2.png')
+
     WIDTH = 1000
     HEIGHT = 800
     stage1_1.life = 3
@@ -257,6 +266,7 @@ def exit():
     del(select_Stage)
     del(select_Stage2)
     del(b)
+
 
 def handle_events():
     global sonic
@@ -284,12 +294,17 @@ def handle_events():
                     sonic.savey2 = sonic.y
                     sonic.Jumping = True
                     sonic.jumpcount -= 1
+                    sonic.Sjump.set_volume(64)
+                    sonic.Sjump.play(1)
 
                 elif sonic.jumpcount == 1:
                     sonic.jumpTime = 0
                     sonic.savey2 = sonic.y
                     sonic.Jumping = True
                     sonic.jumpcount -= 1
+                    sonic.Sjump.set_volume(64)
+                    sonic.Sjump.play(1)
+
 
             elif event.key == SDLK_LSHIFT or event.key == SDLK_RSHIFT:  # 쉬프트
                 sonic.fast = True
@@ -305,6 +320,7 @@ def handle_events():
 def update():
     sonic.update()
     sonic.move()
+
 
 def draw():
     clear_canvas()
