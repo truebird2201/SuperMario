@@ -367,38 +367,12 @@ class player:
                     ite.remove(i)
 
         for i in wm:
-            if self.die == False and i.die == False:
-                if self.starmode == False:                                                 # 스타모드가 아니라면
-                    if self.depence == False and (crush(self, i) == 1 or crush(self, i) == 2):                  # 옆에서 부딪히면 소닉 죽음
-                        if self.size == 54 or self.firemode == True:
-                            self.size = 48
-                            self.firemode = False
-                            self.depence = True
-                        else:
-                            self.Sdie.set_volume(64)
-                            self.Sdie.play(1)
-                            sonic.die = True
-                            sonic.frame = 0
-                            sonic.dir = 0
-                    if crush(self, i) == 3:                                             # 위에서 소닉이 밟으면 굼바 죽음
-                        if i.die == False:
-                            global point
-                            point += 2
-                        i.die = True
-                        i.frame = 0
-                        self.Skill.set_volume(64)
-                        self.Skill.play(1)
-
-                        self.Jumping = True
-                        self.jumpTime = 0.0
-                        self.jumpcount = 1
-
-                else:
-                    if crush(sonic, i) != 0:
-                        if i.die == False:
-                            point += 2
-                        i.die = True
-                        i.frame = 0
+            if crush(self, i) == 1 or crush(self, i) == 2 or crush(self, i) == 3 or crush(self, i) == 4:  # 옆에서 부딪히면 소닉 죽음
+                sonic.die = True
+                self.Sdie.set_volume(64)
+                self.Sdie.play(1)
+                sonic.frame = 0
+                sonic.dir = 0
 
 
 
@@ -736,7 +710,7 @@ class Monster:
                 self.check = False
 
         if self.hit == 1:
-            self.x -= 400 * game_framework.frame_time
+            self.x -= 600 * game_framework.frame_time
             if self.right < 0:
                 self.x = 1200
                 self.check1=True
@@ -882,6 +856,7 @@ def crush(A,B):
         return 4
     if A.top > B.top and A.bottom-1 < B.top and A.right > B.left and A.left < B.right:
         return 3
+
     return 0
 
 
