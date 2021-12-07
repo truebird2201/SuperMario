@@ -248,7 +248,9 @@ class player:
         self.Snotbrick = load_wav('Snotbrick.wav')
         self.Sshell = load_wav('Sshell.wav')
         self.Sitem = load_wav('Sitem.wav')
-        self.Sstar = load_wav('Sstar.wav')
+        self.Sstar = load_music('Sstar.mp3')
+        self.Sdie = load_music('Sdie.mp3')
+        self.Skill = load_wav('Skill.wav')
         self.backsound.set_volume(64)
         self.backsound.repeat_play()
 
@@ -319,8 +321,11 @@ class player:
                             self.depence = True
                         else:
                             sonic.die = True
+                            self.Sdie.set_volume(64)
+                            self.Sdie.play(1)
                             sonic.frame = 0
                             sonic.dir = 0
+
 
                 else:
                     if crush(sonic, i) != 0:
@@ -329,6 +334,8 @@ class player:
                             point += 2
                         i.die = True
                         i.frame = 0
+                        self.Skill.set_volume(64)
+                        self.Skill.play(1)
 
 
         if self.die == True and int(self.frame) <= 2:                                        # 떨어지는 이미지
@@ -345,6 +352,8 @@ class player:
         if self.starcount == 0 and self.starmode == True:                           # 스타모드 끝
             self.starmode = False
             self.Sstar.stop()
+            self.backsound.set_volume(64)
+            self.backsound.repeat_play()
 
 
 
@@ -401,6 +410,8 @@ class player:
 
             if crush(self,i) == 5 and self.die == False and i.kind == 2:
                 self.die = True
+                self.Sdie.set_volume(64)
+                self.Sdie.play(1)
                 self.frame = 0
                 self.dir = 0
 

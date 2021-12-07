@@ -272,6 +272,7 @@ class player:
         self.backsound = load_music('S1-2.mp3')
         self.Sitem = load_wav('Sitem.wav')
         self.Scoin = load_wav('Scoin.wav')
+        self.Sdie = load_music('Sdie.mp3')
         self.backsound.set_volume(64)
         self.backsound.repeat_play()
 
@@ -301,6 +302,8 @@ class player:
 
         if sonic.die == False and sonic.top < 0:
             self.dir = 0
+            self.Sdie.set_volume(64)
+            self.Sdie.play(1)
             global diecount
             diecount+=1
             enter()

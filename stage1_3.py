@@ -273,6 +273,7 @@ class player:
         self.Sbrick = load_wav('Sbrick.wav')
         self.Snotbrick = load_wav('Snotbrick.wav')
         self.backsound = load_music('S1-1.mp3')
+        self.Sdie = load_music('Sdie.mp3')
         self.backsound.set_volume(64)
         self.backsound.repeat_play()
 
@@ -302,6 +303,8 @@ class player:
 
         if sonic.die == False and sonic.top < 0:
             self.dir = 0
+            self.Sdie.set_volume(64)
+            self.Sdie.play(1)
             global diecount
             diecount+=1
             enter()

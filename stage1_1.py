@@ -3,6 +3,7 @@ from pico2d import *
 import game_framework
 import Select_state
 import GameOver
+import time
 import stage1_2
 from math import *
 
@@ -302,6 +303,8 @@ class player:
         self.Snotbrick = load_wav('Snotbrick.wav')
         self.Sshell = load_wav('Sshell.wav')
         self.backsound = load_music('S1-1.mp3')
+        self.Sdie = load_music('Sdie.mp3')
+        self.Skill = load_wav('Skill.wav')
         self.backsound.set_volume(64)
         self.backsound.repeat_play()
 
@@ -331,6 +334,8 @@ class player:
 
         if sonic.die == False and sonic.top < 0:
             global life
+            self.Sdie.set_volume(64)
+            self.Sdie.play(1)
             life -= 1
             self.dir = 0
             enter()
@@ -371,6 +376,8 @@ class player:
                             self.firemode = False
                             self.depence = True
                         else:
+                            self.Sdie.set_volume(64)
+                            self.Sdie.play(1)
                             sonic.die = True
                             sonic.frame = 0
                             sonic.dir = 0
@@ -380,6 +387,8 @@ class player:
                             point += 2
                         i.die = True
                         i.frame = 0
+                        self.Skill.set_volume(64)
+                        self.Skill.play(1)
 
                         self.Jumping = True
                         self.jumpTime = 0.0
@@ -394,6 +403,8 @@ class player:
             if i.die == True and crush(self, i) == 1 and i.kind == 2:           # 등껍질
                 wm.remove(i)
                 ts.append(Shell(self.x, self.y))
+                self.Sshell.set_volume(64)
+                self.Sshell.play(1)
 
 
 
@@ -981,6 +992,8 @@ class Shell:                         # 등딱지
                         point += 2
                     i.die = True
                     i.frame = 0
+                    sonic.Skill.set_volume(64)
+                    sonic.Skill.play(1)
 
     def move(self):
         self.x2 += self.dir * 300 * game_framework.frame_time
