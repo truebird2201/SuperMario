@@ -962,13 +962,13 @@ class Shell:                         # 등딱지
         self.y = y
 
     def draw(self):
-        turtle_monster.clip_draw(int(self.frame) * 25, 0, 25, 20, self.x2, self.y, 30, 20)
+        turtle_monster.clip_draw(int(self.frame) * 25, 0, 25, 20, self.x, self.y, 30, 20)
 
     def update(self):
         self.frame = (self.frame + 12* game_framework.frame_time) % 8
         self.x = self.x2+bmx
-        self.left = self.x2-15
-        self.right = self.x2 + 15
+        self.left = self.x-15
+        self.right = self.x + 15
         self.top = self.y + 10
         self.bottom = self.y - 10
 
