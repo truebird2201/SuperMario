@@ -382,6 +382,22 @@ class player:
                 sonic.frame = 0
                 sonic.dir = 0
 
+        for i in bm:
+            if crush(self, i) == 1 or crush(self, i) == 2 or crush(self, i) == 3 or crush(self, i) == 4:  # 옆에서 부딪히면 소닉 죽음
+                sonic.die = True
+                self.Sdie.set_volume(64)
+                self.Sdie.play(1)
+                sonic.frame = 0
+                sonic.dir = 0
+
+        for i in bm2:
+            if crush(self, i) == 1 or crush(self, i) == 2 or crush(self, i) == 3 or crush(self, i) == 4:  # 옆에서 부딪히면 소닉 죽음
+                sonic.die = True
+                self.Sdie.set_volume(64)
+                self.Sdie.play(1)
+                sonic.frame = 0
+                sonic.dir = 0
+
 
 
         if self.die == True and int(self.frame) <= 2:                                        # 떨어지는 이미지
@@ -703,8 +719,12 @@ class Monster:
         if self.hit == 0:
             self.hitcount += 1
 
-        if self.hitcount > 1000:
-            self.hit = 1
+        if self.hitcount > 800:
+            self.hit = 2
+
+        if self.hit == 2 and self.check1==False:
+            self.check1 = True
+            bm.append(Bomb())
 
 
     def move(self):
@@ -732,6 +752,128 @@ class Monster:
     def draw(self):
         boss.clip_draw(int(self.frame) * 80, 0, 80, 55, self.x, self.y, 90, 70)
 
+
+class Bomb:
+    left = 0
+    right = 0
+    top = 0
+    bottom = 0
+    frame = 0
+    dir = 1
+    gravity = 0.0025
+    jumpPower = 1.3
+    jumpTime = 0
+    downpower = 0
+    savey = 0
+    savey2 = 0
+    jumpcount = 2
+    Ground = False
+    Jumping = True
+    x=0
+    check = False
+
+
+    def __init__(self):
+        self.x = 920
+        self.y = 100
+        self.savey = 100
+
+    def update(self):
+        self.left = self.x - 40
+        self.right = self.x + 40
+        self.top = self.y + 40
+        self.bottom = self.y - 40
+
+        if self.x<600:
+            bm.remove(self)
+            bm2.append(Bomb2(self.x,self.y,1))
+            bm2.append(Bomb2(self.x,self.y,-1))
+
+    def move(self):
+        self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
+                self.jumpTime * self.jumpPower) + self.savey
+        self.jumpTime += 1
+
+        self.x -= 400 * game_framework.frame_time
+
+    def draw(self):
+        it.clip_draw(160, 120, 40, 40, self.x, self.y,80,80)
+
+
+class Bomb2:
+    left = 0
+    right = 0
+    top = 0
+    bottom = 0
+    frame = 0
+    dir = 1
+    gravity = 0.003
+    jumpPower = 0.9
+    jumpTime = 0
+    downpower = 0
+    savey = 0
+    savey2 = 0
+    jumpcount = 2
+    Ground = False
+    Jumping = True
+    x=0
+    check = False
+
+
+    def __init__(self,x,y,dir):
+        self.x = x
+        self.y = y
+        self.dir = dir
+        self.savey = y
+
+    def update(self):
+
+        self.frame = (self.frame + 40* game_framework.frame_time) % 10
+
+        self.left = self.x - 20
+        self.right = self.x + 20
+        self.top = self.y + 20
+        self.bottom = self.y - 20
+
+        for i in b:
+            if self.top > i.bottom and self.bottom < i.top and self.right > i.left and self.left < i.left:
+                if self in bm2:
+                    bm2.remove(self)
+            elif self.top > i.bottom and self.bottom < i.top and self.right > i.right and self.left < i.right:
+                if self in bm2:
+                    bm2.remove(self)
+            elif self.bottom + 10 > i.top and self.bottom < i.top and self.right > i.left and self.left < i.right:
+                self.y = i.top + 20
+                self.savey = self.y
+                self.Jumping = True
+                self.jumpTime = 0.0
+
+
+        if self.left > 1000:
+            if self in bm2:
+                bm2.remove(self)
+        if self.left < 0:
+            if self in bm2:
+                bm2.remove(self)
+
+        if wm[0].hit == 2 and len(bm2)==0:
+            print(len(bm2))
+            wm[0].hit = 0
+            wm[0].hitcount = 0
+            wm[0].check1 = False
+
+
+
+    def move(self):
+        if self.Jumping:                                                            # 점프
+            self.y = (self.jumpTime * self.jumpTime * (-self.gravity) / 2) + (
+                        self.jumpTime * self.jumpPower) + self.savey
+            self.jumpTime += 1
+
+        self.x += self.dir * 200* game_framework.frame_time
+
+    def draw(self):
+        it.clip_draw(200, 120, 40, 40, self.x, self.y,80,80)
 
 class Block:                         # 블럭
 
@@ -871,7 +1013,7 @@ def draw_back():                                   # 배경 그리기
     stage3_1.clip_draw(0, 0, 1000, 600, 500, 300, 1000, 600)
 
 def enter():
-    global sonic, b, wm, ite, fb, bb, life, turtle_monster,ts
+    global sonic, b, wm, ite, fb, bb, life, turtle_monster,ts,bm,bm2
     global WIDTH, HEIGHT, frame, x, y, walk_monster, point, coin, firesonic, point, money
     global sonic_sprite, stage3_1, num, score, it, star, fly_monster, brick, bmx, bmy,boss,hp
 
@@ -900,6 +1042,8 @@ def enter():
     fb = []
     bb = []
     ts = []
+    bm = []
+    bm2 = []
 
     sonic = player(30, 500)
     bmx = 0
@@ -1011,6 +1155,12 @@ def update():
     for i in ts:
         i.update()
         i.move()
+    for i in bm:
+        i.update()
+        i.move()
+    for i in bm2:
+        i.update()
+        i.move()
     if life == 0:
         game_framework.change_state(GameOver)
     if wm[0].life == 0:
@@ -1033,6 +1183,10 @@ def draw():
     for i in bb:
         i.draw()
     for i in ts:
+        i.draw()
+    for i in bm:
+        i.draw()
+    for i in bm2:
         i.draw()
     if sonic.depencetime % 2 == 0:
         sonic.draw()
