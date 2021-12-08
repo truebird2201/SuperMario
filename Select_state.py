@@ -14,7 +14,7 @@ select = None
 select_Stage = None
 select_Stage2 = None
 
-lock = 1
+lock = 3
 main_frame = 0
 main_move = False
 

@@ -1067,7 +1067,7 @@ def exit():
     del(firesonic)
     del(brick)
     del(turtle_monster)
-    
+
 
 def handle_events():
     global sonic
