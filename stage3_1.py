@@ -719,8 +719,8 @@ class Monster:
         if self.hit == 0:
             self.hitcount += 1
 
-        if self.hitcount > 800:
-            self.hit = 2
+        if self.hitcount > 500:
+            self.hit = randint(1,2)
 
         if self.hit == 2 and self.check1==False:
             self.check1 = True
